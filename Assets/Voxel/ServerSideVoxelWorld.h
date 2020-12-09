@@ -1,14 +1,9 @@
 #pragma once
-#include "../../libs/glm/vec3.hpp"
 #include "ServerSideChunk.h"
-#include "../../System/Comparators/ivec3Comparator.h"
-#include "../../System/Debug.h"
 #include "TerrainGenerator.h"
-#include "../../EventSystem/NetworkEvents/MsgReciveEvent.h"
-#include <map>
+#include <set>
 #include "VoxelWorld.h"
-#include "../../Network/Server.h"
-#include "../../System/Comparators/BinaryComparator.h"
+#include "System/Comparators/BinaryComparator.h"
 
 enum ServerSideVoxelWorldEvents 
 {

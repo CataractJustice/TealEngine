@@ -1,6 +1,8 @@
 #pragma once
 #include "ServerSideVoxelWorld.h"
-
+#include "Network/Server.h"
+#include "EventSystem/NetworkEvents/MsgReciveEvent.h"
+#include "System/Debug.h"
 enum ServerSideVoxelWorldEvents
 {
 	CHUNK_DATA_SEND,
