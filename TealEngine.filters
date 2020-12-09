@@ -1,0 +1,686 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов\shaders">
+      <UniqueIdentifier>{1208f5b4-21fb-4ba4-93d1-b1db20f0274e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\glm">
+      <UniqueIdentifier>{63dd9499-9b8f-4249-b992-4801e050746f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\GameNode">
+      <UniqueIdentifier>{9982b66d-9a0e-4c17-8479-976c1e7071f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\FileInputOutput">
+      <UniqueIdentifier>{9f333f70-eb3b-48df-9c11-17c2d28cccb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Graphics">
+      <UniqueIdentifier>{4c85ceb2-a85b-4b9c-ac6e-650225ebb2e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Graphics\Nodes">
+      <UniqueIdentifier>{99cac780-7616-4cc7-932f-c0b7e333a8f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Input">
+      <UniqueIdentifier>{0b5b41ca-d7e3-4652-bd56-06a24cf3a59f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\System">
+      <UniqueIdentifier>{2e9cb2c7-f95f-4827-92e4-5d9074717ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\FileInputOutput">
+      <UniqueIdentifier>{cb4b3b36-270e-4c58-b047-b7ad6b33ca81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Graphics">
+      <UniqueIdentifier>{36548037-de02-4f3e-8f5e-a624151651d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Input">
+      <UniqueIdentifier>{5083c231-1f4e-41d6-8214-0b2aefe60f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Math">
+      <UniqueIdentifier>{620bf624-0b52-42da-a5a6-c4b5a04363a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Math">
+      <UniqueIdentifier>{6b796b4e-7138-4d59-b705-c8c3d636217a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Graphics\Rendering">
+      <UniqueIdentifier>{f2d979f0-e27a-444b-94f2-86529c1f1c66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Graphics\Rendering">
+      <UniqueIdentifier>{bf07582e-9054-43fa-af79-90267554fb0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Math\Geometry">
+      <UniqueIdentifier>{b85b8540-21bb-4b5f-91c0-11a2a028f349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Graphics\Mesh">
+      <UniqueIdentifier>{298ff67b-bbd6-48bd-acfc-bc03ad401f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Physic">
+      <UniqueIdentifier>{13a0c001-56c8-438c-b610-60afb6214cc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem">
+      <UniqueIdentifier>{d2974458-7134-4857-bcee-8829f9da0981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Debug">
+      <UniqueIdentifier>{8f21aaff-284f-4b91-ab4a-98a146746f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\EventSystem">
+      <UniqueIdentifier>{55c87bda-fd23-440d-a79f-6f2abcd54f46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events">
+      <UniqueIdentifier>{477bd9bf-e224-4919-b47b-c6932b5928c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Window">
+      <UniqueIdentifier>{9e760280-4c25-43b8-9e34-266205485909}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Keyboard">
+      <UniqueIdentifier>{6a97c0c9-4571-48a1-9880-d1be3dccda4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Mouse">
+      <UniqueIdentifier>{1031b45e-aece-4a26-872a-6a0d966155f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Physic">
+      <UniqueIdentifier>{64308192-20a2-423c-8fe8-e428c2f4e4f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Assets">
+      <UniqueIdentifier>{b9d9f513-0c56-499e-9d99-780c71b92afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Assets\Voxel">
+      <UniqueIdentifier>{e82e177f-773a-4b32-83d0-3c13614fd4d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Misc">
+      <UniqueIdentifier>{578eac7a-4816-435a-adf2-44d0e037602b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Debug">
+      <UniqueIdentifier>{ddfcb8c3-7ec0-49ea-bcd8-c8fc2a4bbccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\GameNode">
+      <UniqueIdentifier>{adedd57e-dbf5-4121-b898-f39178566643}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Physics">
+      <UniqueIdentifier>{68b0933b-efa9-4e8b-b582-267e72bf6740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Network">
+      <UniqueIdentifier>{14ef9462-f921-434c-9c5d-a81558dc7fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\EventSystem\Events\Network">
+      <UniqueIdentifier>{07fe801c-b8f9-456d-a4bf-e5e6881d6e25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\enet">
+      <UniqueIdentifier>{d2d16bca-5490-4a8b-8998-fcb63ee217c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Network">
+      <UniqueIdentifier>{229d6932-96cf-4019-aa83-070754c14d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\GameNode">
+      <UniqueIdentifier>{1e3afdce-0333-4e18-971b-ce3c49244421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Assets\Prefabs">
+      <UniqueIdentifier>{343b3100-3e60-4b0d-9ed9-c64c322460c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\GUI">
+      <UniqueIdentifier>{2f9ee531-843e-425c-a2ec-f0689e54e7e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Assets\Voxel\Prefabs">
+      <UniqueIdentifier>{c2d01f5d-c429-4580-9aee-f4e337453ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Libs">
+      <UniqueIdentifier>{0a73e71d-eb67-4afe-b7ad-f12c23fa4f3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Libs\compression">
+      <UniqueIdentifier>{97855914-d09f-49e2-988d-bbc6fe32a139}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="loadStrFromFile.cpp">
+      <Filter>Исходные файлы\FileInputOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Исходные файлы\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Noise.cpp">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PerlinNoise.cpp">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="randrange.cpp">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DefferedRenderer.cpp">
+      <Filter>Исходные файлы\Graphics\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ForwardRenderer.cpp">
+      <Filter>Исходные файлы\Graphics\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshUtil.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderUtil.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderUtil.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="getDirectoryList.cpp">
+      <Filter>Исходные файлы\FileInputOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="EventPublisher.cpp">
+      <Filter>Исходные файлы\EventSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EventListener.cpp">
+      <Filter>Исходные файлы\EventSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Исходные файлы\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelData.cpp">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="GameNode.cpp">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClCompile>
+    <ClCompile Include="MarchingCubesVoxelMesh.cpp">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpolation.cpp">
+      <Filter>Исходные файлы\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Исходные файлы\Physic</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletPhysicsConverting.cpp">
+      <Filter>Исходные файлы\Physic</Filter>
+    </ClCompile>
+    <ClCompile Include="isDirectory.cpp">
+      <Filter>Исходные файлы\FileInputOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="getFilesInDir.cpp">
+      <Filter>Исходные файлы\FileInputOutput</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockData.cpp">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureAtlas.cpp">
+      <Filter>Исходные файлы\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\callbacks.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\compress.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\host.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\list.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\packet.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\peer.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\protocol.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\unix.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="enet\win32.c">
+      <Filter>Исходные файлы\enet</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientNode.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Исходные файлы\GameNode</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientNode.cpp">
+      <Filter>Исходные файлы\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabFactory.cpp">
+      <Filter>Исходные файлы\GameNode</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Исходные файлы\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerSideChunk.cpp">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="TPacket.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="TStruct.cpp">
+      <Filter>Исходные файлы\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="TPacket.cpp">
+      <Filter>Исходные файлы\Network</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Transform.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\common.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\exponential.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\ext.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\fwd.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\geometric.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\glm.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\integer.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat2x2.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat2x3.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat2x4.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat3x2.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat3x3.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat3x4.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat4x2.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat4x3.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\mat4x4.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\matrix.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\packing.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\trigonometric.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\vec2.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\vec3.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\vec4.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="glm\vector_relational.hpp">
+      <Filter>Файлы заголовков\glm</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков\Graphics\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Файлы заголовков\Graphics\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="loadStrFromFile.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Uniform.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Файлы заголовков\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="PerlinNoise.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Noise.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="randrange.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Файлы заголовков\Graphics\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="DefferedRenderer.h">
+      <Filter>Файлы заголовков\Graphics\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderer.h">
+      <Filter>Файлы заголовков\Graphics\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIRenderer.h">
+      <Filter>Файлы заголовков\Graphics\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexConvert.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUtil.h">
+      <Filter>Файлы заголовков\Graphics\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering.hpp">
+      <Filter>Файлы заголовков\Graphics\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshUtil.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureUtil.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GameNode3D.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="GameNode.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="getDirectoryList.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Файлы заголовков\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Файлы заголовков\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener.h">
+      <Filter>Файлы заголовков\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="QTree.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="AAQTree.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="EventPublisher.h">
+      <Filter>Файлы заголовков\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowResizeEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyPressEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyRepeatEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyReleasedEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardEvents.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Keyboard</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEvents.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="WheelScrollEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseButtonPressEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSystem.h">
+      <Filter>Файлы заголовков\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseButtonReleaseEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseEvents.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseMoveEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Physic</Filter>
+    </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>Файлы заголовков\System</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelData.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="InvokeEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="CubicVoxelMesh.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelDataModifyEvent.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="AddressComparator.h">
+      <Filter>Файлы заголовков\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ValueChangeEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="MarchingCubesVoxelMesh.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkNode.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockData.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpolation.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildNodeRemoveEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildNodeAddEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="GameNodeEvents.h">
+      <Filter>Файлы заголовков\EventSystem\Events\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Файлы заголовков\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Файлы заголовков\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletPhysicsConverting.h">
+      <Filter>Файлы заголовков\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureAtlas.h">
+      <Filter>Файлы заголовков\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="isDirectory.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="getFilesInDir.h">
+      <Filter>Файлы заголовков\FileInputOutput</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="MsgReciveEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PeerConnectEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PeerDisconnectEvent.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PeerData.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkEvents.h">
+      <Filter>Файлы заголовков\EventSystem\Events\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="THost.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="TClient.h">
+      <Filter>Файлы заголовков\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientEntityFactory.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="TestEntity.h">
+      <Filter>Исходные файлы\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCubePrefab.h">
+      <Filter>Исходные файлы\Assets\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabFactory.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefab.h">
+      <Filter>Файлы заголовков\GameNode</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIElement.h">
+      <Filter>Файлы заголовков\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUITransform.h">
+      <Filter>Файлы заголовков\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSideVoxelWorld.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="ivec3Comparator.h">
+      <Filter>Файлы заголовков\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainGenerator.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="Biome.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSideChunk.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSideVoxelWorld.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelWorld.h">
+      <Filter>Исходные файлы\Assets\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelWorldPrefab.h">
+      <Filter>Исходные файлы\Assets\Voxel\Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="TStruct.h">
+      <Filter>Файлы заголовков\System</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\compression\huffman.hpp">
+      <Filter>Файлы заголовков\Libs\compression</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryComparator.h">
+      <Filter>Файлы заголовков\System</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="waterVelShader">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </Text>
+    <Text Include="TODO_LIST.txt">
+      <Filter>Файлы заголовков</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="add">
+      <Filter>Файлы ресурсов\shaders</Filter>
+    </None>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+</Project>

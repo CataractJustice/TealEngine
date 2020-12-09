@@ -1,0 +1,19 @@
+﻿  callbacks.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\callbacks.c: No such file or directory,
+  compress.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\compress.c: No such file or directory,
+  host.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\host.c: No such file or directory,
+  list.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\list.c: No such file or directory,
+  packet.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\packet.c: No such file or directory,
+  peer.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\peer.c: No such file or directory,
+  protocol.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\protocol.c: No such file or directory,
+  unix.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\unix.c: No such file or directory,
+  win32.c
+c1 : fatal error C1083: Не удается открыть файл источник: enet\win32.c: No such file or directory,
+  Создание кода...

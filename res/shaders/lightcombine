@@ -1,0 +1,13 @@
+#version 330 core
+layout (location = 0) out vec4 FragColor;
+
+in vec2 TexCoord;
+
+uniform sampler2D AlbedoMap;
+uniform sampler2D LightMap;
+
+void main()
+{
+	vec4 light = texture(LightMap, TexCoord);
+	FragColor = vec4(texture(AlbedoMap, TexCoord).xyz * light.xyz * light.w, 1.0f);
+}

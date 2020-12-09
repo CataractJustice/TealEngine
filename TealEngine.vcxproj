@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{5132A159-0137-4E89-A1D5-F38179D2B884}</ProjectGuid>
+    <RootNamespace>coolANDnewmewGAMEaaaaa</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>glfw/include;glew/include/GL;BulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>glfw/lib/32;glew/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;BulletPhysics\lib\Debug\BulletCollision_Debug.lib;BulletPhysics\lib\Debug\LinearMath_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>libs/glfw/include;libs/glew/include/GL;libs\enet\include;libs/BulletPhysics/src;$(SolutionDir)/TealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/enet;libs/glew/lib/Release/x64;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;BulletPhysics\lib\Debug\BulletCollision_Debug.lib;BulletPhysics\lib\Debug\LinearMath_Debug.lib;libs\enet\enet.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;enet/include;$(SolutionDir)/TealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;_MBCS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <OmitFramePointers>false</OmitFramePointers>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;enet/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet\enet.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AddModuleNamesToAssembly>
+      </AddModuleNamesToAssembly>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Assets\Voxel\BlockData.cpp" />
+    <ClCompile Include="Assets\Voxel\MarchingCubesVoxelMesh.cpp" />
+    <ClCompile Include="Assets\Voxel\ServerSideChunk.cpp" />
+    <ClCompile Include="Assets\Voxel\VoxelData.cpp" />
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="enet\callbacks.c" />
+    <ClCompile Include="enet\compress.c" />
+    <ClCompile Include="enet\host.c" />
+    <ClCompile Include="enet\list.c" />
+    <ClCompile Include="enet\packet.c" />
+    <ClCompile Include="enet\peer.c" />
+    <ClCompile Include="enet\protocol.c" />
+    <ClCompile Include="enet\unix.c" />
+    <ClCompile Include="enet\win32.c" />
+    <ClCompile Include="EventSystem\EventListener.cpp" />
+    <ClCompile Include="EventSystem\EventPublisher.cpp" />
+    <ClCompile Include="Filesystem\getDirectoryList.cpp" />
+    <ClCompile Include="Filesystem\getFilesInDir.cpp" />
+    <ClCompile Include="Filesystem\isDirectory.cpp" />
+    <ClCompile Include="Filesystem\loadStrFromFile.cpp" />
+    <ClCompile Include="GameNode\Entity\Entity.cpp" />
+    <ClCompile Include="GameNode\GameNode.cpp" />
+    <ClCompile Include="GameNode\Prefab\PrefabFactory.cpp" />
+    <ClCompile Include="Graphics\FrameBuffer\FrameBuffer.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="Graphics\Graphics.cpp" />
+    <ClCompile Include="Graphics\Light\Light.cpp" />
+    <ClCompile Include="Graphics\Mesh\Mesh.cpp" />
+    <ClCompile Include="Graphics\Mesh\MeshUtil.cpp" />
+    <ClCompile Include="Graphics\Renderer\DefferedRenderer.cpp" />
+    <ClCompile Include="Graphics\Renderer\ForwardRenderer.cpp" />
+    <ClCompile Include="Graphics\Renderer\RenderUtil.cpp" />
+    <ClCompile Include="Graphics\Shader\Shader.cpp" />
+    <ClCompile Include="Graphics\Shader\ShaderProgram.cpp" />
+    <ClCompile Include="Graphics\Texture\Texture.cpp" />
+    <ClCompile Include="Graphics\Texture\TextureAtlas.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math\Interpolation.cpp" />
+    <ClCompile Include="Math\Noise.cpp" />
+    <ClCompile Include="Math\PerlinNoise.cpp" />
+    <ClCompile Include="Math\randrange.cpp" />
+    <ClCompile Include="Network\ClientNode.cpp" />
+    <ClCompile Include="Network\Server.cpp" />
+    <ClCompile Include="Network\TPacket.cpp" />
+    <ClCompile Include="Physics\BulletPhysicsConverting.cpp" />
+    <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="System\Debug.cpp" />
+    <ClCompile Include="System\Input.cpp" />
+    <ClCompile Include="System\TStruct.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assets\Player.h" />
+    <ClInclude Include="Assets\TestCubePrefab.h" />
+    <ClInclude Include="Assets\TestEntity.h" />
+    <ClInclude Include="Assets\Voxel\Biome.h" />
+    <ClInclude Include="Assets\Voxel\BlockData.h" />
+    <ClInclude Include="Assets\Voxel\ChunkNode.h" />
+    <ClInclude Include="Assets\Voxel\ClientSideVoxelWorld.h" />
+    <ClInclude Include="Assets\Voxel\CubicVoxelMesh.h" />
+    <ClInclude Include="Assets\Voxel\MarchingCubesVoxelMesh.h" />
+    <ClInclude Include="Assets\Voxel\ServerSideChunk.h" />
+    <ClInclude Include="Assets\Voxel\ServerSideVoxelWorld.h" />
+    <ClInclude Include="Assets\Voxel\TerrainGenerator.h" />
+    <ClInclude Include="Assets\Voxel\VoxelData.h" />
+    <ClInclude Include="Assets\Voxel\VoxelWorld.h" />
+    <ClInclude Include="Assets\Voxel\VoxelWorldPrefab.h" />
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="EventSystem\Event.h" />
+    <ClInclude Include="EventSystem\EventListener.h" />
+    <ClInclude Include="EventSystem\EventPublisher.h" />
+    <ClInclude Include="EventSystem\EventSystem.h" />
+    <ClInclude Include="EventSystem\GameNodeEvents\ChildNodeAddEvent.h" />
+    <ClInclude Include="EventSystem\GameNodeEvents\ChildNodeRemoveEvent.h" />
+    <ClInclude Include="EventSystem\GameNodeEvents\GameNodeEvents.h" />
+    <ClInclude Include="EventSystem\KeyboardEvents\KeyboardEvents.h" />
+    <ClInclude Include="EventSystem\KeyboardEvents\KeyPressEvent.h" />
+    <ClInclude Include="EventSystem\KeyboardEvents\KeyReleasedEvent.h" />
+    <ClInclude Include="EventSystem\KeyboardEvents\KeyRepeatEvent.h" />
+    <ClInclude Include="EventSystem\Misc\InvokeEvent.h" />
+    <ClInclude Include="EventSystem\Misc\ValueChangeEvent.h" />
+    <ClInclude Include="EventSystem\Misc\Voxel\VoxelDataModifyEvent.h" />
+    <ClInclude Include="EventSystem\MouseEvents\MouseButtonPressEvent.h" />
+    <ClInclude Include="EventSystem\MouseEvents\MouseButtonReleaseEvent.h" />
+    <ClInclude Include="EventSystem\MouseEvents\MouseEvents.h" />
+    <ClInclude Include="EventSystem\MouseEvents\MouseMoveEvent.h" />
+    <ClInclude Include="EventSystem\MouseEvents\WheelScrollEvent.h" />
+    <ClInclude Include="EventSystem\NetworkEvents\MsgReciveEvent.h" />
+    <ClInclude Include="EventSystem\NetworkEvents\NetworkEvents.h" />
+    <ClInclude Include="EventSystem\NetworkEvents\PeerConnectEvent.h" />
+    <ClInclude Include="EventSystem\NetworkEvents\PeerDisconnectEvent.h" />
+    <ClInclude Include="EventSystem\PhysicEvents\CollisionEvent.h" />
+    <ClInclude Include="EventSystem\WindowEvents\WindowEvents.h" />
+    <ClInclude Include="EventSystem\WindowEvents\WindowResizeEvent.h" />
+    <ClInclude Include="Filesystem\getDirectoryList.h" />
+    <ClInclude Include="Filesystem\getFilesInDir.h" />
+    <ClInclude Include="Filesystem\isDirectory.h" />
+    <ClInclude Include="Filesystem\loadStrFromFile.h" />
+    <ClInclude Include="GameNode\Default\AABB.h" />
+    <ClInclude Include="GameNode\Default\AAQTree.h" />
+    <ClInclude Include="GameNode\Default\QTree.h" />
+    <ClInclude Include="GameNode\Entity\Entity.h" />
+    <ClInclude Include="GameNode\GameNode.h" />
+    <ClInclude Include="GameNode\GameNode3D.h" />
+    <ClInclude Include="GameNode\Prefab\Prefab.h" />
+    <ClInclude Include="GameNode\Prefab\PrefabFactory.h" />
+    <ClInclude Include="GameNode\Transform.h" />
+    <ClInclude Include="glm\common.hpp" />
+    <ClInclude Include="glm\exponential.hpp" />
+    <ClInclude Include="glm\ext.hpp" />
+    <ClInclude Include="glm\fwd.hpp" />
+    <ClInclude Include="glm\geometric.hpp" />
+    <ClInclude Include="glm\glm.hpp" />
+    <ClInclude Include="glm\integer.hpp" />
+    <ClInclude Include="glm\mat2x2.hpp" />
+    <ClInclude Include="glm\mat2x3.hpp" />
+    <ClInclude Include="glm\mat2x4.hpp" />
+    <ClInclude Include="glm\mat3x2.hpp" />
+    <ClInclude Include="glm\mat3x3.hpp" />
+    <ClInclude Include="glm\mat3x4.hpp" />
+    <ClInclude Include="glm\mat4x2.hpp" />
+    <ClInclude Include="glm\mat4x3.hpp" />
+    <ClInclude Include="glm\mat4x4.hpp" />
+    <ClInclude Include="glm\matrix.hpp" />
+    <ClInclude Include="glm\packing.hpp" />
+    <ClInclude Include="glm\trigonometric.hpp" />
+    <ClInclude Include="glm\vec2.hpp" />
+    <ClInclude Include="glm\vec3.hpp" />
+    <ClInclude Include="glm\vec4.hpp" />
+    <ClInclude Include="glm\vector_relational.hpp" />
+    <ClInclude Include="Graphics\Camera.h" />
+    <ClInclude Include="Graphics\FrameBuffer\FrameBuffer.h" />
+    <ClInclude Include="Graphics\Graphics.h" />
+    <ClInclude Include="Graphics\GUI\GUIElement.h" />
+    <ClInclude Include="Graphics\GUI\GUIRenderer.h" />
+    <ClInclude Include="Graphics\GUI\GUITransform.h" />
+    <ClInclude Include="Graphics\Light\Light.h" />
+    <ClInclude Include="Graphics\Mesh\Mesh.h" />
+    <ClInclude Include="Graphics\Mesh\MeshRenderer.h" />
+    <ClInclude Include="Graphics\Mesh\MeshUtil.h" />
+    <ClInclude Include="Graphics\Renderer\DefferedRenderer.h" />
+    <ClInclude Include="Graphics\Renderer\ForwardRenderer.h" />
+    <ClInclude Include="Graphics\Renderer\RenderUtil.h" />
+    <ClInclude Include="Graphics\Shader\Shader.h" />
+    <ClInclude Include="Graphics\Shader\ShaderProgram.h" />
+    <ClInclude Include="Graphics\Shader\Uniform.h" />
+    <ClInclude Include="Graphics\Texture\Texture.h" />
+    <ClInclude Include="Graphics\Texture\TextureAtlas.h" />
+    <ClInclude Include="Graphics\Texture\TextureUtil.h" />
+    <ClInclude Include="libs\compression\huffman.hpp" />
+    <ClInclude Include="Math\IndexConvert.h" />
+    <ClInclude Include="Math\Interpolation.h" />
+    <ClInclude Include="Math\Noise.h" />
+    <ClInclude Include="Math\PerlinNoise.h" />
+    <ClInclude Include="Math\randrange.h" />
+    <ClInclude Include="Network\ClientNode.h" />
+    <ClInclude Include="Network\PeerData.h" />
+    <ClInclude Include="Network\Server.h" />
+    <ClInclude Include="Network\TClient.h" />
+    <ClInclude Include="Network\THost.h" />
+    <ClInclude Include="Network\TPacket.h" />
+    <ClInclude Include="Physics\BulletPhysicsConverting.h" />
+    <ClInclude Include="Physics\Collider.h" />
+    <ClInclude Include="Physics\RigidBody.h" />
+    <ClInclude Include="Resources.h" />
+    <ClInclude Include="System\Clock.h" />
+    <ClInclude Include="System\Debug.h" />
+    <ClInclude Include="System\Input.h" />
+    <ClInclude Include="System\TStruct.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
