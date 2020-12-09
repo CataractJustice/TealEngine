@@ -34,6 +34,7 @@ namespace Blocks
 				return i;
 			}
 		}
+		return -1;
 	}
 
 	BlockData* getBlockByID(unsigned int id) 

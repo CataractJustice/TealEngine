@@ -106,7 +106,6 @@ namespace TealEngine
 						break;
 					case PEER_DISCONNECTED:
 						onDisconnect(event);
-						TE_DEBUG_LOG("Client has disconected.");
 						break;
 					default:
 						break;
