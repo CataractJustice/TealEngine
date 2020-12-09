@@ -3,11 +3,6 @@
 #include "Network/Server.h"
 #include "EventSystem/NetworkEvents/MsgReciveEvent.h"
 #include "System/Debug.h"
-enum ServerSideVoxelWorldEvents
-{
-	CHUNK_DATA_SEND,
-	CHUNK_DATA_MODIFY
-};
 
 void ServerSideVoxelWorld::messageDispatch(Event* e)
 {
