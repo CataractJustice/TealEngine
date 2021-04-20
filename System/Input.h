@@ -1,6 +1,4 @@
 #pragma once
-#include <glew.h>
-#include <GLFW/glfw3.h>
 #include "Graphics/Graphics.h"
 #include "libs/glm/vec2.hpp"
 namespace TealEngine 

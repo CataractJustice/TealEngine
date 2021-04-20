@@ -14,7 +14,7 @@ namespace TealEngine{
 	class Camera : public GameNode3D
 	{
 	private:
-		mat4 projection;
+		glm::mat4 projection;
 		float fov, aspect, zNear, zFar, width, height;
 		bool fixedToWindowSize = true;
 		EventListener* windowResizeListener;
@@ -23,7 +23,7 @@ namespace TealEngine{
 		Texture renderTexture;
 		void setPerspectiveProjection(float fov, float aspect, float zNear, float zFar)
 		{
-			this->projection = glm::perspective(radians(fov), aspect, zNear, zFar);
+			this->projection = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
 			this->fov = fov;
 			this->aspect = aspect;
 			this->zFar = zFar;
@@ -51,7 +51,7 @@ namespace TealEngine{
 			if (!this->fixedToWindowSize) 
 			{
 				this->addEventListener(WINDOW_RESIZE, eventListenerBind(&Camera::resizeEvent, this));
-				Graphics::Window::WindowResize.subscribe(this->getEventListener(WINDOW_RESIZE));
+				Graphics::window->WindowResize.subscribe(this->getEventListener(WINDOW_RESIZE));
 				this->fixedToWindowSize = true;
 			}
 		}
@@ -85,13 +85,13 @@ namespace TealEngine{
 			}
 		}
 
-		mat4 getPV() 
+		glm::mat4 getPV()
 		{
 			Transform t = this->getWorldTransform();
 			return projection * lookAt(t.getPosition(), t.getPosition() + t.forward(), t.up());
 		}
 
-		mat4 getProjection() 
+		glm::mat4 getProjection()
 		{
 			return this->projection;
 		}

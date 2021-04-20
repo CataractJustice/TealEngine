@@ -3,7 +3,6 @@
 #include "../../Graphics/Mesh/Mesh.h"
 #include "../../Math/IndexConvert.h"
 #include "../../Graphics/Mesh/MeshUtil.h"
-#include "../../EventSystem/Misc/Voxel/VoxelDataModifyEvent.h"
 class CubicVoxelMesh : public Mesh
 {
 private:

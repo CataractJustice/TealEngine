@@ -8,15 +8,29 @@ using namespace TealEngine;
 
 class VoxelWorld;
 
+
 struct Voxel 
 {
 public:
-	byte blockType;
-	byte amount;
+	char blockType;
+	char amount;
+};
+
+class VoxelDataModifyEvent : public Event
+{
+public:
+
+	EVENT_TYPE(MISC);
+	EVENT_CATEGORY(MISC_EVENTS);
+	glm::ivec3 position;
+	Voxel oldVoxel;
+	Voxel newVoxel;
+	VoxelDataModifyEvent(glm::ivec3 position, Voxel oldVoxel, Voxel newVoxel) : position(position), oldVoxel(oldVoxel), newVoxel(newVoxel) {}
 };
 
 enum ScalarFieldWrapping
 {
+	ERROR,
 	NO_WRAP,
 	REPEAT,
 	CLAMP_TO_BORDER,

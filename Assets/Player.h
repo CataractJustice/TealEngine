@@ -18,7 +18,7 @@ namespace TealEngine {
 		Player() 
 		{
 			this->sensivity = 1.0f;
-			this->mouseMoveListener = function<void(Event* e)>(std::bind(&Player::onMouseMove, this, std::placeholders::_1));
+			this->mouseMoveListener = eventListenerBind(&Player::onMouseMove, this);
 			Input::Mouse::MouseMove.subscribe(&mouseMoveListener);
 			
 		}

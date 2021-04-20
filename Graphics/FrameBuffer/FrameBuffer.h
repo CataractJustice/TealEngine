@@ -1,6 +1,4 @@
 #pragma once
-#include <glew.h>
-#include <GLFW/glfw3.h>
 namespace TealEngine 
 {
 	class FrameBuffer
@@ -14,18 +12,12 @@ namespace TealEngine
 		void resize(GLuint width, GLuint height);
 		void apply();
 		void bind();
-		static void unbind()
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		static void unbind();
 		void enable(GLuint id);
 		void disable(GLuint id);
 		void attachTexture(GLuint texture, GLubyte id);
 		void attachDepthTexture(GLuint texture);
-		~FrameBuffer() 
-		{
-			glDeleteFramebuffers(1, &this->FBO);
-		}
+		~FrameBuffer();
 		GLuint getDepthTexture();
 		GLuint getAttachedTextureId(GLuint index);
 	};

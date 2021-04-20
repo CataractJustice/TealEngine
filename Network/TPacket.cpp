@@ -1,15 +1,15 @@
 #pragma once
 #include "TPacket.h"
-#include <enet/enet.h>
+#include "enet/enet.h"
 #include "libs/compression/huffman.hpp"
 namespace TealEngine
 {
-	TPacket::TPacket(uint8_t* data, unsigned int dataSize) : TStruct(data, dataSize, true) {};////..
+	TPacket::TPacket(char* data, unsigned int dataSize) : TStruct(data, dataSize, true) {};////..
 	TPacket::TPacket(const TPacket& other) : TStruct(other) {};
 	TPacket::TPacket(TPacket& other) : TStruct(other) {};
 	TStruct TPacket::operator=(const TStruct& other) { return TStruct::operator=(other); }
 
-	ENetPacket* TPacket::createENetPacket(enet_uint32 packet_flags)
+	void* TPacket::createENetPacket(unsigned int packet_flags)
 	{
 		unsigned int messageSize = 0;
 		uint8_t* uncompressedMessage;

@@ -39,7 +39,7 @@ public:
 			{
 				for (unsigned int k = 0; k < chunkSize.z; k++)
 				{
-					voxel.amount = byte(std::max(0.0f,landscape(glm::vec3(i+chunkPos.x,j+chunkPos.y,k+chunkPos.z)) * 255.0f - 96.0f));
+					voxel.amount = char(std::max(0.0f,landscape(glm::vec3(i+chunkPos.x,j+chunkPos.y,k+chunkPos.z)) * 255.0f - 96.0f));
 					chunk->quickSetVoxel(glm::ivec3(i,j,k),voxel);
 				}
 			}

@@ -22,6 +22,6 @@ namespace TealEngine
 
 		ClientNode(std::string ip, unsigned int port);
 
-		void sendEntityData(Entity* entity, TPacket data, enet_uint32 packetFlags = ENET_PACKET_FLAG_UNRELIABLE_FRAGMENT);
+		void sendEntityData(Entity* entity, TPacket data, unsigned int packetFlags = 8);
 	};
 }

@@ -4,8 +4,8 @@
 #include <map>
 #include <list>
 #include <set>
-#include "../EventSystem/Event.h"
-#include "../EventSystem/EventListener.h"
+#include "EventSystem/Event.h"
+#include "EventSystem/EventListener.h"
 using namespace std;
 
 enum NODE_RELATION 

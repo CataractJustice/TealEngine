@@ -32,6 +32,7 @@ namespace TealEngine {
 	}
 	void DefferedRenderer::render()
 	{
+		//render pass
 		fb.bind();
 		fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		//fb.enable(0);
@@ -45,6 +46,8 @@ namespace TealEngine {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		renderModels();
+		
+		//light pass
 		fb.disable(1);
 		fb.disable(2);
 		fb.disable(3);

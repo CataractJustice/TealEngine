@@ -1,13 +1,15 @@
 #include "loadStrFromFile.h"
+#include "System/Debug.h"
 #include <iostream>
-std::string loadStrFromFile(std::string path)
+std::string loadStrFromFile(std::string path, int* errorcode)
 {
 	std::ifstream file;
 	file.open(path);
 	if (!file) 
 	{
-		std::cout << "loadStrFromFile() ERROR: file not found.\n";
-		return "";
+		TE_DEBUG_ERROR("File " + path + " not found.\n");
+		if(errorcode)
+			*errorcode = 1;
 	}
 	std::stringstream stream;
 	stream << file.rdbuf();

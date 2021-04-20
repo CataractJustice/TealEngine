@@ -1,10 +1,8 @@
 #pragma once
-#include <glew.h>
-#include <GLFW/glfw3.h>
-#include "../../GameNode/GameNode3D.h"
-#include "../Shader/ShaderProgram.h"
-#include "../../Filesystem/loadStrFromFile.h"
-#include "../../libs/glm/glm.hpp"
+#include "GameNode/GameNode3D.h"
+#include "Graphics/Shader/ShaderProgram.h"
+#include "Filesystem/loadStrFromFile.h"
+#include "libs/glm/glm.hpp"
 using namespace glm;
 namespace TealEngine
 {
@@ -22,10 +20,10 @@ namespace TealEngine
 	class SharedMesh : public GameNode3D
 	{
 	protected:
-		GLuint VAO;
-		GLuint* ilength;
-		std::vector<GLuint> LODs;
-		GLuint LODsCount;
+		unsigned int VAO;
+		unsigned int* ilength;
+		std::vector<unsigned int> LODs;
+		unsigned int LODsCount;
 		//layouts
 		//- - vertice position
 		//0 - vertice normal
@@ -39,17 +37,17 @@ namespace TealEngine
 		void enableAllAttribs();
 		void disableAttrib(MESH_ATTRIBS target);
 		//O
-		void render(GLuint LOD = 0, GLuint mode = GL_TRIANGLES);
-		virtual GLuint getLength();
-		GLuint getLODIndex(GLuint LOD);
-		GLuint getLODCount();
+		void render(unsigned int LOD = 0, unsigned int mode = -1);
+		virtual unsigned int getLength();
+		unsigned int getLODIndex(unsigned int LOD);
+		unsigned int getLODCount();
 	};
 
 	class Mesh : public SharedMesh
 	{
 	private:
-		GLuint VBO, EBO;
-		GLenum usage;
+		unsigned int VBO, EBO;
+		unsigned int usage;
 
 	protected:
 		vector<vec3> vertices;
@@ -57,7 +55,7 @@ namespace TealEngine
 		vector<vec3> tangets;
 		vector<vec2> UVs;
 		vector<vec4> colors;
-		vector<GLuint> indices;
+		vector<unsigned int> indices;
 		
 	public:
 
@@ -70,7 +68,7 @@ namespace TealEngine
 		void setTangets(std::vector<vec3> tangets);
 		void setUVs(std::vector<vec2> UVs);
 		void setColors(std::vector<vec4> colors);
-		void setIndices(std::vector<GLuint> indices);
+		void setIndices(std::vector<unsigned int> indices);
 
 		//Output
 		SharedMesh* sharedMesh();
@@ -80,8 +78,8 @@ namespace TealEngine
 		vector<vec3> getTangets();
 		vector<vec2> getUVs();
 		vector<vec4> getColors();
-		vector<GLuint> getIndices();
-		GLuint getLength() override;
+		vector<unsigned int> getIndices();
+		unsigned int getLength() override;
 		
 		//Modify
 		void addMesh(Mesh mesh);
@@ -93,10 +91,10 @@ namespace TealEngine
 		void removeDoubles();
 		void splitTriangles();
 		void updateAABB();
-		void addLODIndex(GLuint index);
+		void addLODIndex(unsigned int index);
 		void popLODIndex();
-		void setLODIndex(GLuint LOD, GLuint index);
+		void setLODIndex(unsigned int LOD, unsigned int index);
 		~Mesh();
-		Mesh(GLenum usage = GL_STATIC_DRAW);
+		Mesh(unsigned int usage = -1);
 	};
 }
