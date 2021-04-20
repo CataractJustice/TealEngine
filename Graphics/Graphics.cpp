@@ -3,15 +3,39 @@
 #include "Graphics.h"
 #include "System/Clock.h"
 #include "EventSystem/WindowEvents/WindowResizeEvent.h"
-#include "libs/glm/vec2.hpp"
+
 namespace TealEngine
 {
 	namespace Graphics
 	{
-	Window* window = nullptr;
-		
+		namespace Window 
+		{
+			GLFWwindow* window;
+			EventPublisher WindowResize;
+			const GLFWvidmode* primMonVidMode;
+			GLuint windowWidth, windowHeight;
+			
+			GLuint getScreenWidth() { return primMonVidMode->width; }
+			GLuint getScreenHeight() { return primMonVidMode->height; }
 
-		std::string initStatusStr(unsigned int code)
+			GLuint getWindowWidth() { return windowWidth; }
+			GLuint getWindowHeight() { return windowHeight; }
+
+			void windowResizeCallback(GLFWwindow* window, int width, int height)
+			{
+				WindowResize(&WindowResizeEvent(width, height));
+				windowWidth = width;
+				windowHeight = height;
+				glViewport(0, 0, width, height);
+			}
+
+			void windowCloseCallback()
+			{
+
+			}
+		}
+
+		std::string glInitStatusStr(unsigned int code)
 		{
 			std::string stats[] = { 
 				"glInit is fine!\n",
@@ -21,20 +45,33 @@ namespace TealEngine
 			return stats[code];
 		}
 
-		unsigned int init(std::string windowName)
+		unsigned int glInit(std::string windowName)
 		{
 			if (!glfwInit())
 				return 1;
-			window = new Window(windowName.c_str());
-			window->setCurrent();
+
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			Window::window = glfwCreateWindow(640, 480, windowName.c_str(), NULL, NULL);
+			Window::windowWidth = 640;
+			Window::windowHeight = 480;
+			if (!Window::window)
+			{
+				glfwTerminate();
+				return 2;
+			}
+
+			glfwMakeContextCurrent(Window::window);
+			glfwSetWindowSizeCallback(Window::window, Window::windowResizeCallback);
+			Window::primMonVidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 			glewExperimental = GL_TRUE;
 			if (GLEW_OK != glewInit())
 			{
 				return 3;
 			}
 
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  
-			glEnable(GL_BLEND);
+			glViewport(0, 0, 640, 480);
 			
 
 			return 0;
@@ -44,11 +81,11 @@ namespace TealEngine
 
 		void display()
 		{
-			glfwSwapBuffers((GLFWwindow*)window->gl_window_ptr_());
+			glfwSwapBuffers(Window::window);
 			glfwPollEvents();
 		}
 
-		void terminate()
+		void glTerminate()
 		{
 			glfwTerminate();
 		}

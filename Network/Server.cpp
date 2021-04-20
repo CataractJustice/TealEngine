@@ -98,8 +98,8 @@ namespace TealEngine
 		scene = new GameNode();
 		scene->addEventListener(CHILD_ADDED, eventListenerBind(&Server::onChildAdded, this));
 		scene->addEventListener(CHILD_REMOVED, eventListenerBind(&Server::onChildRemoved, this));
-		//scene->addChild(PrefabFactory::createPrefabInstance("TestCube", true, nullptr));
-		//scene->addChild(PrefabFactory::createPrefabInstance("VoxelWorld", true, nullptr));
+		scene->addChild(PrefabFactory::createPrefabInstance("TestCube", true, nullptr));
+		scene->addChild(PrefabFactory::createPrefabInstance("VoxelWorld", true, nullptr));
 		
 	}
 

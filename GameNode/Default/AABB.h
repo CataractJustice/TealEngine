@@ -1,15 +1,15 @@
 #pragma once
-#include "libs/glm/vec3.hpp"
-
+#include "../../libs/glm/vec3.hpp"
+using namespace glm;
 namespace TealEngine 
 {
 	class AABB
 	{
 	public:
-		glm::vec3 position;
-		glm::vec3 scale;
+		vec3 position;
+		vec3 scale;
 
-		AABB(glm::vec3 position = glm::vec3(0.0f), glm::vec3 scale = glm::vec3(0.0f))
+		AABB(vec3 position = vec3(0.0f), vec3 scale = vec3(0.0f)) 
 		{
 			this->position = position;
 			this->scale = scale;
@@ -25,7 +25,7 @@ namespace TealEngine
 				);
 		}
 
-		bool isPointIn(glm::vec3 point)
+		bool isPointIn(vec3 point) 
 		{
 			return (point.x > position.x && point.y > position.y && point.z > position.z && point.x < position.x + scale.x && point.y < position.y + scale.y && point.z < position.z + scale.z);
 		}

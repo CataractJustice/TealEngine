@@ -26,7 +26,7 @@ void ClientSideVoxelWorld::messageDispatch(Event* e)
 	}
 }
 
-ClientSideVoxelWorld::ClientSideVoxelWorld(int renderDistance, ivec3 chunkSize, ShaderProgram* shader, unsigned int loadsPerFrame) : VoxelWorld(chunkSize)
+ClientSideVoxelWorld::ClientSideVoxelWorld(int renderDistance, ivec3 chunkSize, ShaderProgram* shader, unsigned int loadsPerFrame = 1) : VoxelWorld(chunkSize)
 {
 	this->chunkSize = chunkSize;
 	this->renderDistance = renderDistance;

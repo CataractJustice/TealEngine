@@ -1,0 +1,49 @@
+#version 330 core
+#define MAX_CASCADES 8
+in vec2 TexCoord;
+layout (location = 5) out vec4 LightColor;
+uniform sampler2D RenderTexture;
+uniform sampler2D AlbedoMap;
+uniform sampler2D PositionMap;
+uniform sampler2D NormalMap;
+uniform sampler2D SpecularMap;
+uniform sampler2D ShadowMap[MAX_CASCADES];
+uniform mat4 lightModel[MAX_CASCADES];
+uniform int resolution;
+uniform int cascades;
+uniform vec3 direction;
+uniform vec3 viewPos;
+uniform vec4 color;
+
+float shadowCalc(vec3 position, vec3 normal)
+{
+float shadow = 0.0f;
+for(int k = 0; k < cascades; k++){
+	
+	vec4 fPos = lightModel[k] * vec4(position, 1.0);
+	vec3 proj = fPos.xyz / fPos.w;
+	proj = proj * 0.5 + 0.5; 
+	for(int i = -1; i <= 1; i++)
+	{
+		for(int j = -1; j <= 1; j++)
+		{
+			shadow += (proj.z+0.00005*pow(2.0f, float(k*2)) < texture(ShadowMap[k], proj.xy + vec2(float(i), float(j))/float(resolution)).r && dot(direction, normal) < 0.0) ? 1.0 : 0.0;
+		}
+	}
+	
+	proj -= 0.5f;
+	
+	if((abs(proj.x) < 0.5f && abs(proj.y) < 0.5f) && proj.z < 0.5f) break;
+}
+return shadow/9.0f;
+}
+
+void main()
+{
+	vec3 normal = vec3(texture(NormalMap, TexCoord));
+	vec3 position = vec3(texture(PositionMap, TexCoord));
+	vec3 viewReflection = normalize(-reflect(position - viewPos, normal));
+	float spec = max(0.0f,pow(dot(viewReflection, direction), texture(SpecularMap, TexCoord).y*256.0f)) * texture(SpecularMap, TexCoord).x;
+	float diffuse = dot(-normal, direction);
+	LightColor = texture(RenderTexture, TexCoord) + (vec4(color.xyz*color.w, 1.0) * (spec + diffuse) * shadowCalc(position, normal));
+}

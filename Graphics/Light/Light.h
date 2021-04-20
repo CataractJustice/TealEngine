@@ -113,12 +113,12 @@ namespace TealEngine
 			vec3 direction = getWorldTransform().forward();
 			int resolution = shadowResolution(), cascades = shadowCascades();
 
-			dLightShader.setUniform("lightModel", PV[0], cascades);
-			dLightShader.setUniform("direction", direction);
-			dLightShader.setUniform("viewPos", viewPos);
-			dLightShader.setUniform("color", color);
-			dLightShader.setUniform("resolution", resolution);
-			dLightShader.setUniform("cascades", cascades);
+			dLightShader.setUniform<glm::mat4>("lightModel", &PV[0], cascades);
+			dLightShader.setUniform<glm::vec3>("direction", &direction);
+			dLightShader.setUniform<glm::vec3>("viewPos", &viewPos);
+			dLightShader.setUniform<glm::vec4>("color", &color);
+			dLightShader.setUniform<int>("resolution", &resolution);
+			dLightShader.setUniform<int>("cascades", &cascades);
 		}
 
 		GLuint shadowResolution() 
@@ -166,11 +166,11 @@ namespace TealEngine
 			aLightShader.setTexture("PositionMap", position);
 			aLightShader.setTexture("NormalMap", normal);
 
-			aLightShader.setUniform("VPmat", Render::VP_matrix);
-			aLightShader.setUniform("color", color);
-			aLightShader.setUniform("resolution", vec2(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight()));
-			aLightShader.setUniform("ssaoarea", SSAOarea);
-			aLightShader.setUniform("ssaostrength", SSAOstrength);
+			aLightShader.setUniform<glm::mat4>("VPmat", &Render::VP_matrix);
+			aLightShader.setUniform<glm::vec4>("color", &color);
+			aLightShader.setUniform<vec2>("resolution", &vec2(Graphics::Window::getWindowWidth(), Graphics::Window::getWindowHeight()));
+			aLightShader.setUniform<int>("ssaoarea", &SSAOarea);
+			aLightShader.setUniform<float>("ssaostrength", &SSAOstrength);
 		}
 	};
 }

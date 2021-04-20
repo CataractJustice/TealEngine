@@ -45,7 +45,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -124,9 +124,9 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>libs/freetype/include;libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;enet/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;enet/include;$(SolutionDir)/TealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;_MBCS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -134,22 +134,16 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;enet/;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet\enet.lib;ws2_32.lib;winmm.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;enet/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet\enet.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AddModuleNamesToAssembly>
       </AddModuleNamesToAssembly>
     </Link>
-    <Lib>
-      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;enet/;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)C:\Users\User\source\repos\tealengine\libs\glew\lib\Release\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet\enet.lib;ws2_32.lib;winmm.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\Voxel\BlockData.cpp" />
-    <ClCompile Include="Assets\Voxel\ClientSideVoxelWorld.cpp" />
     <ClCompile Include="Assets\Voxel\MarchingCubesVoxelMesh.cpp" />
     <ClCompile Include="Assets\Voxel\ServerSideChunk.cpp" />
-    <ClCompile Include="Assets\Voxel\ServerSideVoxelWorld.cpp" />
     <ClCompile Include="Assets\Voxel\VoxelData.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="enet\callbacks.c" />
@@ -169,42 +163,32 @@
     <ClCompile Include="Filesystem\loadStrFromFile.cpp" />
     <ClCompile Include="GameNode\Entity\Entity.cpp" />
     <ClCompile Include="GameNode\GameNode.cpp" />
-    <ClCompile Include="GameNode\GameNode3D.cpp" />
     <ClCompile Include="GameNode\Prefab\PrefabFactory.cpp" />
-    <ClCompile Include="GameNode\Transform.cpp" />
     <ClCompile Include="Graphics\FrameBuffer\FrameBuffer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="Graphics\Graphics.cpp" />
-    <ClCompile Include="Graphics\GUI\GUITransform.cpp" />
-    <ClCompile Include="Graphics\GUI\Text\Font.cpp" />
-    <ClCompile Include="Graphics\GUI\Text\FreeTypeUtil.cpp" />
     <ClCompile Include="Graphics\Light\Light.cpp" />
     <ClCompile Include="Graphics\Mesh\Mesh.cpp" />
-    <ClCompile Include="Graphics\Mesh\MeshRenderer.cpp" />
     <ClCompile Include="Graphics\Mesh\MeshUtil.cpp" />
     <ClCompile Include="Graphics\Renderer\DefferedRenderer.cpp" />
     <ClCompile Include="Graphics\Renderer\ForwardRenderer.cpp" />
     <ClCompile Include="Graphics\Renderer\RenderUtil.cpp" />
     <ClCompile Include="Graphics\Shader\Shader.cpp" />
     <ClCompile Include="Graphics\Shader\ShaderProgram.cpp" />
-    <ClCompile Include="Graphics\Shader\Uniform.cpp" />
     <ClCompile Include="Graphics\Texture\Texture.cpp" />
     <ClCompile Include="Graphics\Texture\TextureAtlas.cpp" />
-    <ClCompile Include="Graphics\Window.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Interpolation.cpp" />
     <ClCompile Include="Math\Noise.cpp" />
     <ClCompile Include="Math\PerlinNoise.cpp" />
     <ClCompile Include="Math\randrange.cpp" />
     <ClCompile Include="Network\ClientNode.cpp" />
     <ClCompile Include="Network\Server.cpp" />
-    <ClCompile Include="Network\TClient.cpp" />
-    <ClCompile Include="Network\THost.cpp" />
     <ClCompile Include="Network\TPacket.cpp" />
     <ClCompile Include="Physics\BulletPhysicsConverting.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Resources.cpp" />
-    <ClCompile Include="System\Clock.cpp" />
     <ClCompile Include="System\Debug.cpp" />
     <ClCompile Include="System\Input.cpp" />
     <ClCompile Include="System\TStruct.cpp" />
@@ -226,7 +210,6 @@
     <ClInclude Include="Assets\Voxel\VoxelWorld.h" />
     <ClInclude Include="Assets\Voxel\VoxelWorldPrefab.h" />
     <ClInclude Include="Core.h" />
-    <ClInclude Include="DefaultTags.h" />
     <ClInclude Include="EventSystem\Event.h" />
     <ClInclude Include="EventSystem\EventListener.h" />
     <ClInclude Include="EventSystem\EventPublisher.h" />
@@ -240,6 +223,7 @@
     <ClInclude Include="EventSystem\KeyboardEvents\KeyRepeatEvent.h" />
     <ClInclude Include="EventSystem\Misc\InvokeEvent.h" />
     <ClInclude Include="EventSystem\Misc\ValueChangeEvent.h" />
+    <ClInclude Include="EventSystem\Misc\Voxel\VoxelDataModifyEvent.h" />
     <ClInclude Include="EventSystem\MouseEvents\MouseButtonPressEvent.h" />
     <ClInclude Include="EventSystem\MouseEvents\MouseButtonReleaseEvent.h" />
     <ClInclude Include="EventSystem\MouseEvents\MouseEvents.h" />
@@ -249,6 +233,7 @@
     <ClInclude Include="EventSystem\NetworkEvents\NetworkEvents.h" />
     <ClInclude Include="EventSystem\NetworkEvents\PeerConnectEvent.h" />
     <ClInclude Include="EventSystem\NetworkEvents\PeerDisconnectEvent.h" />
+    <ClInclude Include="EventSystem\PhysicEvents\CollisionEvent.h" />
     <ClInclude Include="EventSystem\WindowEvents\WindowEvents.h" />
     <ClInclude Include="EventSystem\WindowEvents\WindowResizeEvent.h" />
     <ClInclude Include="Filesystem\getDirectoryList.h" />
@@ -261,7 +246,7 @@
     <ClInclude Include="GameNode\Entity\Entity.h" />
     <ClInclude Include="GameNode\GameNode.h" />
     <ClInclude Include="GameNode\GameNode3D.h" />
-    <ClInclude Include="GameNode\Prefab\IPrefab.h" />
+    <ClInclude Include="GameNode\Prefab\Prefab.h" />
     <ClInclude Include="GameNode\Prefab\PrefabFactory.h" />
     <ClInclude Include="GameNode\Transform.h" />
     <ClInclude Include="glm\common.hpp" />
@@ -290,12 +275,9 @@
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="Graphics\Graphics.h" />
-    <ClInclude Include="Graphics\GUI\Text\Font.h" />
-    <ClInclude Include="Graphics\GUI\Text\FreeTypeUtil.h" />
     <ClInclude Include="Graphics\GUI\GUIElement.h" />
     <ClInclude Include="Graphics\GUI\GUIRenderer.h" />
     <ClInclude Include="Graphics\GUI\GUITransform.h" />
-    <ClInclude Include="Graphics\GUI\Text\Text.h" />
     <ClInclude Include="Graphics\Light\Light.h" />
     <ClInclude Include="Graphics\Mesh\Mesh.h" />
     <ClInclude Include="Graphics\Mesh\MeshRenderer.h" />
@@ -309,7 +291,6 @@
     <ClInclude Include="Graphics\Texture\Texture.h" />
     <ClInclude Include="Graphics\Texture\TextureAtlas.h" />
     <ClInclude Include="Graphics\Texture\TextureUtil.h" />
-    <ClInclude Include="Graphics\Window.h" />
     <ClInclude Include="libs\compression\huffman.hpp" />
     <ClInclude Include="Math\IndexConvert.h" />
     <ClInclude Include="Math\Interpolation.h" />

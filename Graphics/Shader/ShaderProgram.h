@@ -8,86 +8,119 @@ namespace TealEngine {
 	class ShaderProgram
 	{
 	private:
-		unsigned int program;
-		static unsigned int lastMaterialId;
-		static unsigned int usedMaterialId;
-		unsigned int materialId;
-		std::map<std::string, Uniform*> uniforms;
-		std::map<std::string, std::pair<unsigned int, unsigned int>> texture;
+		GLuint program;
+		static GLuint lastMaterialId;
+		static GLuint usedMaterialId;
+		GLuint materialId;
+		std::map<std::string, std::pair<unsigned short, Uniform*>> uniform;
+		std::map<std::string, std::pair<GLuint, GLuint>> texture;
 		void addTexture(std::string name);
-		void tryAddUniform(std::string name) 
-		{
-			if (uniforms.find(name) == uniforms.cend())
-				uniforms[name] = new Uniform(program, name);
-		}
 	public:
-
-		ShaderProgram() 
-		{
-			materialId = lastMaterialId++;
-		}
-
-		ShaderProgram(const ShaderProgram& sp) : ShaderProgram()
-		{
-			program = sp.program;
-			for (auto& upair : sp.uniforms) 
-			{
-				uniforms[upair.first] = new Uniform(*upair.second);
-			}
-
-			this->texture = sp.texture;
-		}
-
-		ShaderProgram& operator=(const ShaderProgram& sp) 
-		{
-			program = sp.program;
-			for (auto& upair : sp.uniforms)
-			{
-				uniforms[upair.first] = new Uniform(*upair.second);
-			}
-
-			this->texture = sp.texture;
-			return *this;
-		}
-
 		~ShaderProgram() 
 		{
-			//for (std::pair<std::string, std::pair<unsigned short, Uniform*>> u : uniform)
-			//	delete u.second.second;
+			for (std::pair<std::string, std::pair<unsigned short, Uniform*>> u : uniform)
+				delete u.second.second;
 		}
 
 		void loadFromFiles(std::string vertpath, std::string fragpath);
 
-		void link(unsigned int vertexShader, unsigned int fragmentShader);
+		void link(GLuint vertexShader, GLuint fragmentShader);
 
 		void link(Shader vertexShader, Shader geometryShader, Shader fragmentShader);
 
 		void use();
 
-		void setTexture(std::string name, unsigned int texture);
-		void setTexture(std::string name, unsigned int index, unsigned int texture);
-
-		void setUniform(std::string name, int x)		 {tryAddUniform(name); uniforms[name]->set1iv(&x, 1); }
-		void setUniform(std::string name, float x)		 {tryAddUniform(name); uniforms[name]->set1fv(&x, 1); }
-		void setUniform(std::string name, glm::vec2 vec) {tryAddUniform(name); uniforms[name]->set2fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::vec3 vec) {tryAddUniform(name); uniforms[name]->set3fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::vec4 vec) {tryAddUniform(name); uniforms[name]->set4fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::mat4 mat) {tryAddUniform(name); uniforms[name]->setm4fv(glm::value_ptr(mat), 1); }
-
-		void setUniform(std::string name, glm::mat4 mat, int size) { tryAddUniform(name); uniforms[name]->setm4fv(glm::value_ptr(mat), size); }
-
-		void setUniform(std::map<std::string, Uniform*>::iterator it, int x)			{ it->second->set1iv(&x, 1); }
-		void setUniform(std::map<std::string, Uniform*>::iterator it, float x)		{ it->second->set1fv(&x, 1); }
-		void setUniform(std::map<std::string, Uniform*>::iterator it, glm::vec2 vec) { it->second->set2fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::map<std::string, Uniform*>::iterator it, glm::vec3 vec) { it->second->set3fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::map<std::string, Uniform*>::iterator it, glm::vec4 vec) { it->second->set4fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::map<std::string, Uniform*>::iterator it, glm::mat4 mat) { it->second->setm4fv(glm::value_ptr(mat), 1); }
-
-		auto getUniformIterator(std::string name) 
+		template <class T>
+		void addUniform(std::string name)
 		{
-			return uniforms.find(name);
+			uniform[name].second = new TemplateUniform<T>(program, name);
 		}
 
-		unsigned int id();
+		void setTexture(std::string name, GLuint texture);
+		void setTexture(std::string name, GLuint index, GLuint texture);
+
+		std::map<std::string, std::pair<unsigned short, Uniform*>>::iterator getUniformIterator(std::string name)
+		{
+			return uniform.find(name);
+		}
+
+		template <class T>
+		void setUniform(std::string id, T* value, int length = 1);
+
+		template <class T>
+		void sharedSetUniform(std::string id, T* value, int length = 1);
+
+		template <class T>
+		void setUniform(std::map<std::string, std::pair<unsigned short, Uniform*>>::iterator it, T* value, int length = 1);
+
+		template <class T>
+		void sharedSetUniform(std::map<std::string, std::pair<unsigned short, Uniform*>>::iterator it, T* value, int length = 1);
+
+		GLuint id();
+
+		ShaderProgram clone() 
+		{
+			ShaderProgram s(*this);
+			for (std::pair<std::string, std::pair<bool, Uniform*>> u : s.uniform)
+			{
+				u.second.second = u.second.second->clone();
+			}
+			lastMaterialId++;
+			materialId = lastMaterialId;
+			return s;
+		}
 	};
+
+
+	template <class T>
+	void ShaderProgram::setUniform(std::string id, T* value, int length)
+	{
+		if (uniform.find(id) == uniform.end())
+		{
+			addUniform<T>(id);
+			setUniform<T>(id, value, length);
+		}
+		else
+			if (dynamic_cast<TemplateUniform<T>*>(uniform[id].second))
+				((TemplateUniform<T>*)uniform[id].second)->set(value, length);
+			else
+				throw ("Types of setting and uniform values is not the same.");
+		uniform[id].first = 1;
+	}
+
+	template <class T>
+	void ShaderProgram::sharedSetUniform(std::string id, T* value, int length)
+	{
+		if (uniform.find(id) == uniform.end())
+		{
+			addUniform<T>(id);
+			sharedSetUniform<T>(id, value, length);
+		}
+		else
+			if (dynamic_cast<TemplateUniform<T>*>(uniform[id]))
+				((TemplateUniform<T>*)uniform[id])->sharedSet(value, length);
+			else
+				throw ("Types of setting and uniform values is not the same.");
+		uniform[id].first = 2;
+	}
+
+	template <class T>
+	void ShaderProgram::setUniform(std::map<std::string, std::pair<unsigned short, Uniform*>>::iterator it, T* value, int length)
+	{
+		if (dynamic_cast<TemplateUniform<T>*>((*it).second.second))
+			((TemplateUniform<T>*)(*it).second.second)->set(value, length);
+		else
+			throw ("Types of setting and uniform values is not the same.");
+		(*it).second.first = 1;
+	}
+
+	template <class T>
+	void ShaderProgram::sharedSetUniform(std::map<std::string, std::pair<unsigned short, Uniform*>>::iterator it, T* value, int length)
+	{
+		if (dynamic_cast<TemplateUniform<T>*>((*it).second.second))
+			((TemplateUniform<T>*)(*it).second.second)->sharedSet(value, length);
+		else
+			throw ("Types of setting and uniform values is not the same.");
+		(*it).second.first = 2;
+	}
 }

@@ -45,17 +45,17 @@ namespace TealEngine
 		return *this;
 	}
 
-	TStruct::TStruct(char* data, unsigned int dataSize, bool decompress)
+	TStruct::TStruct(uint8_t* data, unsigned int dataSize, bool decompress)
 	{
 		if (data != nullptr)
 		{
-			char* dec_data = data;
+			uint8_t* dec_data = data;
 			unsigned int dec_size = dataSize;
 			if (decompress)
 			{
-				dec_data = new char[*((unsigned int*)(data))];
+				dec_data = new uint8_t[*((unsigned int*)(data))];
 				dec_size = *((int*)(data));
-				huffman::easyDecode((uint8_t*)data + sizeof(int) * 2, dataSize - sizeof(int) * 2, (*(int*)(data + sizeof(int))), (uint8_t*)dec_data, *((int*)(data)));
+				huffman::easyDecode(data + sizeof(int) * 2, dataSize - sizeof(int) * 2, (*(int*)(data + sizeof(int))), dec_data, *((int*)(data)));
 
 				TE_DEBUG_LOG("compression ratio = " + to_string(double(dec_size) / double(dataSize)));
 			}

@@ -1,5 +1,3 @@
-#include <glew.h>
-#include <GLFW/glfw3.h>
 #include "Mesh.h"
 #include "../../System/Debug.h"
 #include <limits>
@@ -22,22 +20,20 @@ namespace TealEngine
 		this->attribs[target] = false;
 	}
 
-	void SharedMesh::render(unsigned int LOD, GLuint mode) 
+	void SharedMesh::render(GLuint LOD, GLuint mode) 
 	{
-		if (mode == unsigned int(-1))
-			mode = GL_TRIANGLES;
-		unsigned int start = getLODIndex(LOD);
-		unsigned int end = getLODIndex(LOD + 1);
+		GLuint start = getLODIndex(LOD);
+		GLuint end = getLODIndex(LOD + 1);
 		glBindVertexArray(VAO);
-		glDrawElements(mode, end - start, GL_UNSIGNED_INT, (void*)(getLODIndex(LOD) * sizeof(unsigned int)));
+		glDrawElements(mode, end - start, GL_UNSIGNED_INT, (void*)(getLODIndex(LOD) * sizeof(GLuint)));
 	}
 
-	unsigned int SharedMesh::getLength() 
+	GLuint SharedMesh::getLength() 
 	{
 		return *this->ilength;
 	}
 
-	unsigned int SharedMesh::getLODIndex(unsigned int LOD)
+	GLuint SharedMesh::getLODIndex(GLuint LOD)
 	{
 		if (LOD == 0)
 		{
@@ -52,7 +48,7 @@ namespace TealEngine
 			return LODs[LOD - 1];
 		}
 	}
-	unsigned int SharedMesh::getLODCount()
+	GLuint SharedMesh::getLODCount()
 	{
 		return LODs.size() + 1;
 	}
@@ -101,10 +97,8 @@ namespace TealEngine
 		return (e == "");
 	}
 
-	Mesh::Mesh(unsigned int usage)
+	Mesh::Mesh(GLenum usage)
 	{
-		if (usage == unsigned int(-1))
-			usage = GL_STATIC_DRAW;
 		this->usage = usage;
 		ilength = new GLuint(0);
 	}
@@ -531,7 +525,7 @@ namespace TealEngine
 		}
 	}
 
-	void Mesh::addLODIndex(unsigned int index) 
+	void Mesh::addLODIndex(GLuint index) 
 	{
 		LODs.push_back(index);
 	}
@@ -541,7 +535,7 @@ namespace TealEngine
 		LODs.pop_back();
 	}
 
-	void Mesh::setLODIndex(unsigned int LOD, unsigned int index) 
+	void Mesh::setLODIndex(GLuint LOD, GLuint index) 
 	{
 		LODs[LOD] = index;
 	}
@@ -552,7 +546,7 @@ namespace TealEngine
 	vector<vec3> Mesh::getTangets() { return tangets; }
 	vector<vec2> Mesh::getUVs() { return UVs; }
 	vector<vec4> Mesh::getColors() { return colors; }
-	vector<unsigned int> Mesh::getIndices() { return indices; }
+	vector<GLuint> Mesh::getIndices() { return indices; }
 	vector<vec3> Mesh::getTriangles() 
 	{
 		vector<vec3> t;

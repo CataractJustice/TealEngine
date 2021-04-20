@@ -1,4 +1,5 @@
 #pragma once
+#include <glew.h>
 #include <string>
 #include <vector>
 #include "Uniform.h"
@@ -7,15 +8,18 @@ namespace TealEngine
 	class Shader
 	{
 	private:
-		unsigned int shader;
+		GLuint shader;
 		std::vector<Uniform*> uniforms;
 	public:
+		std::vector<Uniform*> getUniforms() 
+		{
+		
+		}
+		void loadFromFile(std::string path, GLenum type);
 
-		void loadFromFile(std::string path, unsigned int type);
+		void loadFromString(std::string source, GLenum type);
 
-		void loadFromString(std::string source, unsigned int type);
-
-		unsigned int id();
+		GLuint id();
 
 		~Shader();
 	};

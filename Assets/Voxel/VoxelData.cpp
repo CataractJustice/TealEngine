@@ -1,7 +1,7 @@
 #pragma once
 #include "VoxelWorld.h"
 #include "VoxelData.h"
-#include "EventSystem/Event.h"
+#include "../../EventSystem/Misc/Voxel/VoxelDataModifyEvent.h"
 using namespace TealEngine;
 
 VoxelData::VoxelData(ivec3 dimensions, ivec3 index, VoxelWorld* world, ScalarFieldWrapping wrapMode)
@@ -214,9 +214,8 @@ void VoxelData::modifyVoxel(glm::ivec3 position, Voxel voxel, int method)
 		}
 		quickSetVoxel(position, newVoxel);
 	}
-	Event* e = new VoxelDataModifyEvent(position, oldVoxel, newVoxel);
-	onModify(e);
-	delete e;
+	
+	onModify(&VoxelDataModifyEvent(position, oldVoxel, newVoxel));
 }
 Voxel* VoxelData::getVoxelWrapped(glm::ivec3 position) 
 {

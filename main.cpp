@@ -7,46 +7,19 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Light/Light.h"
 #include "Graphics/Mesh/MeshRenderer.h"
-#include "Assets/Sokoban/CameraController.h"
-#include "Assets/Sokoban/SocobanLevel.h"
 #include "Assets/Player.h"
-#include "Graphics/GUI/Text/Text.h"
+#include "Math/randrange.h"
+#include "Math/PerlinNoise.h"
+#include "Physics/RigidBody.h"
 #include <thread>
 using namespace TealEngine;
+Player* p;
 Camera* cam;
-CameraController* cameraController;
-SokobanLevel* level;
+//Clock clock;
 Texture t, nt, ut;
 SharedMesh* um;
 DirectionLight* dlight;
 GameNode* scene = new GameNode();
-Player* p;
-
-#define w WALL
-#define b BOX
-#define p PLAYER
-#define t TARGET
-#define s BOX | TARGET
-
-unsigned int sokobanmap[] =
-{
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, 0, 0, 0, w, w, w, w, w, w,
-	w, w, w, w, w, t, p, b, 0, 0, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, 0, b, t, w, w, w, w, w, w,
-	w, w, w, w, w, t, w, w, b, 0, w, w, w, w, w, w,
-	w, w, w, w, w, 0, w, 0, t, 0, w, w, w, w, w, w,
-	w, w, w, w, w, b, 0, s, b, b, t, w, w, w, w, w,
-	w, w, w, w, w, 0, 0, 0, t, 0, 0, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w
-};
 
 int main()
 {
@@ -54,46 +27,33 @@ int main()
 
 
 	cam = new Camera();
-	cam->setPerspectiveProjection(90.0f, Graphics::Window::getScreenHeight() / Graphics::Window::getScreenWidth(), 0.01f, 32.0f);
+	cam->setPerspectiveProjection(90.0f, Graphics::Window::getScreenHeight() / Graphics::Window::getScreenWidth(), 0.01f, 5000.0f);
 	cam->resize(Graphics::Window::getScreenWidth(), Graphics::Window::getScreenHeight());
 	Core::Scene::renderer.setCamera(cam);
-	
-	//p = new Player();
-	//p->sensivity = 1;
-	//p->addChild(cam);
-	//scene->addChild(p);
 
-	cameraController = new CameraController();
-	cameraController->addChild(cam);
-	level = new SokobanLevel(16, 16);
-
-	for (int i = 0; i < 16; i++)
-		for (int j = 0; j < 16; j++)
-			level->tile(ivec2(i, j)) = std::rand() % 2;
-	level->loadLevel(sokobanmap);
-
-	scene->addChild(cameraController);
-	Transform t;
-	t.setScale(vec3(0.5));
-	t.translate(vec3(-8.0, 0.0, -8.0));
-	level->setTransform(t);
-	scene->addChild(level);
+	p = new Player();
+	p->sensivity = 1.0f;
+	p->addChild(cam);
+	Transform pt;
+	pt.translate(vec3(0.0f, 0.0f, -10.0f));
+	p->setRelativeTransform(pt);
+	scene->addChild(p);
 
 	AmbientLight* alight = new AmbientLight();
 	alight->color = vec4(0.4f);
 	alight->SSAOarea = 1;
-	alight->SSAOstrength = 0.8f;
+	alight->SSAOstrength = 0.4f;
 	//scene->addChild(alight);
 
-	dlight = new DirectionLight(8192, 1, 32.0f);
+	dlight = new DirectionLight(96, 2);
+	dlight->setCascadeRatio(0, 0.5f);
 	dlight->color = vec4(1.0f);
 	scene->addChild(dlight);
 
-	Text text;
-	text.text = L"Suka Blyat'";
-	text.font = Resources::getFont("comicz.ttf");
-	text.scale = 1.5f;
-	text.getTransform().set(GUI_Y_OFFSET, 0.5, HEIGHT_PERCENTS);
+	ShaderProgram testShader = Resources::getShader("deffered").clone();
+	testShader.setTexture("tex", Resources::getTexture("stone.png").id());
+	Transform ct;
+	ct.translate(vec3(-0.5f));
 	//for (unsigned short i = 0; i < 4; i++)
 	//{
 	//	for (unsigned short j = 0; j < 4; j++)
@@ -151,13 +111,10 @@ int main()
 
 	while (!glfwWindowShouldClose(Graphics::Window::window)) 
 	{
-		if(Input::Keyboard::isKeyPressed(GLFW_KEY_R))
-			level->loadLevel(sokobanmap);
 		
 		//clock.update();
-		Transform lightTransform;
-		lightTransform.rotate(glfwGetTime() * 10.0f, vec3(0.0f, 1.0f, 0.0f));
-		lightTransform.rotate(90.0f, vec3(1.0f, 0.1f, 1.08f));
+		Transform lightTransform = dlight->getTransform();
+		lightTransform.rotate(0.1f, vec3(1.0f, 0.3f, 0.08f));
 		dlight->setTransform(lightTransform);
 
 		//fps[fpsi] = 1.0f / clock.deltaTime();
@@ -166,12 +123,12 @@ int main()
 
 		if (Input::Keyboard::isKeyPressed(GLFW_KEY_I))
 		{
-			float sec = 0.0f;
+			float s = 0.0f;
 			for (auto f : fps) 
 			{
-				sec += f;
+				s += f;
 			}
-			std::cout << sec / float(fpssamples) << "\n";
+			std::cout << s / float(fpssamples) << "\n";
 		}
 		//world->setRenderPosition(p->getWorldTransform().getPosition());
 		Core::Scene::update();

@@ -3,4 +3,4 @@
 #include<sstream>
 #include<string>
 
-std::string loadStrFromFile(std::string path, int* errorcode = nullptr);
+std::string loadStrFromFile(std::string path);

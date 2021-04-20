@@ -1,6 +1,7 @@
 #pragma once
 #include "MarchingCubesVoxelMesh.h"
 #include "../../Math/IndexConvert.h"
+#include "../../EventSystem/Misc/Voxel/VoxelDataModifyEvent.h"
 #include "BlockData.h"
 
 int edgeTable[256] = {
@@ -317,7 +318,7 @@ void MarchingCubesVoxelMesh::OnModifyCallback(Event* e)
 {
 	if (e)
 	{
-		if (true)//e->getType() == VOXEL_DATA_MODIFY)
+		if (e->getType() == VOXEL_DATA_MODIFY)
 		{
 			VoxelDataModifyEvent* VDME = (VoxelDataModifyEvent*)e;
 

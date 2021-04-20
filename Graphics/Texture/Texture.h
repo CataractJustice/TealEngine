@@ -1,10 +1,9 @@
 #pragma once
 #include "libs/glm/vec4.hpp"
-#include "libs/glew/include/GL/glew.h"
-#include "libs/glfw/include/GLFW/glfw3.h"
+#include <glew.h>
+#include <GLFW/glfw3.h>
 #include <string>
 #include <map>
-
 namespace TealEngine 
 {
 	class Texture 

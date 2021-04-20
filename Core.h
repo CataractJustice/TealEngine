@@ -33,7 +33,6 @@ namespace TealEngine
 			void addNode(GameNode* node);
 			void clearScene();
 			void update();
-			float deltaTime();
 		}
 
 		extern std::map<std::string, std::string> settings;

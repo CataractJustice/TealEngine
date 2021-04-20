@@ -57,8 +57,8 @@ namespace TealEngine
 		glBindTexture(this->type, texture);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexImage2D(this->type, 0, this->internalformat, width, height, 0, this->format, dataType, pixels);
 		glBindTexture(this->type, 0);

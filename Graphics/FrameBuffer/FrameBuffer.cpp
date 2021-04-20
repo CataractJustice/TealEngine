@@ -1,16 +1,9 @@
 #pragma once
 #define GLEW_STATIC
 #include <iostream>
-#include <glew.h>
-#include <GLFW/glfw3.h>
 #include "FrameBuffer.h"
 namespace TealEngine
 {
-	void FrameBuffer::unbind()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
 	void FrameBuffer::resize(GLuint width, GLuint height) 
 	{
 		glDeleteFramebuffers(1, &FBO);
@@ -87,10 +80,5 @@ namespace TealEngine
 	GLuint FrameBuffer::getAttachedTextureId(GLuint index) 
 	{
 		return this->attachments[index];
-	}
-
-	FrameBuffer::~FrameBuffer()
-	{
-		glDeleteFramebuffers(1, &this->FBO);
 	}
 }

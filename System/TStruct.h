@@ -11,7 +11,7 @@ namespace TealEngine
 	public:
 		TStruct(const TStruct& other);
 		TStruct(TStruct& other);
-		TStruct(char* data = nullptr, unsigned int dataSize = 0, bool decompress = false);
+		TStruct(uint8_t* data = nullptr, unsigned int dataSize = 0, bool decompress = false);
 		TStruct operator=(const TStruct& other);
 		~TStruct();
 		void push(unsigned int size, void* data);

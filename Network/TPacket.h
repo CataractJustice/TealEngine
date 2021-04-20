@@ -1,5 +1,6 @@
 #pragma once
 #include "System/TStruct.h"
+#include <enet/enet.h>
 namespace TealEngine 
 {
 
@@ -8,12 +9,12 @@ namespace TealEngine
 	private:
 		
 	public:
-		TPacket(char* data = nullptr, unsigned int dataSize = 0);
+		TPacket(uint8_t* data = nullptr, unsigned int dataSize = 0);
 		TPacket(const TPacket& other);
 		TPacket(TPacket& other);
 		TStruct operator=(const TStruct& other);
 
-		void* createENetPacket(unsigned int packet_flags);
+		ENetPacket* createENetPacket(enet_uint32 packet_flags);
 		TPacket operator +(TPacket second);
 		TPacket operator+=(TPacket second);
 	};

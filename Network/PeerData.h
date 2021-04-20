@@ -1,10 +1,11 @@
 #pragma once
+#include <enet/enet.h>
 namespace TealEngine
 {
 	class PeerData
 	{
 	public:
-		void* enetPeer;
+		ENetPeer* enPeer;
 		unsigned int peerID;
 	};
 }

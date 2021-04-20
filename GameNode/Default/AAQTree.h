@@ -1,5 +1,5 @@
 #pragma once
-#include "GameNode/GameNode3D.h"
+#include "../GameNode3D.h"
 namespace TealEngine
 {
 	template<class T>
