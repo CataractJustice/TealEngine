@@ -55,7 +55,7 @@ namespace TealEngine
 		socket.onRecive.subscribe(&messageDispatcher);
 	}
 
-	void ClientNode::sendEntityData(Entity* entity, TPacket data, enet_uint32 packetFlags)
+	void ClientNode::sendEntityData(Entity* entity, TPacket data, unsigned int packetFlags)
 	{
 		TPacket head;
 		head.push(UPDATE_ENTITY_MSG);

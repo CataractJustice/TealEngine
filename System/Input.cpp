@@ -32,8 +32,16 @@ namespace TealEngine
 
 			void buttonCallback(GLFWwindow* window, int button, int action, int mod) 
 			{
-				if (action == GLFW_PRESS) MouseButtonPress(&MouseButtonPressEvent(button, mod));
-				if (action == GLFW_RELEASE) MouseButtonRelease(&MouseButtonReleaseEvent(button, mod));
+				if (action == GLFW_PRESS)
+				{
+					MouseButtonPressEvent e = MouseButtonPressEvent(button, mod);
+ 					MouseButtonPress(&e);
+				}
+				if (action == GLFW_RELEASE)
+				{
+					MouseButtonReleaseEvent e = MouseButtonReleaseEvent(button, mod);
+					MouseButtonRelease(&e);
+				}
 				mButton[button] = action != GLFW_RELEASE;
 			}
 
@@ -60,19 +68,33 @@ namespace TealEngine
 		
 			void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mod) 
 			{
-				if (action == GLFW_PRESS) KeyPress(&KeyPressEvent(key, scancode, mod));
-				if (action == GLFW_REPEAT) KeyPress(&KeyRepeatEvent(key, scancode, mod));
-				if (action == GLFW_RELEASE) KeyPress(&KeyReleaseEvent(key, scancode, mod));
+
+				if (action == GLFW_PRESS)
+				{
+					KeyPressEvent e = KeyPressEvent(key, scancode, mod);
+					KeyPress(&e);
+				}
+				if (action == GLFW_REPEAT) 
+				{
+					KeyRepeatEvent e = KeyRepeatEvent(key, scancode, mod);
+					KeyPress(&e);
+				}
+				if (action == GLFW_RELEASE)
+				{
+					KeyReleaseEvent e = KeyReleaseEvent(key, scancode, mod);
+					KeyPress(&e);
+				}
 				keyboardKey[key] = action != GLFW_RELEASE;
 			}
 		}
 
 		void init() 
 		{
-			glfwSetKeyCallback(Graphics::Window::window,Keyboard::keyCallback);
-			glfwSetCursorPosCallback(Graphics::Window::window, Mouse::moveCallback);
-			glfwSetMouseButtonCallback(Graphics::Window::window, Mouse::buttonCallback);
-			glfwSetScrollCallback(Graphics::Window::window, Mouse::wheelCallback);
+			GLFWwindow* wptr = (GLFWwindow*)Graphics::window->gl_window_ptr_();
+			glfwSetKeyCallback(wptr,Keyboard::keyCallback);
+			glfwSetCursorPosCallback(wptr, Mouse::moveCallback);
+			glfwSetMouseButtonCallback(wptr, Mouse::buttonCallback);
+			glfwSetScrollCallback(wptr, Mouse::wheelCallback);
 		}
 	}
 }

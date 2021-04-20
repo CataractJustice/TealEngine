@@ -5,7 +5,7 @@
 namespace TealEngine
 {
 	class EventPublisher;
-	typedef std::function<void(Event* e)> eventListenerFunc;
+	#define eventListenerFunc std::function<void(Event* e)>
 	
 	#define eventListenerBind(method, object) eventListenerFunc(std::bind(method, object, std::placeholders::_1))
 

@@ -72,8 +72,8 @@ namespace TealEngine {
 
 	void ShaderProgram::use()
 	{
-		if (usedMaterialId != materialId)
-		{
+		//if (usedMaterialId != materialId)
+		//{
 			glUseProgram(program);
 			usedMaterialId = materialId;
 
@@ -82,14 +82,10 @@ namespace TealEngine {
 				glActiveTexture(GL_TEXTURE0 + tex.second.first);
 				glBindTexture(GL_TEXTURE_2D, tex.second.second);
 			}
-		}
-		for (std::pair<std::string, std::pair<unsigned short, Uniform*>> u : this->uniform)
+		//}
+		for (auto u : this->uniforms)
 		{
-			if (u.second.first)
-			{
-				u.second.second->use();
-				if(u.second.first == 1) u.second.first = 0;
-			}
+			u.second->use();
 		}
 	}
 

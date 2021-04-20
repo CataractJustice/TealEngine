@@ -5,7 +5,7 @@ namespace TealEngine
 {
 	namespace BulletPhysicsConverting 
 	{
-		vec3 vec3BTtoGLM(btVector3 vec);
+		glm::vec3 vec3BTtoGLM(btVector3 vec);
 		btVector3 vec3GLMtoBT(glm::vec3 vec);
 		Transform transformBTtoTE(btTransform btT);
 		btTransform transformTEtoBT(Transform TEtransform);

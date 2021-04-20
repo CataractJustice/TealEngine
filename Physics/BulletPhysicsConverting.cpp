@@ -21,16 +21,16 @@ namespace TealEngine
 			btQuaternion btRot = btT.getRotation();
 			btVector3 btRotAxis = btRot.getAxis();
 			Transform TEtransform;
-			TEtransform.setPosition(vec3(btPos.x(), btPos.y(), btPos.z()));
-			TEtransform.setRotation(btRot.getAngle() / glm::pi<float>() * 180.0f, vec3(btRotAxis.x(), btRotAxis.y(), btRotAxis.z()));
+			TEtransform.setPosition(glm::vec3(btPos.x(), btPos.y(), btPos.z()));
+			TEtransform.setRotation(btRot.getAngle() / glm::pi<float>() * 180.0f, glm::vec3(btRotAxis.x(), btRotAxis.y(), btRotAxis.z()));
 			return TEtransform;
 		}
 
 		btTransform transformTEtoBT(Transform TEtransform)
 		{
 			btTransform btT;
-			vec3 TEpos = TEtransform.getPosition();
-			quat TEquat = TEtransform.getRotation();
+			glm::vec3 TEpos = TEtransform.getPosition();
+			glm::quat TEquat = TEtransform.getRotation();
 			btQuaternion btQuat;
 			btT.setIdentity();
 			btT.setOrigin(btVector3(TEpos.x, TEpos.y, TEpos.z));

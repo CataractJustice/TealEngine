@@ -94,7 +94,8 @@ namespace TealEngine {
 	{
 		node->setParrent(this);
 		this->childNodes.push_back(node);
-		handleEvent(&ChildNodeAddEvent(node));
+		ChildNodeAddEvent e = ChildNodeAddEvent(node);
+		handleEvent(&e);
 		return childNodes.back();
 	}
 
@@ -106,7 +107,8 @@ namespace TealEngine {
 	void GameNode::removeChild(GameNode* node)
 	{
 		this->childNodes.remove(node);
-		handleEvent(&ChildNodeRemoveEvent(node));
+		ChildNodeRemoveEvent e = ChildNodeRemoveEvent(node);
+		handleEvent(&e);
 		node->parrent = nullptr;
 	}
 

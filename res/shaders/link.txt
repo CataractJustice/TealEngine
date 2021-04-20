@@ -1,8 +1,0 @@
-basic_2d basic2dvert basicfrag
-basic_3d basic3dvert basicfrag
-deffered defferedvert defferedfrag
-deffered_triplanar defferedvert defferedfragtriplanar
-empty_3d basic3dvert emptyfrag
-direction_light basic2dvert directionlight
-ambient_light basic2dvert ambientlight
-light_combine basic2dvert lightcombine

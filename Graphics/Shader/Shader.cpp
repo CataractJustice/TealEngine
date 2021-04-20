@@ -8,12 +8,12 @@
 #include "Filesystem/loadStrFromFile.h"
 namespace TealEngine
 {
-	void Shader::loadFromFile(std::string path, GLenum type)
+	void Shader::loadFromFile(std::string path, unsigned int type)
 	{
 		loadFromString(loadStrFromFile(path), type);
 	}
 
-	void Shader::loadFromString(std::string source, GLenum type)
+	void Shader::loadFromString(std::string source, unsigned int type)
 	{
 		shader = glCreateShader(type);
 

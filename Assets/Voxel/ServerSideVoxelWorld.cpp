@@ -150,6 +150,6 @@ void ServerSideVoxelWorld::update()
 		this->loadChunksForPeer(peer.second);
 	}
 
-	for (byte i = 0; i < 1; i++)
+	for (char i = 0; i < 1; i++)
 		loadQueuedChunk();
 }
