@@ -1,6 +1,5 @@
 #include "THost.h"
-#include "enet/enet.h"
-
+#include <enet/enet.h>
 namespace TealEngine 
 {
 	void THost::host(unsigned int port, unsigned int connections)
@@ -28,7 +27,7 @@ namespace TealEngine
 				onConnect(e);
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
-				e = new MsgReciveEvent(pd, TPacket((uint8_t*)(event.packet->data), event.packet->dataLength));
+				e = new MsgReciveEvent(pd, TPacket((char*)(event.packet->data), event.packet->dataLength));
 				onRecive(e);
 				enet_packet_destroy(event.packet);
 				break;

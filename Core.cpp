@@ -15,7 +15,7 @@
 #include <thread>
 #include "DefaultTags.h"
 #include "System/Debug.h"
-#define TE_MULTIPLAYER
+//#define TE_MULTIPLAYER
 #ifdef TE_MULTIPLAYER
 #include "enet/enet.h"
 #include "Network/Server.h"

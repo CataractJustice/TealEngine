@@ -1,5 +1,6 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (coolANDnewmewGAMEaaaaa.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-ws2_32.lib(WS2_32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
-winmm.lib(WINMM.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
-freetype.lib(freetype.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
-  TealEngine.vcxproj -> C:\Users\User\source\repos\GravSim\x64\Release\TealEngine.lib
+  Core.cpp
+C:\Users\User\source\repos\tealengine\Core.cpp(184,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(185,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(209,1): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\User\source\repos\tealengine\Core.cpp(230,4): error C3861: 'enet_initialize': identifier not found

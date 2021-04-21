@@ -17,7 +17,7 @@ namespace TealEngine
 					eventsQueue.emplace(new PeerConnectEvent(pd));
 					break;
 				case ENET_EVENT_TYPE_RECEIVE:
-					eventsQueue.emplace(new MsgReciveEvent(pd, TPacket(event.packet->data, event.packet->dataLength)));
+					eventsQueue.emplace(new MsgReciveEvent(pd, TPacket((char*)event.packet->data, event.packet->dataLength)));
 					break;
 				case ENET_EVENT_TYPE_DISCONNECT:
 					eventsQueue.emplace(new PeerDisconnectEvent(pd));

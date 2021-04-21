@@ -1,4 +1,4 @@
-#pragma once=
+#pragma once
 #include "libs/glm/vec3.hpp"
 #include "libs/glm/matrix.hpp"
 #include "libs/glm/ext/matrix_transform.hpp"

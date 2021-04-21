@@ -124,12 +124,13 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>libs/freetype/include;libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;enet/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;_MBCS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>libs/freetype/include;libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;libs/enet/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;_MBCS;NOMINMAX;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -140,8 +141,8 @@
       </AddModuleNamesToAssembly>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;enet/;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)C:\Users\User\source\repos\tealengine\libs\glew\lib\Release\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet\enet.lib;ws2_32.lib;winmm.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;libs/enet/Release;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet.lib;ws2_32.lib;winmm.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -152,15 +153,6 @@
     <ClCompile Include="Assets\Voxel\ServerSideVoxelWorld.cpp" />
     <ClCompile Include="Assets\Voxel\VoxelData.cpp" />
     <ClCompile Include="Core.cpp" />
-    <ClCompile Include="enet\callbacks.c" />
-    <ClCompile Include="enet\compress.c" />
-    <ClCompile Include="enet\host.c" />
-    <ClCompile Include="enet\list.c" />
-    <ClCompile Include="enet\packet.c" />
-    <ClCompile Include="enet\peer.c" />
-    <ClCompile Include="enet\protocol.c" />
-    <ClCompile Include="enet\unix.c" />
-    <ClCompile Include="enet\win32.c" />
     <ClCompile Include="EventSystem\EventListener.cpp" />
     <ClCompile Include="EventSystem\EventPublisher.cpp" />
     <ClCompile Include="Filesystem\getDirectoryList.cpp" />

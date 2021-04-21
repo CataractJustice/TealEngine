@@ -1,6 +1,6 @@
 #pragma once
 #include "TPacket.h"
-#include "enet/enet.h"
+#include <enet/enet.h>
 #include "libs/compression/huffman.hpp"
 namespace TealEngine
 {
