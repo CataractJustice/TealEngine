@@ -126,8 +126,11 @@ namespace TealEngine
 			{
 				Scene::renderer.render();
 				FrameBuffer::unbind();
-				Render::rednerTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
-				//CoreGUIRenderer.render();
+				if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
+					Render::rednerTexture(Input::Mouse::getScrollPos());
+				else
+					Render::rednerTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
+				CoreGUIRenderer.render();
 				Graphics::display();
 				Scene::rootNode->updateAll();
 				sceneclock.update();
@@ -206,7 +209,7 @@ namespace TealEngine
 					unsigned int height = ((WindowResizeEvent*)(e))->height;
 
 					Scene::renderer.resize(width, height);
-					Scene::renderer.getActiveCamera()->setPerspectiveProjection(90.0f, float(width) / float(height), 0.1, 5000.0f);
+					Scene::renderer.getActiveCamera()->setPerspectiveProjection(Scene::renderer.getActiveCamera()->getFOV(), float(width) / float(height), Scene::renderer.getActiveCamera()->getNear(), Scene::renderer.getActiveCamera()->getFar());
 					Scene::renderer.getActiveCamera()->renderTexture.create(width, height);
 				});
 			Graphics::window->WindowResize.subscribe(&Scene::rendererResizeEvent);
@@ -227,11 +230,13 @@ namespace TealEngine
 			Scene::GUIBody = new GUIElement();
 			Scene::CoreGUIRenderer.push(Scene::GUIBody);
 
+#ifdef  TE_MULTIPLAYER
 			enet_initialize();
 			//thread* serverThread = new thread(startServer);
 
 			//ClientNode* client = new ClientNode("127.0.0.1", 8888);
 			//Scene::addNode(client);
+#endif //  TE_MULTIPLAYER
 		}
 	}
 }

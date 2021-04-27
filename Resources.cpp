@@ -18,31 +18,6 @@ namespace TealEngine
 			ShaderProgram testShader = Resources::getShader("deffered");
 			testShader.setTexture("tex", Resources::getTexture("stone.png").id());
 			materials["testShader"] = testShader;
-
-			ShaderProgram sandShader = Resources::getShader("deffered");
-			sandShader.setTexture("tex", Resources::getTexture("sand.bmp").id());
-			sandShader.setTexture("nmap", Resources::getTexture("tileNormalMap.jpg").id());
-			sandShader.setTexture("specmap", Resources::getTexture("bd.bmp").id());
-			sandShader.setUniform("spec", vec3(0.3f, 256.0f, 1.0f));
-			sandShader.setUniform("color", vec4(1.0f));
-			materials["sandShader"] = sandShader;
-
-			ShaderProgram playerShader = Resources::getShader("deffered");
-			playerShader.setTexture("tex", Resources::getTexture("obama.bmp").id());
-			playerShader.setTexture("nmap", Resources::getTexture("moonnorm.jpg").id());
-			materials["SokobanPlayer"] = playerShader;
-
-			ShaderProgram boxShader = Resources::getShader("deffered");
-			boxShader.setTexture("tex", Resources::getTexture("boxDiffuseMap.jpg").id());
-			boxShader.setTexture("nmap", Resources::getTexture("boxNormalMap.jpg").id());
-			boxShader.setUniform("color", vec4(1.0f));
-			materials["SokobanBox"] = boxShader;
-
-			ShaderProgram tarShader = Resources::getShader("deffered");
-			tarShader.setTexture("tex", Resources::getTexture("bd.bmp").id());
-			tarShader.setTexture("nmap", Resources::getTexture("bn.bmp").id());
-			tarShader.setUniform("color", vec4(0.0f, 1.0f, 0.0f, 0.0f));
-			materials["SokobanTarget"] = tarShader;
 		}
 
 		void load(std::string path)
@@ -140,13 +115,17 @@ namespace TealEngine
 			return textures[key];
 		}
 
-		void addMaterial(std::string key, ShaderProgram material) 
+		void addMaterial(std::string key, ShaderProgram& material) 
 		{
-			materials[key];
+			materials[key] = material;
 		}
 		
 		ShaderProgram& getMaterial(std::string key) 
 		{
+			if (!isResourceExist(MATERIAL_RESOURCE, key))
+			{
+				throw "There is no material with a \"" + key + "\" as a key.";
+			}
 			return materials[key];
 		}
 

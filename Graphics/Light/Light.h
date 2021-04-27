@@ -31,6 +31,14 @@ namespace TealEngine
 
 	class DirectionLight : public Light 
 	{
+	public:
+		enum DIRECTION_LIGHT_CASCADER_DRAW_ORDER
+		{
+			ALL_CASCADES_AT_ONCE,
+			ONE_CASCADE_PER_FRAME,
+			PRIORITIZE_CLOSEST
+		};
+
 	private:
 		GLuint resolution;
 		GLfloat shadowFar;
@@ -38,8 +46,37 @@ namespace TealEngine
 		GLuint cascades;
 		float cascadesRatio[8];
 		
+		unsigned char cascadeCounter;
+		DIRECTION_LIGHT_CASCADER_DRAW_ORDER drawOrder;
+
+		void updateCameraPos(int i, float& ratioSum, float& currZ, float& zSegment, glm::vec3& segmentCorner, Camera* camera)
+		{
+			vec3 segmentMin = vec3(numeric_limits<float>::max()), segmentMax = vec3(-numeric_limits<float>::max());
+			zSegment = (shadowFar - camera->getNear()) / ratioSum * cascadesRatio[i] + currZ;
+			for (int j = 0; j < 8; j++)
+			{
+				//calc segment corner in camera coordinate system
+				//calc segment corner in global coordinate system
+				segmentCorner = glm::inverse(camera->getPV()) * vec4((j % 2) ? 1.0f : -1.0f, ((j / 2) % 2) ? 1.0f : -1.0f, ((j >= 4) ? currZ : zSegment), 1.0f) / (camera->getFar() - camera->getNear());
+				//calc segment corner in sun coordinate system
+				segmentCorner = this->getWorldTransform().getMatrix() * glm::vec4(segmentCorner, 1.0f);
+
+				segmentMin = vec3(glm::min(segmentCorner.x, segmentMin.x), glm::min(segmentCorner.y, segmentMin.y), glm::min(segmentCorner.z, segmentMin.z));
+				segmentMax = vec3(glm::max(segmentCorner.x, segmentMax.x), glm::max(segmentCorner.y, segmentMax.y), glm::max(segmentCorner.z, segmentMax.z));
+			}
+			Transform camTransform = this->transform;
+			camTransform.setPosition(camera->getWorldTransform().getPosition() + camera->getWorldTransform().forward() * (currZ + zSegment) / 2.0f);
+			currZ = zSegment;
+			vec3 center = (segmentMax + segmentMin) / 2.0f;
+			vec3 scale = (segmentMax - segmentMin);
+			scale = vec3(glm::max(glm::max(scale.x, scale.y), scale.z));
+
+			((Camera*)(shadowCamera[i]))->setOrthoProjection(scale.x * 2.4f, scale.y * 2.4f, -shadowFar, scale.z);
+			((Camera*)(shadowCamera[i]))->setTransform(camTransform);
+		}
 	public:
-		
+		unsigned char getCascadeDrawRequiredMask() { return cascadeCounter ^ (cascadeCounter - 1); }
+
 		LightType getLightType() override 
 		{
 			return DIRECTION_LIGHT;
@@ -64,35 +101,18 @@ namespace TealEngine
 			float currZ = camera->getNear();
 			float zSegment;
 			for (unsigned int i = 0; i < cascades; i++) ratioSum += this->cascadesRatio[i];
-			//float minSegment = (camera->getFar() - camera->getNear()) * (float(cascades)-1.0f) / (pow(2.0f, float(cascades))-1.0f);
-			for (unsigned int i = 0; i < this->cascades; i++) 
+			unsigned char drawMask = (cascadeCounter ^ (cascadeCounter + 1));
+			int cascadeBit = 1 << (cascades - 1);
+			for (unsigned int i = this->cascades - 1; i >= 0; i--)
 			{
-				
-				vec3 segmentMin = vec3(numeric_limits<float>::max()), segmentMax = vec3(-numeric_limits<float>::max());
-				for (int j = 0; j < 8; j++)
+				if (cascadeBit & drawMask)
 				{
-					zSegment = (shadowFar - camera->getNear()) / ratioSum * cascadesRatio[i] * float(j > 3) + currZ;
-					//calc segment corner in camera coordinate system
-					segmentCorner = vec3((-1.0f + float(j % 2) * 2.0f) * (zSegment / tan(camera->getFOV() / 2.0f)), (-1.0f + float((j % 4) > 1) * 2.0f) * (zSegment / tan(camera->getFOV() / 2.0f)), zSegment);
-					//calc segment corner in global coordinate system
-					segmentCorner = camera->getWorldTransform().right() * segmentCorner.x + camera->getWorldTransform().up() * segmentCorner.y + camera->getWorldTransform().forward() * segmentCorner.z + camera->getWorldTransform().getPosition();
-					//calc segment corner in sun coordinate system
-					segmentCorner -= this->getWorldTransform().getPosition();
-					segmentCorner = vec3(dot(this->transform.right(), segmentCorner), dot(this->transform.up(), segmentCorner), dot(this->transform.forward(), segmentCorner));
-					
-					segmentMin = vec3(glm::min(segmentCorner.x, segmentMin.x), glm::min(segmentCorner.y, segmentMin.y), glm::min(segmentCorner.z, segmentMin.z));
-					segmentMax = vec3(glm::max(segmentCorner.x, segmentMax.x), glm::max(segmentCorner.y, segmentMax.y), glm::max(segmentCorner.z, segmentMax.z));
+					updateCameraPos(i, ratioSum, currZ, zSegment, segmentCorner, camera);
+					break;
 				}
-				currZ = zSegment;
-				vec3 center = (segmentMax + segmentMin) /2.0f;
-				vec3 scale = (segmentMax - segmentMin);
-				scale = vec3(glm::max(glm::max(scale.x, scale.y), scale.z));
-
-				((Camera*)(shadowCamera[i]))->setOrthoProjection(scale.x*1.2f, scale.y*1.2f, -camera->getFar()*2.0f, scale.z);
-				Transform camTransform = ((Camera*)(shadowCamera[i]))->getTransform();
-				camTransform.setPosition(center);
-				((Camera*)(shadowCamera[i]))->setRelativeTransform(camTransform);
+				cascadeBit = cascadeBit >> 1;
 			}
+			cascadeCounter++;
 		}
 
 		void setupUniforms(GLuint render, GLuint albedo, GLuint position, GLuint normal, GLuint specular, vec3 viewPos) 
@@ -113,7 +133,7 @@ namespace TealEngine
 			vec3 direction = getWorldTransform().forward();
 			int resolution = shadowResolution(), cascades = shadowCascades();
 
-			dLightShader.setUniform("lightModel", PV[0], cascades);
+			dLightShader.setUniform("lightModel", PV, cascades);
 			dLightShader.setUniform("direction", direction);
 			dLightShader.setUniform("viewPos", viewPos);
 			dLightShader.setUniform("color", color);
@@ -142,8 +162,7 @@ namespace TealEngine
 				((Camera*)shadowCamera[i])->renderTexture.create(shadow_resolution, shadow_resolution);
 				((Camera*)shadowCamera[i])->renderTexture.setParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 				((Camera*)shadowCamera[i])->renderTexture.setParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-				//((Camera*)shadowCamera[i])->renderTexture.setBorderColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
-				this->addChild(shadowCamera[i]);
+				((Camera*)shadowCamera[i])->renderTexture.setBorderColor(vec4(1.0f, 0.0f, 0.0f, 1.0f));
 			}
 		}
 	};

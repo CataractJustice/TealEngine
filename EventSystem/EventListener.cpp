@@ -31,7 +31,7 @@ namespace TealEngine
 		return *this;
 	}
 
-	EventListener& EventListener::operator=(const eventListenerFunc ex)
+	EventListener& EventListener::operator=(const  std::function<void(Event* e)> ex)
 	{
 		this->executable = ex;
 		return *this;

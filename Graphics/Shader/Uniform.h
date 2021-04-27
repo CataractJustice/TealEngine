@@ -29,6 +29,7 @@ protected:
 	int bytesize;
 	int size;
 	UniformType type;
+	void uset(void* data, int typesize, int size, Uniform::UniformType type);
 public:
 
 	void use();
@@ -50,22 +51,26 @@ public:
 	
 	Uniform(Uniform& uniform) 
 	{
+		value = new char[uniform.getByteSize()];
 		memcpy(value, uniform.valueptr(), uniform.getByteSize());
 		this->bytesize = uniform.bytesize;
 		this->location = uniform.location;
 		this->name = uniform.name;
 		this->size = uniform.size;
-		this->value = new char[uniform.getByteSize()];
+		this->type = uniform.type;
 	}
 
 	Uniform& operator=(Uniform& other) 
 	{
+		if (value)
+			delete[] value;
+		value = new char[other.getByteSize()];
 		memcpy(value, other.valueptr(), other.getByteSize());
 		this->bytesize = other.bytesize;
 		this->location = other.location;
 		this->name = other.name;
 		this->size = other.size;
-		this->value = new char[other.getByteSize()];
+		this->type = other.type;
 		return *this;
 	}
 

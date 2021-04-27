@@ -44,6 +44,8 @@ namespace TealEngine {
 
 		void setRotation(float angle, glm::vec3 axis);
 
+		void setRotation(glm::quat);
+
 		glm::quat getRotation();
 
 		glm::vec3 forward();

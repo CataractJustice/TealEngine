@@ -19,6 +19,7 @@ namespace TealEngine
 			auto GUIChilds = findNodesByTag(GUI_ELEMENT_TAG);
 			for (auto node : GUIChilds)
 			{
+				((GUIElement*)node)->getTransform().recalculateUnits();
 				((GUIElement*)node)->render();
 			}
 			render();

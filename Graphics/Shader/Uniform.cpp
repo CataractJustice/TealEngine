@@ -5,20 +5,45 @@
 #define DEFINE_UNIFORM_SET_METHOD(name, datatype, stride, enumtype)\
 void Uniform:: ## name (datatype* values, int size) \
 {\
-	if (this->value)\
-		delete[] this->value; \
-	this->value = new char[sizeof(*values) * stride]; \
-	memcpy(this->value, values, size * sizeof(*values)* stride); \
-	this->type = enumtype; \
-	this->size = size;\
+	uset((void*)values, sizeof(datatype) * stride, size, enumtype);\
 }
 
-DEFINE_UNIFORM_SET_METHOD(set1fv, float, 1, FLOAT_UNIFORM);
-DEFINE_UNIFORM_SET_METHOD(set2fv, float, 2, VEC2_UNIFORM);
-DEFINE_UNIFORM_SET_METHOD(set3fv, float, 3, VEC3_UNIFORM);
-DEFINE_UNIFORM_SET_METHOD(set4fv, float, 4, VEC4_UNIFORM);
-DEFINE_UNIFORM_SET_METHOD(setm4fv, float, 16, MAT4_UNIFORM);
-DEFINE_UNIFORM_SET_METHOD(set1iv, int, 1, INT_UNIFORM);
+void Uniform::uset(void* values, int typesize, int size, Uniform::UniformType type) 
+{
+	if (this->value)
+		delete[] this->value;
+	this->value = new char[typesize * size];
+	memcpy(this->value, values, typesize * size);
+	this->type = type;
+	this->size = size;
+	this->bytesize = typesize * size;
+}
+
+void Uniform::set1fv(float* values, int size) 
+{
+	uset(values, sizeof(float), size, FLOAT_UNIFORM);
+}
+void Uniform::set2fv(float* values, int size)
+{
+	uset(values, sizeof(float) * 2, size, VEC2_UNIFORM);
+}
+void Uniform::set3fv(float* values, int size)
+{
+	uset(values, sizeof(float) * 3, size, VEC3_UNIFORM);
+}
+void Uniform::set4fv(float* values, int size)
+{
+	uset(values, sizeof(float) * 4, size, VEC4_UNIFORM);
+}
+void Uniform::setm4fv(float* values, int size)
+{
+	uset(values, sizeof(float) * 16, size, MAT4_UNIFORM);
+}
+void Uniform::set1iv(int* values, int size)
+{
+	uset(values, sizeof(int), size, INT_UNIFORM);
+}
+
 
 
 void Uniform::use() 

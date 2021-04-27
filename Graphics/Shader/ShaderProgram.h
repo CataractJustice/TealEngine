@@ -27,6 +27,17 @@ namespace TealEngine {
 			materialId = lastMaterialId++;
 		}
 
+		ShaderProgram(ShaderProgram& sp) : ShaderProgram()
+		{
+			program = sp.program;
+			for (auto& upair : sp.uniforms)
+			{
+				uniforms[upair.first] = new Uniform(*upair.second);
+			}
+
+			this->texture = sp.texture;
+		}
+
 		ShaderProgram(const ShaderProgram& sp) : ShaderProgram()
 		{
 			program = sp.program;
@@ -39,6 +50,18 @@ namespace TealEngine {
 		}
 
 		ShaderProgram& operator=(const ShaderProgram& sp) 
+		{
+			program = sp.program;
+			for (auto& upair : sp.uniforms)
+			{
+				uniforms[upair.first] = new Uniform(*upair.second);
+			}
+
+			this->texture = sp.texture;
+			return *this;
+		}
+
+		ShaderProgram& operator=(ShaderProgram& sp)
 		{
 			program = sp.program;
 			for (auto& upair : sp.uniforms)
@@ -74,7 +97,14 @@ namespace TealEngine {
 		void setUniform(std::string name, glm::vec4 vec) {tryAddUniform(name); uniforms[name]->set4fv(glm::value_ptr(vec), 1); }
 		void setUniform(std::string name, glm::mat4 mat) {tryAddUniform(name); uniforms[name]->setm4fv(glm::value_ptr(mat), 1); }
 
-		void setUniform(std::string name, glm::mat4 mat, int size) { tryAddUniform(name); uniforms[name]->setm4fv(glm::value_ptr(mat), size); }
+		void setUniform(std::string name, glm::mat4* mat, int size) 
+		{ 
+			float* matv = new float[16 * size];
+			for (int i = 0; i < size; i++)
+				memcpy(matv + i * 16, value_ptr(mat[i]), sizeof(float) * 16);
+			tryAddUniform(name); uniforms[name]->setm4fv(matv, size);
+			delete[] matv;
+		}
 
 		void setUniform(std::map<std::string, Uniform*>::iterator it, int x)			{ it->second->set1iv(&x, 1); }
 		void setUniform(std::map<std::string, Uniform*>::iterator it, float x)		{ it->second->set1fv(&x, 1); }

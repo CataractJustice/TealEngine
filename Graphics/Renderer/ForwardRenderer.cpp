@@ -3,6 +3,7 @@
 #include "RenderUtil.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/Light/Light.h"
+#include "System/Input.h"
 #include <stack>
 namespace TealEngine {
 
@@ -62,7 +63,7 @@ namespace TealEngine {
 	{
 		for (MeshRenderer* mesh : meshList)
 		{
-			mesh->render();
+			mesh->render(nullptr, Input::Keyboard::isKeyPressed(GLFW_KEY_9) ? GL_LINES : GL_TRIANGLES);
 		}
 	}
 

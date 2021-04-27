@@ -18,14 +18,16 @@ namespace TealEngine
 			}
 		}
 
-		int loadFont(std::string path, void*&face)
+		int loadFont(std::string path, void*& face)
 		{
 			int e;
-			if (e = FT_New_Face(ft, path.c_str(), 0, (FT_Face*)face))
+			FT_Face a = (FT_Face)face;
+			if (e = FT_New_Face(ft, path.c_str(), 0, &a))
 			{
 				std::cout << "ERROR::FREETYPE: Failed to load font from \"" << path << "\"" << "error code: " << e << std::endl;
-				return -1;
+				return e;
 			}
+			face = a;
 			return 0;
 		}
 	}

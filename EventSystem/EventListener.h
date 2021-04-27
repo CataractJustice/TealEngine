@@ -22,7 +22,7 @@ namespace TealEngine
 		unsigned int getId();
 		void subscribeTo(EventPublisher* ep);
 		EventListener& operator=(const EventListener el);
-		EventListener& operator=(const eventListenerFunc ex);
+		EventListener& operator=(const std::function<void(Event* e)> ex);
 		void operator()(Event* e);
 	};
 }

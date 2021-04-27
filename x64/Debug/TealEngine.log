@@ -1,19 +1,107 @@
-﻿  callbacks.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\callbacks.c: No such file or directory,
-  compress.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\compress.c: No such file or directory,
-  host.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\host.c: No such file or directory,
-  list.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\list.c: No such file or directory,
-  packet.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\packet.c: No such file or directory,
-  peer.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\peer.c: No such file or directory,
-  protocol.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\protocol.c: No such file or directory,
-  unix.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\unix.c: No such file or directory,
-  win32.c
-c1 : fatal error C1083: Не удается открыть файл источник: enet\win32.c: No such file or directory,
-  Создание кода...
+﻿  BlockData.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Texture\Texture.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec4.hpp': No such file or directory
+  ClientSideVoxelWorld.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Shader\Uniform.h(3,10): fatal error C1083: Cannot open include file: 'libs/glm/vec2.hpp': No such file or directory
+  MarchingCubesVoxelMesh.cpp
+C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
+  ServerSideChunk.cpp
+C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
+  ServerSideVoxelWorld.cpp
+C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
+  VoxelData.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
+  Core.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+C:\Users\User\source\repos\tealengine\Core.cpp(20,10): fatal error C1083: Cannot open include file: 'enet/enet.h': No such file or directory
+  EventListener.cpp
+  EventPublisher.cpp
+  getDirectoryList.cpp
+  getFilesInDir.cpp
+  isDirectory.cpp
+  loadStrFromFile.cpp
+C:\Users\User\source\repos\tealengine\Filesystem\loadStrFromFile.cpp(2,10): fatal error C1083: Cannot open include file: 'System/Debug.h': No such file or directory
+  Entity.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
+  GameNode.cpp
+C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
+  GameNode3D.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
+  PrefabFactory.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Prefab\PrefabFactory.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Entity/Entity.h': No such file or directory
+  Transform.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
+  Graphics.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Graphics.h(2,10): fatal error C1083: Cannot open include file: 'libs/glew/include/GL/glew.h': No such file or directory
+  GUITransform.cpp
+C:\Users\User\source\repos\tealengine\Graphics\GUI\GUITransform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
+  Generating Code...
+  Compiling...
+  Font.cpp
+C:\Users\User\source\repos\tealengine\Graphics\GUI\Text\Font.cpp(1,10): fatal error C1083: Cannot open include file: 'ft2build.h': No such file or directory
+  FreeTypeUtil.cpp
+C:\Users\User\source\repos\tealengine\Graphics\GUI\Text\FreeTypeUtil.cpp(3,10): fatal error C1083: Cannot open include file: 'ft2build.h': No such file or directory
+  Light.cpp
+C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
+  Mesh.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Mesh\Mesh.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/GameNode3D.h': No such file or directory
+  MeshRenderer.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Mesh\MeshRenderer.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
+  MeshUtil.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Mesh\Mesh.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/GameNode3D.h': No such file or directory
+  DefferedRenderer.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\ForwardRenderer.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/Mesh/Mesh.h': No such file or directory
+  ForwardRenderer.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\ForwardRenderer.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/Mesh/Mesh.h': No such file or directory
+  RenderUtil.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\RenderUtil.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/Shader/ShaderProgram.h': No such file or directory
+  Shader.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Shader\Uniform.h(3,10): fatal error C1083: Cannot open include file: 'libs/glm/vec2.hpp': No such file or directory
+  ShaderProgram.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Shader\Uniform.h(3,10): fatal error C1083: Cannot open include file: 'libs/glm/vec2.hpp': No such file or directory
+  Uniform.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Shader\Uniform.h(3,10): fatal error C1083: Cannot open include file: 'libs/glm/vec2.hpp': No such file or directory
+  Texture.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Texture\Texture.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec4.hpp': No such file or directory
+  TextureAtlas.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Texture\Texture.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec4.hpp': No such file or directory
+  Window.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Window.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec2.hpp': No such file or directory
+  Interpolation.cpp
+C:\Users\User\source\repos\tealengine\Math\Interpolation.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
+  Noise.cpp
+C:\Users\User\source\repos\tealengine\Math\Noise.cpp(4,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
+  PerlinNoise.cpp
+C:\Users\User\source\repos\tealengine\Math\Interpolation.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
+  randrange.cpp
+  ClientNode.cpp
+C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): fatal error C1083: Cannot open include file: 'Graphics/Renderer/DefferedRenderer.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Server.cpp
+C:\Users\User\source\repos\tealengine\Network\Server.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Entity/Entity.h': No such file or directory
+  TClient.cpp
+C:\Users\User\source\repos\tealengine\Network\TClient.cpp(1,10): fatal error C1083: Cannot open include file: 'enet/enet.h': No such file or directory
+  THost.cpp
+C:\Users\User\source\repos\tealengine\Network\THost.h(2,10): fatal error C1083: Cannot open include file: 'EventSystem/EventPublisher.h': No such file or directory
+  TPacket.cpp
+C:\Users\User\source\repos\tealengine\Network\TPacket.h(2,10): fatal error C1083: Cannot open include file: 'System/TStruct.h': No such file or directory
+  BulletPhysicsConverting.cpp
+C:\Users\User\source\repos\tealengine\Physics\BulletPhysicsConverting.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Transform.h': No such file or directory
+  RigidBody.cpp
+C:\Users\User\source\repos\tealengine\Physics\Rigidbody.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/GameNode3D.h': No such file or directory
+  Resources.cpp
+C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
+  Clock.cpp
+C:\Users\User\source\repos\tealengine\System\Clock.cpp(13,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\tealengine\System\Clock.cpp(18,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+  Debug.cpp
+  Input.cpp
+C:\Users\User\source\repos\tealengine\System\Input.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/Graphics.h': No such file or directory
+  TStruct.cpp
+C:\Users\User\source\repos\tealengine\System\TStruct.cpp(8,10): fatal error C1083: Cannot open include file: 'libs/compression/huffman.hpp': No such file or directory
+  Generating Code...

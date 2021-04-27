@@ -16,6 +16,8 @@ namespace TealEngine
 			fb.resize(Graphics::window->getScreenWidth(), Graphics::window->getScreenHeight());
 			fb.bind();
 			fb.attachTexture(renderTexture.id(), 0);
+			fb.enable(0);
+			fb.apply();
 			for (GUIElement* element : elements)
 				if (GameNode::isNodeExist(element))
 					element->renderAll();

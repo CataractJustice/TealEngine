@@ -22,7 +22,7 @@ namespace TealEngine
 		Texture getTexture(std::string key);
 		ShaderProgram& getMaterial(std::string key);
 		Font getFont(std::string key);
-		void addMaterial(std::string key, ShaderProgram material);
+		void addMaterial(std::string key, ShaderProgram& material);
 		bool isResourceExist(RESOURCE_TYPE resourceType,  std::string key);
 	}
 }

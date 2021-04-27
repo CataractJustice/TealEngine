@@ -9,7 +9,7 @@ namespace TealEngine {
 	void DefferedRenderer::resize(GLuint width, GLuint height)
 	{
 		ForwardRenderer::resize(width, height);
-		if(position.id() == 0)position = normal = Texture(GL_TEXTURE_2D, GL_RGB32F, GL_RGB, GL_FLOAT);
+		if(position.id() == 0)specular = position = normal = Texture(GL_TEXTURE_2D, GL_RGB32F, GL_RGB, GL_FLOAT);
 		albedo.create(width, height);
 		position.create(width, height);
 		normal.create(width, height);
@@ -55,6 +55,7 @@ namespace TealEngine {
 		fb.apply();
 		renderLights();
 		fb.disable(5);
+		fb.apply();
 		combineLightShader.setTexture("AlbedoMap", albedo.id());
 		combineLightShader.setTexture("LightMap", light.id());
 		Render::renderShader(&combineLightShader);
@@ -79,24 +80,35 @@ namespace TealEngine {
 				break;
 
 			case TealEngine::DIRECTION_LIGHT:
-				directionLight->updateProjections(this->activeCamera);
+			{
 				//render shadow maps
-				shadowMapRenderer.fb.viewport(directionLight->shadowResolution(), directionLight->shadowResolution());
-				shadowMapRenderer.fb.bind();
-				for (unsigned int i = 0; i < directionLight->shadowCascades(); i++)
+				for (int c = 0; c < directionLight->shadowCascades() && c < 2; c++) 
 				{
-					shadowMapRenderer.setCamera(directionLight->getShadowCamera(i));
-					shadowMapRenderer.fb.attachDepthTexture(directionLight->getShadowCamera(i)->renderTexture.id());
-					glCullFace(GL_FRONT);
-					shadowMapRenderer.render(this->meshList, &empty3D, true);
+					directionLight->updateProjections(this->activeCamera);
+					shadowMapRenderer.fb.viewport(directionLight->shadowResolution(), directionLight->shadowResolution());
+					shadowMapRenderer.fb.bind();
+					int cascade = directionLight->shadowCascades() - 1;
+					for (unsigned int i = 1 << directionLight->shadowCascades() - 1; i > 0; i = i >> 1)
+					{
+						if (i & directionLight->getCascadeDrawRequiredMask())
+						{
+							shadowMapRenderer.setCamera(directionLight->getShadowCamera(cascade));
+							shadowMapRenderer.fb.attachDepthTexture(directionLight->getShadowCamera(cascade)->renderTexture.id());
+							glCullFace(GL_BACK);
+							shadowMapRenderer.render(this->meshList, &empty3D, true);
+							break;
+						}
+						cascade--;
+					}
 				}
-
-				//render light to camera texture
-				fb.bind();
-				glDisable(GL_DEPTH_TEST);
-				glDisable(GL_CULL_FACE);
-				directionLight->setupUniforms(light.id(), albedo.id(), position.id(), normal.id(), specular.id(), activeCamera->getWorldTransform().getPosition());
-				Render::renderShader(&dLightShader);
+					//render light to camera texture
+					fb.bind();
+					glDisable(GL_DEPTH_TEST);
+					glDisable(GL_CULL_FACE);
+					directionLight->setupUniforms(light.id(), albedo.id(), position.id(), normal.id(), specular.id(), activeCamera->getWorldTransform().getPosition());
+					Render::renderShader(&dLightShader);
+				
+			}
 				break;
 
 			case TealEngine::SPOT_LIGHT:
