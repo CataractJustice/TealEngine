@@ -9,8 +9,8 @@ namespace TealEngine
 class IPrefab;
 	namespace PrefabFactory
 	{
-		Entity* createPrefabInstance(std::string prefabName, bool serverSide, TStruct* params);
-
+		Entity* createPrefabInstance(std::string prefabName, bool serverSide);
+		IPrefab* getPrefab(std::string name);
 		void addPrefab(std::string prefabName, IPrefab* prefab);
 	};
 }

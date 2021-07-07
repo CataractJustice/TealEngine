@@ -67,7 +67,7 @@ namespace TealEngine{
 				
 				//culling
 				vec4 screenPos = Render::VP_matrix * vec4(meshTransform.getPosition(), 1.0f);
-				if (screenPos.z > -32.0f) 
+				if (true) 
 				{
 					ShaderProgram* targetShader = shader ? shader : this->shader;
 					if (shader)
@@ -82,7 +82,7 @@ namespace TealEngine{
 						targetShader->setUniform(nModel, meshTransform.getNormalsModel());
 						targetShader->setUniform(PV, Render::VP_matrix);
 					}
-					MeshRenderer::render(targetShader, mode ? mode : this->mode, clamp(int(log2f(length(vec3(screenPos.x, screenPos.y, screenPos.z)) / 16.0f + 2.0f)) - 2, 0, int(((SharedMesh*)parrent)->getLODCount() - 1)));
+					MeshRenderer::render(targetShader, mode ? mode : this->mode);
 				}
 			}
 		}

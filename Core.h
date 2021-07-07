@@ -38,5 +38,6 @@ namespace TealEngine
 
 		extern std::map<std::string, std::string> settings;
 		void init();
+		bool isServer();
 	}
 }

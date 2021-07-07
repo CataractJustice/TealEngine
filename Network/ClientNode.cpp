@@ -1,7 +1,7 @@
 #include "ClientNode.h"
 namespace TealEngine
 {
-	void ClientNode::dispatchEvent(Event* e)
+	void ClientComponent::dispatchEvent(Event* e)
 	{
 		MsgReciveEvent* mre = (MsgReciveEvent*)e;
 		std::cout << mre->message.getSchema();
@@ -11,7 +11,7 @@ namespace TealEngine
 		{
 		case CREATE_ENTITY_MSG:
 			eId = *(unsigned int*)mre->message[1];
-			this->addEntity(PrefabFactory::createPrefabInstance(mre->message.getString(2), false, nullptr), eId);
+			this->addEntity(PrefabFactory::createPrefabInstance(mre->message.getString(2), false), eId);
 			break;
 		case DESTROY_ENTITY_MSG:
 			eId = *(unsigned int*)mre->message[1];
@@ -34,28 +34,28 @@ namespace TealEngine
 		}
 	}
 
-	void ClientNode::addEntity(Entity* e, unsigned int id)
+	void ClientComponent::addEntity(Entity* e, unsigned int id)
 	{
 		e->setEntityID(id);
 		entities[e->getEntityID()] = e;
 		e->setClient(this);
-		addChild(static_cast<GameNode*>(e));
+		getParrent()->addChild(static_cast<GameNode*>(e));
 	}
 
-	void ClientNode::update()
+	void ClientComponent::update()
 	{
 		this->socket.pollEvents();
 	}
 
-	ClientNode::ClientNode(std::string ip, unsigned int port)
+	ClientComponent::ClientComponent(std::string ip, unsigned int port)
 	{
-		rename("client_root");
+		getParrent()->rename("client_root");
 		socket.connect(CONNECTION_TIMEOUT, ip, port);
-		messageDispatcher = eventListenerBind(&ClientNode::dispatchEvent, this);
+		messageDispatcher = eventListenerBind(&ClientComponent::dispatchEvent, this);
 		socket.onRecive.subscribe(&messageDispatcher);
 	}
 
-	void ClientNode::sendEntityData(Entity* entity, TPacket data, unsigned int packetFlags)
+	void ClientComponent::sendEntityData(Entity* entity, TPacket data, unsigned int packetFlags)
 	{
 		TPacket head;
 		head.push(UPDATE_ENTITY_MSG);

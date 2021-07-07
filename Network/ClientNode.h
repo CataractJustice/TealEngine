@@ -4,10 +4,11 @@
 #include "Server.h"
 #include "GameNode/Entity/Entity.h"
 #include "GameNode/Prefab/PrefabFactory.h"
+#include "GameNode/Component.h"
 #define CONNECTION_TIMEOUT 10000
 namespace TealEngine 
 {
-	class ClientNode : public GameNode
+	class ClientComponent : public Component
 	{
 	private:
 		TClient socket;
@@ -20,7 +21,7 @@ namespace TealEngine
 	public:
 		void update();
 
-		ClientNode(std::string ip, unsigned int port);
+		ClientComponent(std::string ip, unsigned int port);
 
 		void sendEntityData(Entity* entity, TPacket data, unsigned int packetFlags = 8);
 	};

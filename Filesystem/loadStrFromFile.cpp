@@ -1,5 +1,7 @@
 #include "loadStrFromFile.h"
 #include "System/Debug.h"
+#include<fstream>
+#include<sstream>
 #include <iostream>
 std::string loadStrFromFile(std::string path, int* errorcode)
 {

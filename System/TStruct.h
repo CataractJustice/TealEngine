@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <stdexcept> 
 namespace TealEngine
 {
 	class TStruct
@@ -15,7 +16,9 @@ namespace TealEngine
 		TStruct operator=(const TStruct& other);
 		~TStruct();
 		void push(unsigned int size, void* data);
+		void setFieldValue(unsigned int size, void* data, unsigned int index);
 		void push(std::string str);
+		void pushReserve(int size);
 		void pop();
 		void* operator [](unsigned int index);
 		TStruct operator +(TStruct second);
@@ -38,6 +41,22 @@ namespace TealEngine
 			return *(T*)this->operator[](index);
 		}
 
+		template <class T>
+		void setFieldValue(T t, unsigned int index)
+		{
+			char* tCopy = new char[sizeof(T)];
+			memcpy(tCopy, &t, sizeof(T));
+			if (index > data.size())
+				throw std::out_of_range("TStruct::setFieldValue() index is out of range");
+			delete[] data[index].second;
+			data[index] = std::pair<unsigned int, void*>(sizeof(T), tCopy);
+		}
+
+		template<>
+		std::string getFieldValue(unsigned int index) 
+		{
+			return getString(index);
+		}
 		
 		template<class T>
 		T* copyArray(unsigned int index)

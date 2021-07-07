@@ -53,7 +53,7 @@ namespace TealEngine
 		this->server = server;
 	}
 
-	void Entity::setClient(ClientNode* node) 
+	void Entity::setClient(ClientComponent* node) 
 	{
 		this->client = node;
 	}

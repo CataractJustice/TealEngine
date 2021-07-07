@@ -33,6 +33,12 @@ namespace TealEngine
 	void Font::setPixelSizes(int height)
 	{
 		FT_Set_Pixel_Sizes(FT_Face(face), 0, height);
+		this->height = height;
+	}
+
+	int Font::getPixelSizes()
+	{
+		return height;
 	}
 
 	FontCharacter Font::getCharacter(font_char_type character)

@@ -21,7 +21,8 @@ namespace TealEngine
 		unsigned int getWindowHeight();
 		float getAspect();
 		void setCurrent();
-		glm::vec2 getResolution();
+		glm::vec2 getScreenResolution();
+		glm::vec2 getWindowResolution();
 		EventPublisher WindowResize;
 		bool shouldClose();
 

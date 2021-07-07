@@ -3,38 +3,37 @@
 #include <unordered_set>
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Network/Server.h"
+#include "Component.h"
 
 using namespace std;
 namespace TealEngine {
 
-	unordered_set<GameNode*> allNodes;
-	map<string, set<GameNode*>> tagged;
+	unordered_set<GameNode*> GameNode::allNodes = unordered_set<GameNode*>(8192);
+	map<string, set<GameNode*>> GameNode::tagged = map<string, set<GameNode*>>();
 
-	void GameNode::init() 
-	{
-		allNodes = unordered_set<GameNode*>();
-		tagged = map<string, set<GameNode*>>();
-	}
-
+	//sets parrent of a node, calls GameNode::onParrentChange after setting new parrent
 	void GameNode::setParrent(GameNode* parrent)
 	{
 		if (this->parrent)
 			this->parrent->removeChild(this);
 		this->parrent = parrent;
 		this->hierarchyDepth = parrent->getHierarchyDepth() + 1;
+		onParrentChange();
 	}
 
-	string GameNode::getName() { return (name.length() == 0) ? "unnamed" : name; }
-
-	void GameNode::rename(string name) { this->name = name; }
+	const std::string& GameNode::getName() { return name; }
+	void GameNode::rename(const string& name) { this->name = name; }
 
 	//tag system methods
-	bool GameNode::hasTag(string tag)
+
+	//checks if node has given tag added
+	bool GameNode::hasTag(const string& tag)
 	{
-		return tags.find(tag) != tags.end();
+		return tags.find(tag) != tags.cend();
 	}
 
-	void GameNode::addTag(string tag)
+
+	void GameNode::addTag(const string& tag)
 	{
 		if (!hasTag(tag))
 		{
@@ -45,7 +44,7 @@ namespace TealEngine {
 		}
 	}
 
-	void GameNode::removeTag(string tag)
+	void GameNode::removeTag(const string& tag)
 	{
 		if (hasTag(tag)) {
 			this->tags.erase(tag);
@@ -53,19 +52,46 @@ namespace TealEngine {
 		}
 	}
 
-	set<GameNode*> GameNode::findNodesByTag(string tag)
+	set<GameNode*> GameNode::findNodesByTag(const string& tag)
 	{
 		return tagged[tag];
 	}
-	//
+	//components:
+
+	void GameNode::attachComponent(Component* component) 
+	{
+		this->components.push_back(component);
+		component->attachTo(this);
+	}
+	void GameNode::attachComponents(const std::initializer_list<Component*>& components)
+	{
+		for (auto& component : components)
+			attachComponent(component);
+	}
+	void GameNode::dettachComponent(Component* component) 
+	{
+		if (component->getParrent() == this) 
+		{
+			components.remove(component);
+			component->parrent = nullptr;
+		}
+		else
+		{
+			throw "tried to remove component from a node to whitch it does not belong";
+		}
+	}
 
 	unsigned short GameNode::getHierarchyDepth()
 	{
 		return hierarchyDepth;
 	}
 
+	[[deprecated("Buggy and non consistent method, not even sure why it exist")]]
 	NODE_RELATION GameNode::checkRelation(GameNode* node)
 	{
+		if (getParrent() == node)
+			return PARRENT_NODE;
+
 		//if nodes appears to be on the same layer of hierarchy then its not related nodes or the same node
 		if (node->getHierarchyDepth() == getHierarchyDepth())
 		{
@@ -73,14 +99,12 @@ namespace TealEngine {
 				return THIS_NODE;
 			else
 				return NOT_RELATED_NODE;
-		}//if check
+		}
+		//if another node is on a higher layer then it's either non relater or parrent node 
 		else if (node->getHierarchyDepth() < getHierarchyDepth())
 		{
-			if (getParrent() == nullptr || getHierarchyDepth() == 0)
+			if (getParrent() == nullptr)
 				return NOT_RELATED_NODE;
-
-			if (getParrent() == node)
-				return PARRENT_NODE;
 
 			return getParrent()->checkRelation(node);
 		}
@@ -99,17 +123,24 @@ namespace TealEngine {
 		return childNodes.back();
 	}
 
-	void GameNode::addChilds(vector<GameNode*> nodes)
+	void GameNode::addChilds(const std::initializer_list<GameNode*>& nodes)
 	{
-		for (unsigned int i = 0; i < nodes.size(); i++) this->addChild(nodes[i]);
+		for (auto& node : nodes) this->addChild(node);
 	}
 
 	void GameNode::removeChild(GameNode* node)
 	{
-		this->childNodes.remove(node);
-		ChildNodeRemoveEvent e = ChildNodeRemoveEvent(node);
-		handleEvent(&e);
-		node->parrent = nullptr;
+		if (node->getParrent() == this) 
+		{
+			this->childNodes.remove(node);
+			ChildNodeRemoveEvent e = ChildNodeRemoveEvent(node);
+			handleEvent(&e);
+			node->parrent = nullptr;
+		}
+		else
+		{
+			throw "tried to remove child from a node to whitch it does not belong";
+		}
 	}
 
 	std::vector<GameNode*> GameNode::getChilds()
@@ -151,9 +182,29 @@ namespace TealEngine {
 	{
 		return parrent;
 	}
-
+	bool GameNode::getActive() { return active; }
 	//events:
-	void GameNode::update() {};
+	void GameNode::setActive(bool active) 
+	{
+		if(active && !this->active)
+			for (Component* comp : components)
+				comp->onAwake();
+		else
+			if(!active && this->active)
+				for (Component* comp : components)
+					comp->onSleep();
+		this->active = active;
+	}
+	void GameNode::onParrentChange() 
+	{
+		for (Component* comp : components)
+			comp->onParrentChange();
+	};
+	void GameNode::update()
+	{
+		for (Component* comp : components)
+			comp->update();
+	};
 
 	void GameNode::updateAll()
 	{
@@ -171,28 +222,38 @@ namespace TealEngine {
 		this->eventListeners[type] = ex;
 	}
 
+	void GameNode::subNodeToEvent(EventType type, GameNode* node) 
+	{
+		this->eventSubscribedNodes[type].push_back(node);
+	}
+
 	EventListener* GameNode::getEventListener(EventType type)
 	{
 		return (this->eventListeners.find(type) == eventListeners.end()) ? nullptr : &eventListeners[type];
 	}
 
-	void GameNode::handleEvent(Event* e, bool toLower)
+	void GameNode::handleEvent(Event* e, bool toLower, bool toUpper)
 	{
 		if (eventListeners.find(e->getType()) != eventListeners.end())
 			this->eventListeners[e->getType()](e);
+		for (GameNode* node : eventSubscribedNodes[e->getType()]) 
+		{
+			node->handleEvent(e, false, false);
+		}
 		
 		if (toLower) 
 		{
 			for (GameNode* child : childNodes)
 				child->handleEvent(e, true);
 		}
-		else
-		if (this->parrent) this->parrent->handleEvent(e);
+		
+		if (this->parrent && toUpper) this->parrent->handleEvent(e);
 	}
 
 	GameNode::GameNode()
 	{
 		childNodes = list<GameNode*>(0);
+		components = list<Component*>(0);
 		parrent = NULL;
 		hierarchyDepth = 0;
 		allNodes.insert(this);
@@ -200,6 +261,8 @@ namespace TealEngine {
 
 	GameNode::~GameNode()
 	{
+		for (Component* comp : components)
+			comp->onDestroy();
 		//recursive delete all the child nodes
 		//using temporal list of nodes cuz node destructor will modify childNodes list
 		list<GameNode*> nodes = childNodes;
@@ -208,7 +271,9 @@ namespace TealEngine {
 			{
 				delete node;
 			}
-
+		std::list<Component*> comps = components;
+		for (Component* comp : comps)
+			delete comp;
 		//removing node from parrent child nodes
 		if (parrent) parrent->removeChild(this);
 

@@ -1,12 +1,10 @@
 #include "PrefabFactory.h"
-
-#include "../../Assets/TestCubePrefab.h"
-#include "../../Assets/Voxel/VoxelWorldPrefab.h"
+#include "IPrefab.h"
 namespace TealEngine 
 {
 	std::map<std::string, IPrefab*> prefabs = std::map<std::string, IPrefab*>();
 
-	Entity* PrefabFactory::createPrefabInstance(std::string prefabName, bool serverSide, TStruct* params)
+	Entity* PrefabFactory::createPrefabInstance(std::string prefabName, bool serverSide)
 	{
 		if (prefabs.find(prefabName) == prefabs.cend())
 		{
@@ -14,10 +12,15 @@ namespace TealEngine
 		}
 		else
 		{
-			Entity* prefab = (*prefabs[prefabName])(serverSide, params);
+			Entity* prefab =  (*prefabs[prefabName])(serverSide);
 			prefab->setEntityTypeName(prefabName);
 			return prefab;
 		}
+	}
+
+	IPrefab* PrefabFactory::getPrefab(std::string name) 
+	{
+		return prefabs[name];
 	}
 
 	void PrefabFactory::addPrefab(std::string prefabName, IPrefab* prefabCreationFunc)

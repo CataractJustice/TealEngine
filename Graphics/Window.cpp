@@ -45,8 +45,8 @@ namespace TealEngine
 		return ((float)windowWidth) / ((float)windowHeight);
 	}
 
-	glm::vec2 Window::getResolution() { return glm::vec2(getScreenWidth(), getScreenHeight()); }
-
+	glm::vec2 Window::getScreenResolution() { return glm::vec2(getScreenWidth(), getScreenHeight()); }
+	glm::vec2 Window::getWindowResolution() { return glm::vec2(windowWidth, windowHeight); }
 	void Window::setCurrent() 
 	{
 		glfwMakeContextCurrent((GLFWwindow*)window);

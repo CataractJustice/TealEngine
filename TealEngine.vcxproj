@@ -73,11 +73,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>glfw/include;glew/include/GL;BulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>glfw/lib/32;glew/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -87,12 +93,18 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>libs/glfw/include;libs/glew/include/GL;libs\enet\include;libs/BulletPhysics/src;$(SolutionDir)/TealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/enet;libs/glew/lib/Release/x64;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -102,12 +114,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -119,18 +136,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>libs/freetype/include;libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;libs/enet/include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING;_MBCS;NOMINMAX;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <OmitFramePointers>false</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -146,12 +165,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assets\Voxel\BlockData.cpp" />
-    <ClCompile Include="Assets\Voxel\ClientSideVoxelWorld.cpp" />
-    <ClCompile Include="Assets\Voxel\MarchingCubesVoxelMesh.cpp" />
-    <ClCompile Include="Assets\Voxel\ServerSideChunk.cpp" />
-    <ClCompile Include="Assets\Voxel\ServerSideVoxelWorld.cpp" />
-    <ClCompile Include="Assets\Voxel\VoxelData.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="EventSystem\EventListener.cpp" />
     <ClCompile Include="EventSystem\EventPublisher.cpp" />
@@ -159,9 +172,12 @@
     <ClCompile Include="Filesystem\getFilesInDir.cpp" />
     <ClCompile Include="Filesystem\isDirectory.cpp" />
     <ClCompile Include="Filesystem\loadStrFromFile.cpp" />
+    <ClCompile Include="Filesystem\saveStrToFile.cpp" />
+    <ClCompile Include="GameNode\Component.cpp" />
     <ClCompile Include="GameNode\Entity\Entity.cpp" />
     <ClCompile Include="GameNode\GameNode.cpp" />
     <ClCompile Include="GameNode\GameNode3D.cpp" />
+    <ClCompile Include="GameNode\Prefab\IPrefab.cpp" />
     <ClCompile Include="GameNode\Prefab\PrefabFactory.cpp" />
     <ClCompile Include="GameNode\Transform.cpp" />
     <ClCompile Include="Graphics\FrameBuffer\FrameBuffer.cpp">
@@ -171,6 +187,7 @@
     <ClCompile Include="Graphics\GUI\GUITransform.cpp" />
     <ClCompile Include="Graphics\GUI\Text\Font.cpp" />
     <ClCompile Include="Graphics\GUI\Text\FreeTypeUtil.cpp" />
+    <ClCompile Include="Graphics\GUI\Text\Text.cpp" />
     <ClCompile Include="Graphics\Light\Light.cpp" />
     <ClCompile Include="Graphics\Mesh\Mesh.cpp" />
     <ClCompile Include="Graphics\Mesh\MeshRenderer.cpp" />
@@ -184,6 +201,7 @@
     <ClCompile Include="Graphics\Texture\Texture.cpp" />
     <ClCompile Include="Graphics\Texture\TextureAtlas.cpp" />
     <ClCompile Include="Graphics\Window.cpp" />
+    <ClCompile Include="Math\i3mod.cpp" />
     <ClCompile Include="Math\Interpolation.cpp" />
     <ClCompile Include="Math\Noise.cpp" />
     <ClCompile Include="Math\PerlinNoise.cpp" />
@@ -193,30 +211,14 @@
     <ClCompile Include="Network\TClient.cpp" />
     <ClCompile Include="Network\THost.cpp" />
     <ClCompile Include="Network\TPacket.cpp" />
-    <ClCompile Include="Physics\BulletPhysicsConverting.cpp" />
-    <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="System\Clock.cpp" />
     <ClCompile Include="System\Debug.cpp" />
     <ClCompile Include="System\Input.cpp" />
     <ClCompile Include="System\TStruct.cpp" />
+    <ClCompile Include="Utils\isPairContains.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assets\Player.h" />
-    <ClInclude Include="Assets\TestCubePrefab.h" />
-    <ClInclude Include="Assets\TestEntity.h" />
-    <ClInclude Include="Assets\Voxel\Biome.h" />
-    <ClInclude Include="Assets\Voxel\BlockData.h" />
-    <ClInclude Include="Assets\Voxel\ChunkNode.h" />
-    <ClInclude Include="Assets\Voxel\ClientSideVoxelWorld.h" />
-    <ClInclude Include="Assets\Voxel\CubicVoxelMesh.h" />
-    <ClInclude Include="Assets\Voxel\MarchingCubesVoxelMesh.h" />
-    <ClInclude Include="Assets\Voxel\ServerSideChunk.h" />
-    <ClInclude Include="Assets\Voxel\ServerSideVoxelWorld.h" />
-    <ClInclude Include="Assets\Voxel\TerrainGenerator.h" />
-    <ClInclude Include="Assets\Voxel\VoxelData.h" />
-    <ClInclude Include="Assets\Voxel\VoxelWorld.h" />
-    <ClInclude Include="Assets\Voxel\VoxelWorldPrefab.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="DefaultTags.h" />
     <ClInclude Include="EventSystem\Event.h" />
@@ -247,9 +249,8 @@
     <ClInclude Include="Filesystem\getFilesInDir.h" />
     <ClInclude Include="Filesystem\isDirectory.h" />
     <ClInclude Include="Filesystem\loadStrFromFile.h" />
-    <ClInclude Include="GameNode\Default\AABB.h" />
-    <ClInclude Include="GameNode\Default\AAQTree.h" />
-    <ClInclude Include="GameNode\Default\QTree.h" />
+    <ClInclude Include="Filesystem\saveStrToFile.h" />
+    <ClInclude Include="GameNode\Component.h" />
     <ClInclude Include="GameNode\Entity\Entity.h" />
     <ClInclude Include="GameNode\GameNode.h" />
     <ClInclude Include="GameNode\GameNode3D.h" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Graphics\Texture\TextureUtil.h" />
     <ClInclude Include="Graphics\Window.h" />
     <ClInclude Include="libs\compression\huffman.hpp" />
+    <ClInclude Include="Math\i3mod.h" />
     <ClInclude Include="Math\IndexConvert.h" />
     <ClInclude Include="Math\Interpolation.h" />
     <ClInclude Include="Math\Noise.h" />
@@ -314,14 +316,18 @@
     <ClInclude Include="Network\TClient.h" />
     <ClInclude Include="Network\THost.h" />
     <ClInclude Include="Network\TPacket.h" />
-    <ClInclude Include="Physics\BulletPhysicsConverting.h" />
-    <ClInclude Include="Physics\Collider.h" />
-    <ClInclude Include="Physics\RigidBody.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="System\Clock.h" />
+    <ClInclude Include="System\Comparators\AddressComparator.h" />
+    <ClInclude Include="System\Comparators\BinaryComparator.h" />
+    <ClInclude Include="System\Comparators\ivec2Comparator.h" />
+    <ClInclude Include="System\Comparators\ivec3Comparator.h" />
     <ClInclude Include="System\Debug.h" />
     <ClInclude Include="System\Input.h" />
+    <ClInclude Include="System\PreparedTStructSchema.h" />
     <ClInclude Include="System\TStruct.h" />
+    <ClInclude Include="Utils\isPairContains.h" />
+    <ClInclude Include="Utils\isPairInGivenOrder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

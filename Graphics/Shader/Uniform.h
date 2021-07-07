@@ -13,23 +13,13 @@ using namespace glm;
 class Uniform
 {
 protected:
-	enum UniformType 
-	{
-		FLOAT_UNIFORM,
-		INT_UNIFORM,
-		VEC2_UNIFORM,
-		VEC3_UNIFORM,
-		VEC4_UNIFORM,
-		MAT4_UNIFORM
-	};
-
 	std::string name;
 	unsigned int location;
 	char* value;
 	int bytesize;
 	int size;
-	UniformType type;
-	void uset(void* data, int typesize, int size, Uniform::UniformType type);
+	int type;
+	void uset(void* data, int typesize, int size, int type);
 public:
 
 	void use();

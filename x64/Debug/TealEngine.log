@@ -9,41 +9,50 @@ C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C10
   ServerSideVoxelWorld.cpp
 C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
   VoxelData.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
 C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
   Core.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
-C:\Users\User\source\repos\tealengine\Core.cpp(20,10): fatal error C1083: Cannot open include file: 'enet/enet.h': No such file or directory
+C:\Users\User\source\repos\tealengine\Core.cpp(127,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(130,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(133,54): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(137,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(142,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(184,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(185,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(197,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(198,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(204,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(206,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(208,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(210,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(212,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(215,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
   EventListener.cpp
   EventPublisher.cpp
-  getDirectoryList.cpp
-  getFilesInDir.cpp
-  isDirectory.cpp
   loadStrFromFile.cpp
 C:\Users\User\source\repos\tealengine\Filesystem\loadStrFromFile.cpp(2,10): fatal error C1083: Cannot open include file: 'System/Debug.h': No such file or directory
+  saveStrToFile.cpp
   Entity.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
 C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
   GameNode.cpp
 C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
   GameNode3D.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
 C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
   PrefabFactory.cpp
 C:\Users\User\source\repos\tealengine\GameNode\Prefab\PrefabFactory.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Entity/Entity.h': No such file or directory
   Transform.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
 C:\Users\User\source\repos\tealengine\GameNode\Transform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/vec3.hpp': No such file or directory
   Graphics.cpp
 C:\Users\User\source\repos\tealengine\Graphics\Graphics.h(2,10): fatal error C1083: Cannot open include file: 'libs/glew/include/GL/glew.h': No such file or directory
   GUITransform.cpp
 C:\Users\User\source\repos\tealengine\Graphics\GUI\GUITransform.h(2,10): fatal error C1083: Cannot open include file: 'libs/glm/glm.hpp': No such file or directory
-  Generating Code...
-  Compiling...
   Font.cpp
 C:\Users\User\source\repos\tealengine\Graphics\GUI\Text\Font.cpp(1,10): fatal error C1083: Cannot open include file: 'ft2build.h': No such file or directory
   FreeTypeUtil.cpp
 C:\Users\User\source\repos\tealengine\Graphics\GUI\Text\FreeTypeUtil.cpp(3,10): fatal error C1083: Cannot open include file: 'ft2build.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Text.cpp
+C:\Users\User\source\repos\tealengine\Graphics\GUI\Text\Text.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/GUI/GUIElement.h': No such file or directory
   Light.cpp
 C:\Users\User\source\repos\tealengine\GameNode\GameNode.h(7,10): fatal error C1083: Cannot open include file: 'EventSystem/Event.h': No such file or directory
   Mesh.cpp
@@ -80,28 +89,30 @@ C:\Users\User\source\repos\tealengine\Math\Interpolation.h(2,10): fatal error C1
   ClientNode.cpp
 C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): fatal error C1083: Cannot open include file: 'Graphics/Renderer/DefferedRenderer.h': No such file or directory
-  Generating Code...
-  Compiling...
   Server.cpp
 C:\Users\User\source\repos\tealengine\Network\Server.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Entity/Entity.h': No such file or directory
+  Generating Code...
+  Compiling...
   TClient.cpp
-C:\Users\User\source\repos\tealengine\Network\TClient.cpp(1,10): fatal error C1083: Cannot open include file: 'enet/enet.h': No such file or directory
+C:\Users\User\source\repos\tealengine\Network\TClient.h(2,10): fatal error C1083: Cannot open include file: 'EventSystem/EventPublisher.h': No such file or directory
   THost.cpp
 C:\Users\User\source\repos\tealengine\Network\THost.h(2,10): fatal error C1083: Cannot open include file: 'EventSystem/EventPublisher.h': No such file or directory
   TPacket.cpp
 C:\Users\User\source\repos\tealengine\Network\TPacket.h(2,10): fatal error C1083: Cannot open include file: 'System/TStruct.h': No such file or directory
   BulletPhysicsConverting.cpp
-C:\Users\User\source\repos\tealengine\Physics\BulletPhysicsConverting.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/Transform.h': No such file or directory
+c1xx : fatal error C1083: Cannot open source file: 'Physics\BulletPhysicsConverting.cpp': No such file or directory
   RigidBody.cpp
-C:\Users\User\source\repos\tealengine\Physics\Rigidbody.h(2,10): fatal error C1083: Cannot open include file: 'GameNode/GameNode3D.h': No such file or directory
+c1xx : fatal error C1083: Cannot open source file: 'Physics\RigidBody.cpp': No such file or directory
   Resources.cpp
-C:\Users\User\source\repos\tealengine\GameNode\Transform.h(1,13): warning C4081: expected 'newline'; found '='
-  Clock.cpp
-C:\Users\User\source\repos\tealengine\System\Clock.cpp(13,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\User\source\repos\tealengine\System\Clock.cpp(18,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\User\source\repos\tealengine\Resources.cpp(23,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Resources.cpp(32,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Resources.cpp(46,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Resources.cpp(56,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Resources.cpp(66,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
   Debug.cpp
   Input.cpp
 C:\Users\User\source\repos\tealengine\System\Input.h(2,10): fatal error C1083: Cannot open include file: 'Graphics/Graphics.h': No such file or directory
   TStruct.cpp
 C:\Users\User\source\repos\tealengine\System\TStruct.cpp(8,10): fatal error C1083: Cannot open include file: 'libs/compression/huffman.hpp': No such file or directory
+  isPairContains.cpp
   Generating Code...

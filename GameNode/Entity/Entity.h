@@ -6,7 +6,7 @@
 using namespace std;
 namespace TealEngine 
 {
-	class ClientNode;
+	class ClientComponent;
 	class Server;
 	class Entity : public GameNode3D
 	{
@@ -15,14 +15,14 @@ namespace TealEngine
 		std::string entityTypeName;
 	protected:
 		Server* server;
-		ClientNode* client;
+		ClientComponent* client;
 	public:
 
 		std::string getEntityTypeName();
 		void setEntityTypeName(std::string typeName);
 
 		void setServer(Server* server);
-		void setClient(ClientNode* node);
+		void setClient(ClientComponent* node);
 		
 		unsigned int getEntityID();
 		void setEntityID(unsigned int id);

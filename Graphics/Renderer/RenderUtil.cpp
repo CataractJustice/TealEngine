@@ -23,11 +23,9 @@ namespace TealEngine {
 
 		void rednerTexture(GLuint texture, glm::vec2 offset, glm::vec2 scale)
 		{
-			ShaderProgram shader = Resources::getShader("basic_2d");
-			shader.setUniform("offset", offset);
-			shader.setUniform("scale", scale);
+			ShaderProgram& shader = Resources::getShader("basic_2d");
 			shader.setTexture("tex", texture);
-			renderShader(&shader);
+			renderShader(&shader, offset, scale);
 		}
 	}
 }

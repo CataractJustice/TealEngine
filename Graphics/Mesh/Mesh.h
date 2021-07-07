@@ -90,7 +90,6 @@ namespace TealEngine
 		void load(string path);
 		void removeDoubles();
 		void splitTriangles();
-		void updateAABB();
 		void addLODIndex(unsigned int index);
 		void popLODIndex();
 		void setLODIndex(unsigned int LOD, unsigned int index);

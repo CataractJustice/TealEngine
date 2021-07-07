@@ -21,6 +21,7 @@ namespace TealEngine
 	{
 	private:
 		void* face;
+		int height;
 		std::map<font_char_type, FontCharacter> characters;
 
 		FontCharacter loadChar(font_char_type character);
@@ -30,6 +31,7 @@ namespace TealEngine
 		Font();
 
 		void setPixelSizes(int height);
+		int getPixelSizes();
 
 		FontCharacter getCharacter(font_char_type character);
 	};

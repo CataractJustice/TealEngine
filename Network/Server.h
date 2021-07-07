@@ -5,7 +5,6 @@
 #include "GameNode/GameNode.h"
 #include "EventSystem/EventSystem.h"
 #include "EventSystem/EventListener.h"
-#include "Assets/TestEntity.h"
 #include "GameNode/Prefab/PrefabFactory.h"
 #include <functional>
 enum MessageType

@@ -94,12 +94,31 @@ namespace TealEngine
 		memcpy(this->data.back().second, str.c_str(), str.length() * sizeof(char));
 	}
 
+
+	void TStruct::setFieldValue(unsigned int size, void* data, unsigned int index) 
+	{
+		if(this->data[index].first)
+			delete[] this->data[index].second;
+		this->data[index] = (std::pair<unsigned int, void*>(size, new char[size]));
+		memcpy(this->data[index].second, data, size);
+	}
+
+	void TStruct::pushReserve(int size) 
+	{
+		while (size) 
+		{
+			size--;
+			data.push_back({0, nullptr});
+		}
+	}
+
 	void TStruct::pop()
 	{
 		if (data.size() > 0)
 		{
 			std::pair<unsigned int, void*> dataBack = data.back();
-			delete[] dataBack.second;
+			if(dataBack.first)
+				delete[] dataBack.second;
 			data.pop_back();
 		}
 	}

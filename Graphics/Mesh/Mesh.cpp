@@ -1,9 +1,8 @@
 #include <glew.h>
 #include <GLFW/glfw3.h>
 #include "Mesh.h"
-#include "../../System/Debug.h"
+#include "System/Debug.h"
 #include <limits>
-#include "../../GameNode/Default/AAQTree.h"
 namespace TealEngine
 {
 	void SharedMesh::enableAttrib(MESH_ATTRIBS target)
@@ -24,12 +23,8 @@ namespace TealEngine
 
 	void SharedMesh::render(unsigned int LOD, GLuint mode) 
 	{
-		if (mode == unsigned int(-1))
-			mode = GL_TRIANGLES;
-		unsigned int start = getLODIndex(LOD);
-		unsigned int end = getLODIndex(LOD + 1);
 		glBindVertexArray(VAO);
-		glDrawElements(mode, end - start, GL_UNSIGNED_INT, (void*)(getLODIndex(LOD) * sizeof(unsigned int)));
+		glDrawElements(mode, getLODIndex(LOD + 1) - getLODIndex(LOD), GL_UNSIGNED_INT, (void*)(getLODIndex(LOD) * sizeof(unsigned int)));
 	}
 
 	unsigned int SharedMesh::getLength() 
@@ -59,46 +54,39 @@ namespace TealEngine
 
 	bool Mesh::validation()
 	{
-
-		std::string e = "";
-
 		//normal
 		if (normals.size() > 0 && vertices.size() != normals.size())
 		{
-			e += "	Vertices and normals length do not match up.\n";
+			throw "Vertices and normals length do not match up.\n";
 		}
 
 		//tanget
 		if (tangets.size() > 0 && vertices.size() != tangets.size())
 		{
-			e += "	Vertices and tangets length do not match up.\n";
+			throw "Vertices and tangets length do not match up.\n";
 		}
 
 		//UV
 		if (UVs.size() != 0 && vertices.size() != UVs.size())
 		{
-			e += "	Vertices and UVs length do not match up.\n";
+			throw "Vertices and UVs length do not match up.\n";
 		}
 
 		//color
 		if (colors.size() > 0 && vertices.size() != colors.size())
 		{
-			e += "	Vertices and colors length do not match up.\n";
+			throw "Vertices and colors length do not match up.\n";
 		}
 
 		//indices
 		for (unsigned int i = 0; i < indices.size(); i++)
 			if (indices[i] >= vertices.size())
 			{
-				e += "Indice out of vertices bounds.\n";
+				throw "Indice out of vertices bounds.\n";
 				break;
 			}
 
-		if (e != "")
-		{
-			TE_DEBUG_ERROR(e);
-		}
-		return (e == "");
+		return true;
 	}
 
 	Mesh::Mesh(unsigned int usage)
@@ -225,7 +213,6 @@ namespace TealEngine
 
 			*this->ilength = this->indices.size();
 			delete[] verticesArray;
-			updateAABB();
 		}
 	}
 
@@ -433,58 +420,58 @@ namespace TealEngine
 
 	void Mesh::removeDoubles() 
 	{
-		this->updateAABB();
-		AAQTree<GLuint> aaqtree(this->aabb.position, this->aabb.scale, 8, 64);
-		for (int i = 0; i < this->vertices.size(); i++)
-		{
-			if (!aaqtree.addItem(i, AABB(vertices[i] - vec3(0.0005f), vec3(0.001f))))
-				int a = 0;
-		}
-		
-		vector<AAQTree<GLuint>> tree = aaqtree.getTree();
-
-		vector<bool> skip_verices(this->vertices.size(), false);
-		vector<GLuint> new_indices(this->vertices.size(), 0);
-		vector<vec3> new_vertices;
-		vector<vec2> new_UVs;
-		vector<vec3> new_normals;
-		for (int i = 0; i < tree.size(); i++) 
-		{
-			vector<GLuint> verticeIndices = tree[i].getItems();
-			for (int j = 0; j < verticeIndices.size(); j++)
-			{
-				if (!skip_verices[verticeIndices[j]])
-				{
-					for (int l = j + 1; l < verticeIndices.size(); l++)
-					{
-						if (
-							vertices[verticeIndices[j]] == vertices[verticeIndices[l]] &&
-							UVs[verticeIndices[j]] == UVs[verticeIndices[l]] &&
-							normals[verticeIndices[j]] == normals[verticeIndices[l]]
-							)
-						{
-							skip_verices[verticeIndices[l]] = true;
-							new_indices[verticeIndices[l]] = new_vertices.size();
-						}
-					}
-					new_indices[verticeIndices[j]] = new_vertices.size();
-					new_vertices.push_back(vertices[verticeIndices[j]]);
-					new_UVs.push_back(UVs[verticeIndices[j]]);
-					new_normals.push_back(normals[verticeIndices[j]]);
-					skip_verices[verticeIndices[j]] = true;
-				}
-			}
-		}
-
-
-		for (int i = 0; i < this->indices.size(); i++) 
-		{
-			this->indices[i] = new_indices[this->indices[i]];
-		}
-
-		this->vertices = new_vertices;
-		this->UVs = new_UVs;
-		this->normals = new_normals;
+		//this->updateAABB();
+		//AAQTree<GLuint> aaqtree(this->aabb.from, this->aabb.to, 8, 64);
+		//for (int i = 0; i < this->vertices.size(); i++)
+		//{
+		//	if (!aaqtree.addItem(i, AABB(vertices[i] - vec3(0.0005f), vec3(0.001f))))
+		//		int a = 0;
+		//}
+		//
+		//vector<AAQTree<GLuint>> tree = aaqtree.getTree();
+		//
+		//vector<bool> skip_verices(this->vertices.size(), false);
+		//vector<GLuint> new_indices(this->vertices.size(), 0);
+		//vector<vec3> new_vertices;
+		//vector<vec2> new_UVs;
+		//vector<vec3> new_normals;
+		//for (int i = 0; i < tree.size(); i++) 
+		//{
+		//	vector<GLuint> verticeIndices = tree[i].getItems();
+		//	for (int j = 0; j < verticeIndices.size(); j++)
+		//	{
+		//		if (!skip_verices[verticeIndices[j]])
+		//		{
+		//			for (int l = j + 1; l < verticeIndices.size(); l++)
+		//			{
+		//				if (
+		//					vertices[verticeIndices[j]] == vertices[verticeIndices[l]] &&
+		//					UVs[verticeIndices[j]] == UVs[verticeIndices[l]] &&
+		//					normals[verticeIndices[j]] == normals[verticeIndices[l]]
+		//					)
+		//				{
+		//					skip_verices[verticeIndices[l]] = true;
+		//					new_indices[verticeIndices[l]] = new_vertices.size();
+		//				}
+		//			}
+		//			new_indices[verticeIndices[j]] = new_vertices.size();
+		//			new_vertices.push_back(vertices[verticeIndices[j]]);
+		//			new_UVs.push_back(UVs[verticeIndices[j]]);
+		//			new_normals.push_back(normals[verticeIndices[j]]);
+		//			skip_verices[verticeIndices[j]] = true;
+		//		}
+		//	}
+		//}
+		//
+		//
+		//for (int i = 0; i < this->indices.size(); i++) 
+		//{
+		//	this->indices[i] = new_indices[this->indices[i]];
+		//}
+		//
+		//this->vertices = new_vertices;
+		//this->UVs = new_UVs;
+		//this->normals = new_normals;
 	}
 
 
@@ -509,26 +496,6 @@ namespace TealEngine
 		this->tangets = t;
 		this->UVs = uv;
 		this->colors = c;
-	}
-
-	void Mesh::updateAABB() 
-	{
-		if (this->vertices.size() > 0) 
-		{
-			vec3 maxpos(numeric_limits<float>::min()), minpos(numeric_limits<float>::max());
-			for (int i = 0; i < this->vertices.size(); i++)
-			{
-				maxpos = vec3(glm::max(this->vertices[i].x, maxpos.x), glm::max(this->vertices[i].y, maxpos.y), glm::max(this->vertices[i].z, maxpos.z));
-				minpos = vec3(glm::min(this->vertices[i].x, minpos.x), glm::min(this->vertices[i].y, minpos.y), glm::min(this->vertices[i].z, minpos.z));
-			}
-			this->aabb.position = minpos;
-			this->aabb.scale = maxpos - minpos;
-		}
-		else 
-		{
-			this->aabb.position = vec3(0.0f);
-			this->aabb.scale = this->aabb.position;
-		}
 	}
 
 	void Mesh::addLODIndex(unsigned int index) 

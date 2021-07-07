@@ -21,7 +21,8 @@ namespace TealEngine
 		Mesh* getModel(std::string key);
 		Texture getTexture(std::string key);
 		ShaderProgram& getMaterial(std::string key);
-		Font getFont(std::string key);
+		Font& getFont(std::string key);
+		Font& getDefaultFont();
 		void addMaterial(std::string key, ShaderProgram& material);
 		bool isResourceExist(RESOURCE_TYPE resourceType,  std::string key);
 	}

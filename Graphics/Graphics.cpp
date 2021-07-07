@@ -4,6 +4,13 @@
 #include "System/Clock.h"
 #include "EventSystem/WindowEvents/WindowResizeEvent.h"
 #include "libs/glm/vec2.hpp"
+#include "System/Debug.h"
+
+extern "C"
+{
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+}
+
 namespace TealEngine
 {
 	namespace Graphics
@@ -23,11 +30,15 @@ namespace TealEngine
 
 		unsigned int init(std::string windowName)
 		{
+			TE_DEBUG_INFO("GLFW init.");
 			if (!glfwInit())
 				return 1;
+			TE_DEBUG_INFO("Creating window.");
 			window = new Window(windowName.c_str());
 			window->setCurrent();
 			glewExperimental = GL_TRUE;
+
+			TE_DEBUG_INFO("GLEW init.");
 			if (GLEW_OK != glewInit())
 			{
 				return 3;
@@ -35,7 +46,6 @@ namespace TealEngine
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  
 			glEnable(GL_BLEND);
-			
 
 			return 0;
 		}
@@ -44,7 +54,10 @@ namespace TealEngine
 
 		void display()
 		{
+			TE_DEBUG_INFO("Swaping buffers.")
 			glfwSwapBuffers((GLFWwindow*)window->gl_window_ptr_());
+
+			TE_DEBUG_INFO("Poll events.")
 			glfwPollEvents();
 		}
 

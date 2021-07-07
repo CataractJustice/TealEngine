@@ -1,7 +1,6 @@
 #pragma once
 #include "Transform.h"
 #include "GameNode.h"
-#include "Default/AABB.h"
 #include "EventSystem/EventListener.h"
 
 namespace TealEngine 
@@ -11,30 +10,27 @@ namespace TealEngine
 	class GameNode3D : public GameNode
 	{
 	private:
-		Transform worldTransform;
-		Transform parrentLastTransform;
-		Transform lastTransform;
+		Transform lastWorldTransform, lastTransfrom, lastParrentWorldTransform;
+		unsigned int transformLastModifyStamp, parrentWorldTransformLastModifyStamp;
+		bool hasGameNode3DParrent;
+
+		void setParrent(GameNode* parrent) override;
+
 	protected:
-		AABB aabb;
 		Transform transform;
 	public:
 
 		GameNode3D();
 
-		virtual Transform getWorldTransform();
+		//do not try to modify game node world transform through this reference
+		virtual Transform& getWorldTransform();
 
-		virtual void setTransform(Transform transform);
+		virtual void setWorldTransform(Transform transform);
 
-		virtual void addTransform(Transform transform);
+		virtual void addTransform(const Transform& transform);
 
-		virtual Transform& getTransform();
+		virtual Transform& getRelativeTransform();
 
-		virtual void setRelativeTransform(Transform transform);
-
-		AABB getAABB(bool includeChildAABB);
-
-		AABB getRelativeAABB();
-
-		void setAABB(glm::vec3 offset, glm::vec3 scale);
+		virtual void setRelativeTransform(const Transform& transform);
 	};
 }

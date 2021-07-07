@@ -90,19 +90,19 @@ namespace TealEngine {
 		void setTexture(std::string name, unsigned int texture);
 		void setTexture(std::string name, unsigned int index, unsigned int texture);
 
-		void setUniform(std::string name, int x)		 {tryAddUniform(name); uniforms[name]->set1iv(&x, 1); }
-		void setUniform(std::string name, float x)		 {tryAddUniform(name); uniforms[name]->set1fv(&x, 1); }
-		void setUniform(std::string name, glm::vec2 vec) {tryAddUniform(name); uniforms[name]->set2fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::vec3 vec) {tryAddUniform(name); uniforms[name]->set3fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::vec4 vec) {tryAddUniform(name); uniforms[name]->set4fv(glm::value_ptr(vec), 1); }
-		void setUniform(std::string name, glm::mat4 mat) {tryAddUniform(name); uniforms[name]->setm4fv(glm::value_ptr(mat), 1); }
+		void setUniform(std::string name, int x)		 {uniforms[name]->set1iv(&x, 1); }
+		void setUniform(std::string name, float x)		 {uniforms[name]->set1fv(&x, 1); }
+		void setUniform(std::string name, glm::vec2 vec) {uniforms[name]->set2fv(glm::value_ptr(vec), 1); }
+		void setUniform(std::string name, glm::vec3 vec) {uniforms[name]->set3fv(glm::value_ptr(vec), 1); }
+		void setUniform(std::string name, glm::vec4 vec) {uniforms[name]->set4fv(glm::value_ptr(vec), 1); }
+		void setUniform(std::string name, glm::mat4 mat) {uniforms[name]->setm4fv(glm::value_ptr(mat), 1); }
 
 		void setUniform(std::string name, glm::mat4* mat, int size) 
 		{ 
 			float* matv = new float[16 * size];
 			for (int i = 0; i < size; i++)
 				memcpy(matv + i * 16, value_ptr(mat[i]), sizeof(float) * 16);
-			tryAddUniform(name); uniforms[name]->setm4fv(matv, size);
+			uniforms[name]->setm4fv(matv, size);
 			delete[] matv;
 		}
 

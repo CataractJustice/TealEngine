@@ -6,8 +6,8 @@
 #include <set>
 #include "EventSystem/Event.h"
 #include "EventSystem/EventListener.h"
+#include "System/Debug.h"
 using namespace std;
-
 enum NODE_RELATION 
 {
 	THIS_NODE,
@@ -17,39 +17,74 @@ enum NODE_RELATION
 };
 
 namespace TealEngine {
+class Component;
 	class GameNode
 	{
 	private:
+		static unordered_set<GameNode*> allNodes;
+		static map<string, set<GameNode*>> tagged;
 		string entityId;
 		map<EventType, EventListener> eventListeners;
+		map<EventType, std::list<GameNode*>> eventSubscribedNodes;
 		set<string> tags;
-
+		bool active;
 		unsigned short hierarchyDepth;
 	protected:
 		string name;
 		list<GameNode*> childNodes;
+		list<Component*> components;
 		GameNode* parrent;
 
-		void setParrent(GameNode* parrent);
+		virtual void setParrent(GameNode* parrent);
 	public:
-		static void init();
-		string getName();
-		void rename(string name);
+		const string& getName();
+		void rename(const string& name);
 
 		//tag system
-		bool hasTag(string tag);
-		void addTag(string tag);
-		void removeTag(string tag);
-		static set<GameNode*> findNodesByTag(string tag);
 
+		//checks if node has given tag added
+		bool hasTag(const string& tag);
+		//adds tag to a node
+		void addTag(const string& tag);
+		//removes tag from node
+		void removeTag(const string& tag);
+		//returns set of ALL nodes with given tag added
+		static set<GameNode*> findNodesByTag(const string& tag);
+
+		//component system
+
+		//detaches component if it attachet to anything and attaches it to this node
+		void attachComponent(Component* component);
+		void attachComponents(const std::initializer_list<Component*>& component);
+		//detaches component if component is attachet to this node, else throws an error
+		void dettachComponent(Component* component);
+		template<class T>
+		//returns all components of given type
+		std::vector<T*> findComponentsByType() 
+		{
+			std::vector<T*> comps;
+			for (Component* component : components)
+				if (dynamic_cast<T*>(component))
+					comps.push_back((T*)component);
+			return comps;
+		}
+
+
+		//returns length of path from root node to this node
 		unsigned short getHierarchyDepth();
+		[[deprecated]]
 		NODE_RELATION checkRelation(GameNode* node);
+		//yes, getParrent returns parrent node
 		GameNode* getParrent();
 
+		//adds child nodes and calls handleEvent with CHILD_ADDED event
 		virtual GameNode* addChild(GameNode* node);
-		virtual void addChilds(vector<GameNode*> nodes);
+		//calls addChild in a loop for every vector element
+		virtual void addChilds(const std::initializer_list<GameNode*>& nodes);
+		//removes given child if it is a child of this node, else throws an error
 		virtual void removeChild(GameNode* node);
 
+		//returns every child node of given type
 		template<typename T>
 		std::vector<T*> findChildsByType(bool childsOfChilds = false) 
 		{
@@ -69,17 +104,41 @@ namespace TealEngine {
 			return res;
 		}
 
+		//gets parrent if parrent is of type T, else throws an error
+		template<typename T>
+		T* getParrentOfType() 
+		{
+			T* castedParrent = dynamic_cast<T*>(parrent);
+			if (!castedParrent)
+				TE_DEBUG_WARNING("Parrent either does not exist or isnt the right type.");
+			return castedParrent;
+		}
+		//returns all child nodes
 		std::vector<GameNode*> getChilds();
+		//returns childs, childs of childs an so on
 		std::vector<GameNode*> getAllChilds();
+		//returns childs with matching name
 		std::vector<GameNode*> findChildsByName(std::string name);
-
+		//
+		bool getActive();
 		//events:
-		virtual void update();
+
+		//enables/disables node, calls onSleep or onAwake for components
+		void setActive(bool active);
+		//called when parrent changed
+		virtual void onParrentChange();
+		//usualy called every frame
+		virtual void update() final;
+		//recursively updates current and all lower nodes
 		void updateAll();
-	
+		//adds function that will be called on call of handleEvent with event of given type
 		void addEventListener(EventType type, eventListenerFunc ex);
+		//handleEvent will be called on param node when handleEvent on this node will be called with event of given type 
+		void subNodeToEvent(EventType type, GameNode* node);
+		//?
 		EventListener* getEventListener(EventType type);
-		void handleEvent(Event* e, bool toLower = false);
+		//sends event to added event listeners
+		void handleEvent(Event* e, bool toLower = false, bool toUpper = true);
 
 		GameNode();
 		virtual ~GameNode();

@@ -2,13 +2,7 @@
 #include <glew.h>
 #include <GLFW/glfw3.h>
 
-#define DEFINE_UNIFORM_SET_METHOD(name, datatype, stride, enumtype)\
-void Uniform:: ## name (datatype* values, int size) \
-{\
-	uset((void*)values, sizeof(datatype) * stride, size, enumtype);\
-}
-
-void Uniform::uset(void* values, int typesize, int size, Uniform::UniformType type) 
+void Uniform::uset(void* values, int typesize, int size, int type) 
 {
 	if (this->value)
 		delete[] this->value;
@@ -21,27 +15,27 @@ void Uniform::uset(void* values, int typesize, int size, Uniform::UniformType ty
 
 void Uniform::set1fv(float* values, int size) 
 {
-	uset(values, sizeof(float), size, FLOAT_UNIFORM);
+	uset(values, sizeof(float), size, GL_FLOAT);
 }
 void Uniform::set2fv(float* values, int size)
 {
-	uset(values, sizeof(float) * 2, size, VEC2_UNIFORM);
+	uset(values, sizeof(float) * 2, size, GL_FLOAT_VEC2);
 }
 void Uniform::set3fv(float* values, int size)
 {
-	uset(values, sizeof(float) * 3, size, VEC3_UNIFORM);
+	uset(values, sizeof(float) * 3, size, GL_FLOAT_VEC3);
 }
 void Uniform::set4fv(float* values, int size)
 {
-	uset(values, sizeof(float) * 4, size, VEC4_UNIFORM);
+	uset(values, sizeof(float) * 4, size, GL_FLOAT_VEC4);
 }
 void Uniform::setm4fv(float* values, int size)
 {
-	uset(values, sizeof(float) * 16, size, MAT4_UNIFORM);
+	uset(values, sizeof(float) * 16, size, GL_FLOAT_MAT4);
 }
 void Uniform::set1iv(int* values, int size)
 {
-	uset(values, sizeof(int), size, INT_UNIFORM);
+	uset(values, sizeof(int), size, GL_INT);
 }
 
 
@@ -50,22 +44,22 @@ void Uniform::use()
 {
 	switch (type)
 	{
-	case Uniform::FLOAT_UNIFORM:
+	case GL_FLOAT:
 		glUniform1fv(location, size, (float*)value);
 		break;
-	case Uniform::INT_UNIFORM:
+	case GL_INT:
 		glUniform1iv(location, size, (int*)value);
 		break;
-	case Uniform::VEC2_UNIFORM:
+	case GL_FLOAT_VEC2:
 		glUniform2fv(location, size, (float*)value);
 		break;
-	case Uniform::VEC3_UNIFORM:
+	case GL_FLOAT_VEC3:
 		glUniform3fv(location, size, (float*)value);
 		break;
-	case Uniform::VEC4_UNIFORM:
+	case GL_FLOAT_VEC4:
 		glUniform4fv(location, size, (float*)value);
 		break;
-	case Uniform::MAT4_UNIFORM:
+	case GL_FLOAT_MAT4:
 		glUniformMatrix4fv(location, size, false, (float*)value);
 		break;
 	default:

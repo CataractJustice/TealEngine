@@ -3,6 +3,7 @@
 #include "ShaderProgram.h"
 #include "Filesystem/loadStrFromFile.h"
 #include "Graphics/Graphics.h"
+#include "System/Debug.h"
 #include <iostream>
 namespace TealEngine {
 
@@ -22,7 +23,7 @@ namespace TealEngine {
 	{
 		glUseProgram(this->program);
 		GLuint loc = glGetUniformLocation(this->program, name.c_str());
-		if (loc == -1) std::cout << "ShaderProgram::addTexture ERROR: uniform \"" << name << "\" is undefined in shader\n";
+		if (loc == -1) TE_DEBUG_WARNING("Could not find uniform with name \"" + name + "\" in shader.");
 		glUniform1i(loc, this->texture.size());
 		this->texture[name] = std::pair<GLuint, GLuint>(texture.size(), 0);
 	}
@@ -47,14 +48,32 @@ namespace TealEngine {
 		glAttachShader(program, vertexShader);
 		glAttachShader(program, fragmentShader); 
 		glLinkProgram(program);
-
 		GLint success;
-		GLchar* infoLog = new GLchar[512];
+		GLchar* infoLog = new GLchar[1024];
 		glGetProgramiv(program, GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(program, 512, NULL, infoLog);
 			std::cout << infoLog;
 		}
+		delete[] infoLog;
+		
+		GLint uniformsCount;
+		GLint buffersize;
+		GLint arraysize;
+		GLint namelength;
+		GLenum type;
+		glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformsCount);
+		glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &buffersize);
+		char* namebuffer = new char[buffersize];
+		for (int i = 0; i < uniformsCount; i++)
+		{
+			glGetActiveUniform(program, i, buffersize, &namelength, &arraysize, &type, namebuffer);
+			if (namebuffer[namelength - 1] == ']')
+				namebuffer[namelength - 3] = 0; //getting rid of "[0]" from the end of an uniform name
+			tryAddUniform(namebuffer);
+		}
+		delete[] namebuffer;
+		
 		lastMaterialId++;
 		materialId = lastMaterialId;
 	}

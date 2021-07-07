@@ -83,7 +83,7 @@ public:
 				}
 			}
 		}
-
+		delete[] noise;
 		return volume;
 	}
 

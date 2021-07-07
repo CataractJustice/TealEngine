@@ -124,16 +124,25 @@ namespace TealEngine
 
 			void update()
 			{
+				TE_DEBUG_INFO("GameNode update pass.");
+				Scene::rootNode->updateAll();
+				sceneclock.update();
+
+				TE_DEBUG_INFO("Render pass.");
 				Scene::renderer.render();
+
+				TE_DEBUG_INFO("Rendering to main buffer.");
 				FrameBuffer::unbind();
 				if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
 					Render::rednerTexture(Input::Mouse::getScrollPos());
 				else
 					Render::rednerTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
+
+				TE_DEBUG_INFO("GUI rendering.");
 				CoreGUIRenderer.render();
+
 				Graphics::display();
-				Scene::rootNode->updateAll();
-				sceneclock.update();
+				
 #ifdef BULLET_PHYSICS
 				Scene::btEngine->stepSimulation(0.01f);
 #endif // BULLET_PHYSICS
@@ -173,6 +182,8 @@ namespace TealEngine
 
 		void init()
 		{
+			TE_DEBUG_INFO("Core initialization started.");
+			TE_DEBUG_INFO("Reading settings file.");
 			int settingsLoadErrorCode = 0;
 			std::string settingsStr = loadStrFromFile("settings.txt", &settingsLoadErrorCode);
 			if (settingsLoadErrorCode)
@@ -191,13 +202,18 @@ namespace TealEngine
 				settings[first] = second;
 				settingsStr = settingsStr.substr(epos + 1, settingsStr.length() - epos - 1);
 			}
-
+			TE_DEBUG_INFO("Graphics initialization.");
 			Graphics::init(settings["title"]);
+			TE_DEBUG_INFO("Loading resources.");
 			Resources::load(settings["resource_pack"]);
+			TE_DEBUG_INFO("Generating models.");
 			BasicMeshes::init();
+			TE_DEBUG_INFO("Initializing input.");
 			Input::init();
+			TE_DEBUG_INFO("Initializing light.");
 			lightInit();
 
+			TE_DEBUG_INFO("Initializing renderer.");
 			Scene::renderer.resize(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
 			Scene::renderer.setDepthTest(true);
 			Scene::renderer.setDepthClear(true);
@@ -237,6 +253,11 @@ namespace TealEngine
 			//ClientNode* client = new ClientNode("127.0.0.1", 8888);
 			//Scene::addNode(client);
 #endif //  TE_MULTIPLAYER
+		}
+
+		bool isServer() 
+		{
+			return false;
 		}
 	}
 }

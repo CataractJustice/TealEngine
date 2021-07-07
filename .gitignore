@@ -12,3 +12,7 @@
 *.lastbuildstate
 *.log
 *.recipe
+*.sarif
+*.log
+*.lib
+*.pdb

@@ -5,7 +5,13 @@ namespace TealEngine
 {
 	class IPrefab 
 	{
+	protected:
+		TStruct* params;
+	private:
+		bool deleteParamsOnDestructor;
 	public:
-		virtual Entity* operator()(bool serverSide, TStruct* params) = 0;
+		virtual Entity* operator()(bool serverSide) = 0;
+		void setParams(TStruct* params, bool makeCopy, bool deleteOnDestructor);
+		~IPrefab();
 	};
 }

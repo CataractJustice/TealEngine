@@ -32,7 +32,7 @@ namespace TealEngine {
 	}
 	void DefferedRenderer::render()
 	{
-		//render pass
+		TE_DEBUG_INFO("Configuring framebuffer.");
 		fb.bind();
 		fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		//fb.enable(0);
@@ -42,9 +42,11 @@ namespace TealEngine {
 		fb.enable(4);
 		fb.enable(5);
 		fb.apply();
+		TE_DEBUG_INFO("Applying render configs.");
 		applyConfig();
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
+		TE_DEBUG_INFO("Rendering models.");
 		renderModels();
 		
 		//light pass
@@ -53,9 +55,11 @@ namespace TealEngine {
 		fb.disable(3);
 		fb.disable(4);
 		fb.apply();
+		TE_DEBUG_INFO("Rendering light.");
 		renderLights();
 		fb.disable(5);
 		fb.apply();
+		TE_DEBUG_INFO("Combining lightmap with albedomap.");
 		combineLightShader.setTexture("AlbedoMap", albedo.id());
 		combineLightShader.setTexture("LightMap", light.id());
 		Render::renderShader(&combineLightShader);
@@ -82,8 +86,11 @@ namespace TealEngine {
 			case TealEngine::DIRECTION_LIGHT:
 			{
 				//render shadow maps
+
+				TE_DEBUG_INFO("Rednering direction light shadow maps.");
 				for (int c = 0; c < directionLight->shadowCascades() && c < 2; c++) 
 				{
+
 					directionLight->updateProjections(this->activeCamera);
 					shadowMapRenderer.fb.viewport(directionLight->shadowResolution(), directionLight->shadowResolution());
 					shadowMapRenderer.fb.bind();
@@ -101,6 +108,7 @@ namespace TealEngine {
 						cascade--;
 					}
 				}
+					TE_DEBUG_INFO("Render direction light to light map");
 					//render light to camera texture
 					fb.bind();
 					glDisable(GL_DEPTH_TEST);

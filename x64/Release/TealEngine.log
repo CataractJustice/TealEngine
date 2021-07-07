@@ -1,5 +1,59 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (coolANDnewmewGAMEaaaaa.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Core.cpp
+C:\Users\User\source\repos\tealengine\Core.cpp(127,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(131,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(134,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(137,54): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(141,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(185,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(186,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(198,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(199,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\User\source\repos\tealengine\Core.cpp(205,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(207,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(209,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(211,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(213,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Core.cpp(216,4): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+  MeshRenderer.cpp
+  DefferedRenderer.cpp
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(35,3): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(45,3): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(49,3): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(58,3): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(62,3): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(90,5): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(91,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(98,6): warning C4554: '<<': check operator precedence for possible error; use parentheses to clarify precedence
+C:\Users\User\source\repos\tealengine\Graphics\Renderer\DefferedRenderer.cpp(111,6): warning C4002: too many arguments for function-like macro invocation 'TE_DEBUG_INFO'
+  ForwardRenderer.cpp
+  RenderUtil.cpp
+  Uniform.cpp
+  ClientNode.cpp
+C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include\utility(193,48): warning C4267: 'initializing': conversion from 'size_t' to '_Ty1', possible loss of data
+          with
+          [
+              _Ty1=unsigned int
+          ]
+C:\Users\User\source\repos\tealengine\System\TStruct.h(35): message : see reference to function template instantiation 'std::pair<unsigned int,void *>::pair<size_t,char*&,0>(_Other1 &&,_Other2) noexcept' being compiled
+          with
+          [
+              _Other1=size_t,
+              _Other2=char *&
+          ]
+C:\Users\User\source\repos\tealengine\System\TStruct.h(35): message : see reference to function template instantiation 'std::pair<unsigned int,void *>::pair<size_t,char*&,0>(_Other1 &&,_Other2) noexcept' being compiled
+          with
+          [
+              _Other1=size_t,
+              _Other2=char *&
+          ]
+C:\Users\User\source\repos\tealengine\Network\ClientNode.cpp(61): message : see reference to function template instantiation 'void TealEngine::TStruct::push<MessageType>(T)' being compiled
+          with
+          [
+              T=MessageType
+          ]
 ws2_32.lib(WS2_32.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
 winmm.lib(WINMM.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
 freetype.lib(freetype.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
-  TealEngine.vcxproj -> C:\Users\User\source\repos\SokobanGame\x64\Release\TealEngine.lib
+  TealEngine.vcxproj -> C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.lib

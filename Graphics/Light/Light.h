@@ -72,7 +72,7 @@ namespace TealEngine
 			scale = vec3(glm::max(glm::max(scale.x, scale.y), scale.z));
 
 			((Camera*)(shadowCamera[i]))->setOrthoProjection(scale.x * 2.4f, scale.y * 2.4f, -shadowFar, scale.z);
-			((Camera*)(shadowCamera[i]))->setTransform(camTransform);
+			((Camera*)(shadowCamera[i]))->setWorldTransform(camTransform);
 		}
 	public:
 		unsigned char getCascadeDrawRequiredMask() { return cascadeCounter ^ (cascadeCounter - 1); }
@@ -95,7 +95,7 @@ namespace TealEngine
 		void updateProjections(Camera* camera) 
 		{
 			
-			vec3 front = camera->getTransform().forward();
+			vec3 front = camera->getRelativeTransform().forward();
 			vec3 segmentCorner;
 			float ratioSum = 0.0f;
 			float currZ = camera->getNear();

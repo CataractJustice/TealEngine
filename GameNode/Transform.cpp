@@ -7,20 +7,22 @@ namespace TealEngine {
 	void Transform::onChange()
 	{
 		modelUpdateRequired = normalsModelUpdateRequired = true;
+		lastModifyStamp = rand();
 	}
 
-	Transform Transform::operator *(Transform b)
+	Transform Transform::operator *(const Transform& b)
 	{
 		Transform a = *this;
 		a.onChange();
-		vec3 pos = a.getPosition();
-		a.position = glm::translate(b.position, vec3(b.rotation * b.scale * vec4(pos, 1.0f)));
+		a.position = glm::translate(b.position, vec3(b.rotation * b.scale * position[3]));
 		a.rotation = b.rotation * a.rotation;
-		a.scale *= b.scale;
+		a.scale[0][0] *= b.scale[0][0];
+		a.scale[1][1] *= b.scale[1][1];
+		a.scale[2][2] *= b.scale[2][2];
 		return a;
 	}
 
-	Transform Transform::operator /(Transform b)
+	Transform Transform::operator /(const Transform& b)
 	{
 		Transform a = *this;
 		a.onChange();
@@ -31,40 +33,42 @@ namespace TealEngine {
 		return a;
 	}
 
-	Transform& Transform::operator *=(Transform b)
+	Transform& Transform::operator *=(const Transform& b)
+	{
+		*this = *this * b;
+		return *this;
+	}
+
+	Transform& Transform::operator /=(const Transform& b)
 	{
 		*this = *this / b;
 		return *this;
 	}
 
-	Transform& Transform::operator /=(Transform b)
+	bool Transform::operator ==(const Transform& b)
 	{
-		*this = *this / b;
-		return *this;
+		if (position[3][0] != b.position[3][0]) return false;
+		if (position[3][1] != b.position[3][1]) return false;
+		if (position[3][2] != b.position[3][2]) return false;
+		if (scale[0][0] != b.scale[0][0]) return false;
+		if (scale[1][1] != b.scale[1][1]) return false;
+		if (scale[2][2] != b.scale[2][2]) return false;
+		if (rotation != b.rotation) return false;
+		return true;
 	}
 
-	bool Transform::operator ==(Transform b)
-	{
-		return
-			(
-				position == b.position &&
-				rotation == b.rotation &&
-				scale == b.scale
-				);
-	}
-
-	bool Transform::operator != (Transform b)
+	bool Transform::operator != (const Transform& b)
 	{
 		return !(*this == b);
 	}
 
-	void Transform::setPosition(vec3 vector)
+	void Transform::setPosition(const vec3& vector)
 	{
 		position = glm::translate(mat4(1.0f), vector);
 		onChange();
 	}
 
-	void Transform::translate(vec3 vector)
+	void Transform::translate(const vec3& vector)
 	{
 		position = glm::translate(position, vector);
 		onChange();
@@ -72,16 +76,20 @@ namespace TealEngine {
 
 	vec3 Transform::getPosition()
 	{
-		return position * vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		return position[3];
 	}
 
-	void Transform::setScale(vec3 vector)
+	float Transform::getX() { return position[3][0]; }
+	float Transform::getY() { return position[3][1]; }
+	float Transform::getZ() { return position[3][2]; }
+
+	void Transform::setScale(const vec3& vector)
 	{
 		scale = glm::scale(mat4(1.0f), vector);
 		onChange();
 	}
 
-	void Transform::scaling(vec3 vector)
+	void Transform::scaling(const vec3& vector)
 	{
 		scale = glm::scale(scale, vector);
 		onChange();
@@ -92,21 +100,31 @@ namespace TealEngine {
 		return scale * vec4(1.0f);
 	}
 
-	void Transform::rotate(float angle, vec3 axis)
+	void Transform::rotate(float angle, const vec3& axis)
 	{
-		rotation = glm::rotate(rotation, radians(angle), axis);
+		rotation = glm::rotate(rotation, angle, axis);
 		onChange();
 	}
 
-	void Transform::setRotation(float angle, vec3 axis)
+	void Transform::globalRotate(float angle, const glm::vec3& axis)
 	{
-		rotation = glm::rotate(mat4(1.0f), radians(angle), axis);
+		if (angle && (axis.x || axis.y || axis.z))
+		{
+			rotation = glm::rotate(glm::mat4(1.0f), angle, axis) * rotation;
+			onChange();
+		}
+	}
+
+	void Transform::setRotation(float angle, const vec3& axis)
+	{
+		rotation = glm::rotate(mat4(1.0f), angle, axis);
 		onChange();
 	}
 
-	void Transform::setRotation(glm::quat q) 
+	void Transform::setRotation(glm::quat& q) 
 	{
 		rotation = glm::mat4(q);
+		onChange();
 	}
 
 	glm::quat Transform::getRotation()
@@ -129,21 +147,29 @@ namespace TealEngine {
 		return rotation * vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	mat4 Transform::getMatrix()
+	const mat4& Transform::getMatrix()
 	{
 		if (modelUpdateRequired)
 		{
-			model = position * rotation * scale;
+			model = rotation;
+			model[0] *= scale[0].x;
+			model[1] *= scale[1].y;
+			model[2] *= scale[2].z;
+
+			model[3].x += position[3].x;
+			model[3].y += position[3].y;
+			model[3].z += position[3].z;
 			modelUpdateRequired = false;
 		}
 		return model;
 	}
 
-	mat4 Transform::getNormalsModel()
+	const mat4& Transform::getNormalsModel()
 	{
 		if (normalsModelUpdateRequired)
 		{
-			normalsModel = transpose(inverse(getMatrix()));
+			//aoaoaoaoaaaammmmmmmmmmmmmmmmm nested max and min
+			normalsModel = (glm::max(abs(scale[0][0]), glm::max(abs(scale[1][1]), abs(scale[2][2]))) - glm::min(abs(scale[0][0]), glm::min(abs(scale[1][1]), abs(scale[2][2]))) < 0.1f) ? getMatrix() : transpose(inverse(getMatrix()));
 			normalsModelUpdateRequired = false;
 		}
 		return normalsModel;
@@ -165,7 +191,7 @@ namespace TealEngine {
 		return pos;
 	}
 
-	vec3 Transform::pointFromLocalToTransform(vec3 pos, Transform transform, bool ignoreScale)
+	vec3 Transform::pointFromLocalToTransform(vec3 pos, Transform& transform, bool ignoreScale)
 	{
 		return transform.pointFromGlobalToLocal(pointFromLocalToGlobal(pos, ignoreScale), ignoreScale);
 	}
@@ -178,10 +204,17 @@ namespace TealEngine {
 		matrix /= rotation;
 		scale = glm::scale(mat4(1.0f), vec3(matrix * vec4(1.0f)));
 		onChange();
+		lastModifyStamp++;
+	}
+
+	unsigned int Transform::getLastModifyStamp() 
+	{
+		return lastModifyStamp;
 	}
 
 	Transform::Transform()
 	{
+		lastModifyStamp = rand();
 		position = glm::translate(mat4(1.0f), vec3(0.0f));
 		scale = glm::scale(mat4(1.0f), vec3(1.0f));
 		rotation = glm::rotate(mat4(1.0f), 0.0f, vec3(1.0f));
