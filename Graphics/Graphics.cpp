@@ -54,10 +54,10 @@ namespace TealEngine
 
 		void display()
 		{
-			TE_DEBUG_INFO("Swaping buffers.")
+			//TE_DEBUG_INFO("Swaping buffers.")
 			glfwSwapBuffers((GLFWwindow*)window->gl_window_ptr_());
 
-			TE_DEBUG_INFO("Poll events.")
+			//TE_DEBUG_INFO("Poll events.")
 			glfwPollEvents();
 		}
 

@@ -22,10 +22,8 @@ namespace TealEngine {
 		virtual void resize(GLuint width, GLuint height);
 		virtual void render(list<MeshRenderer*> meshList, ShaderProgram* material = NULL, bool depthOnly = false);
 		virtual void render(ShaderProgram* material = NULL);
-		virtual void push(MeshRenderer* mesh);
 		virtual void push(GameNode* scene);
-		virtual void pop(MeshRenderer* mesh);
-		virtual void pop(GameNode* mesh);
+		virtual void pop(GameNode* scene);
 		void setDepthTest(bool value);
 		void setStencilTest(bool value);
 		void setColorClear(bool value);
@@ -33,6 +31,7 @@ namespace TealEngine {
 		void setStencilClear(bool value);
 		void setClearColor(glm::vec4 color);
 		void setCamera(Camera* camera);
+		std::list<MeshRenderer*>& getMeshRendererList();
 		Camera* getActiveCamera();
 	};
 }

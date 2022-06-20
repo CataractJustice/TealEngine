@@ -1,121 +1,183 @@
 #include "Server.h"
-
+#include "PacketTemplates.h"
+#include "GameNode/Component.h"
+#include "GameNode/ComponentFactory.h"
 namespace TealEngine
 {
-	void Server::onConnect(Event* e)
+	void Server::onConnect(Event* e) 
 	{
-		if (e->getType() == PEER_CONNECTED)
-		{
-			PeerConnectEvent* pce = (PeerConnectEvent*)e;
-			for (std::pair<unsigned int, Entity*> entity : entities)
-			{
-				if (entity.second->isVisibleForPeer(pce->peerData))
-				{
-					sendEntityCreatedMsg(entity.second, pce->peerData);
-				}
-			}
-		}
+		PeerConnectEvent* pce = (PeerConnectEvent*)e;
 	}
 
-	void Server::sendEntityCreatedMsg(Entity* entity, PeerData peer)
+	NodeNetworkIDType Server::getNodeId(GameNode* node)
 	{
-		if (entity->isVisibleForPeer(peer))
-		{
-			TPacket packet;
-			packet.push(CREATE_ENTITY_MSG);
-			packet.push(entity->getEntityID());
-			packet.push(entity->getEntityTypeName());
-			host.send(packet, peer);
-		}
+		return (NodeNetworkIDType)node;
 	}
 
-	void Server::onChildAdded(Event* e)
+	ComponentNetworkIDType Server::getComponentId(Component* component) 
 	{
-		if (e->getType() == CHILD_ADDED)
-		{
-			ChildNodeAddEvent* cnae = (ChildNodeAddEvent*)e;
-			Entity* entity = dynamic_cast<Entity*>(cnae->node);
-			if (entity)
-			{
-				entity->setServer(this);
-				std::map<unsigned int, PeerData> peers = host.getPeers();
-				this->entities[entity->getEntityID()] = entity;
-				for (std::pair<unsigned int, PeerData> peer : peers)
-				{
-					sendEntityCreatedMsg(entity, peer.second);
-				}
-			}
-		}
+		return (ComponentNetworkIDType)component;
 	}
 
-	void Server::onChildRemoved(Event* e)
+	void Server::start(int port, int connections)
 	{
-		if (e->getType() == CHILD_REMOVED)
-		{
-			ChildNodeRemoveEvent* cnre = (ChildNodeRemoveEvent*)e;
-			Entity* entity = dynamic_cast<Entity*>(cnre->node);
-			if (entity)
-			{
-				entities.erase(entity->getEntityID()); TPacket packet;
-				packet.push(DESTROY_ENTITY_MSG);
-				packet.push(entity->getEntityID());
-				host.broadcast(packet);
-			}
-		}
-	}
-
-	void Server::sendEntityData(Entity* entity, TPacket data, PeerData peer)
-	{
-		TPacket head;
-		head.push(UPDATE_ENTITY_MSG);
-		head.push(entity->getEntityID());
-		host.send(head + data, peer);
-	}
-
-	Entity* Server::getPeerEntity(PeerData peer)
-	{
-		return this->entities[peerEntities[peer.peerID]];
-	}
-
-	std::map<unsigned int, PeerData> Server::getPeers() 
-	{
-		return host.getPeers();
-	}
-
-	void Server::setPeerEntity(PeerData peer, Entity* entity)
-	{
-		this->peerEntities[peer.peerID] = entity->getEntityID();
-	}
-
-	void Server::start(unsigned int port, unsigned int connections)
-	{
-
-		onConnectListener = eventListenerBind(&Server::onConnect, this);
-		onReciveListener;
 		host.host(port, connections);
-		host.onConnect.subscribe(&onConnectListener);
-
-		scene = new GameNode();
-		scene->addEventListener(CHILD_ADDED, eventListenerBind(&Server::onChildAdded, this));
-		scene->addEventListener(CHILD_REMOVED, eventListenerBind(&Server::onChildRemoved, this));
-		//scene->addChild(PrefabFactory::createPrefabInstance("TestCube", true, nullptr));
-		//scene->addChild(PrefabFactory::createPrefabInstance("VoxelWorld", true, nullptr));
-		
 	}
 
 	void Server::update()
 	{
+	/*	if ((rand() % 1000000) == 0)
+		{
+			GameNode* n = new GameNode();
+			addNodeToNetwork(n);
+			Component* c = ComponentFactory::instantiateComponent("NetworkTest");
+			n->attachComponent(c);
+			addComonentToNetwork(c);
+			TPacket nodepacket;
+			nodepacket.push("Message to node.");
+
+			TPacket componentpacket;
+			componentpacket.push("Message to component.");
+			broadcastToNode(n, nodepacket);
+			broadcastToComponent(c, componentpacket);
+		}
+		*/
 		host.pollEvents();
-		scene->updateAll();
 	}
 
-	void Server::sendEvent()
+	void Server::broadcastToNode(GameNode* node, TPacket& pakcet)
 	{
+		NodeNetworkIDType id = getNodeId(node);
+		TPacket nodePacket;
 
+		nodePacket.pushReserve(PacketTemplates::nodePacketTemplate.getLength());
+		nodePacket.setFieldValue(id, PacketTemplates::nodePacketTemplate.getIndexOf("node_id"));
+
+		unsigned int packetSize = 0;
+		uint8_t* packetStr = pakcet.constructDataString(packetSize);
+		nodePacket.setFieldValue(packetSize, packetStr, PacketTemplates::nodePacketTemplate.getIndexOf("packet"));
+
+		TPacket finalPacket;
+		finalPacket.push(ServerPacketEType::BroadcastToNode);
+		finalPacket += nodePacket;
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		for (auto peerpair : peers) 
+		{
+			if (node->isVisibleForPeer(peerpair.second)) 
+			{
+				host.send(finalPacket, peerpair.second);
+			}
+		}
 	}
 
-	void Server::broadcastEntityData(unsigned int entityId)
-	{
+	void Server::broadcastToComponent(Component* component, TPacket& pakcet) {
+		ComponentNetworkIDType id = getComponentId(component);
+		TPacket compPacket;
 
+		compPacket.pushReserve(PacketTemplates::componentPacketTemplate.getLength());
+		compPacket.setFieldValue(id, PacketTemplates::componentPacketTemplate.getIndexOf("component_id"));
+
+		unsigned int packetSize = 0;
+		uint8_t* packetStr = pakcet.constructDataString(packetSize);
+		compPacket.setFieldValue(packetSize, packetStr, PacketTemplates::nodePacketTemplate.getIndexOf("packet"));
+
+		TPacket finalPacket;
+		finalPacket.push(ServerPacketEType::BroadcastToComponent);
+		finalPacket += compPacket;
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		for (auto peerpair : peers) 
+		{
+			if (component->getParrent()->isVisibleForPeer(peerpair.second)) 
+			{
+				host.send(finalPacket, peerpair.second);
+			}
+		}
+
+		delete[] packetStr;
+	}
+
+	void Server::addNodeToNetwork(GameNode* node) 
+	{
+		TPacket packet;
+		packet.pushReserve(PacketTemplates::newNodePacketTemplate.getLength());
+		packet.setFieldValue(getNodeId(node), PacketTemplates::newNodePacketTemplate.getIndexOf("node_id"));
+
+		TPacket packetPrefix;
+		packetPrefix.push(ServerPacketEType::NewNode);
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		for (auto peerpair : peers) 
+		{
+			if (node->isVisibleForPeer(peerpair.second)) 
+			{
+				host.send(packetPrefix + packet, peerpair.second);
+			}
+		}
+	}
+
+	void Server::removeNodeFromNetwork(GameNode* node) 
+	{
+		TPacket packet;
+		packet.pushReserve(PacketTemplates::newNodePacketTemplate.getLength());
+		packet.setFieldValue(getNodeId(node), PacketTemplates::newNodePacketTemplate.getIndexOf("node_id"));
+
+		TPacket packetPrefix;
+		packetPrefix.push(ServerPacketEType::RemoveNode);
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		host.broadcast(packetPrefix + packet);
+	}
+
+	void Server::addComonentToNetwork(Component* component)
+	{
+		GameNode* attachTo = component->getParrent();
+
+		if (!attachTo) 
+		{
+			TE_DEBUG_ERROR("Attach component to anything before adding it to network.");
+		}
+
+		TPacket packet;
+		packet.pushReserve(PacketTemplates::newComponentPacketTemplate.getLength());
+
+		std::string ComponentFactoryName = component->getFactoryName();
+		packet.setFieldValue(ComponentFactoryName.size(), (void*)ComponentFactoryName.c_str(), PacketTemplates::newComponentPacketTemplate.getIndexOf("component_type"));
+
+
+		packet.setFieldValue(getComponentId(component), PacketTemplates::newComponentPacketTemplate.getIndexOf("component_id"));
+		packet.setFieldValue(getNodeId(attachTo), PacketTemplates::newComponentPacketTemplate.getIndexOf("node_id"));
+
+		TPacket packetPrefix;
+		packetPrefix.push(ServerPacketEType::NewComponent);
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		for (auto peerpair : peers)
+		{
+			if (attachTo->isVisibleForPeer(peerpair.second))
+			{
+				host.send(packetPrefix + packet, peerpair.second);
+			}
+		}
+	}
+
+	void Server::removeComponentFromNetwork(Component* component)
+	{
+		TPacket packet;
+		packet.pushReserve(PacketTemplates::newNodePacketTemplate.getLength());
+		packet.setFieldValue(getComponentId(component), PacketTemplates::newNodePacketTemplate.getIndexOf("node_id"));
+
+		TPacket packetPrefix;
+		packetPrefix.push(ServerPacketEType::RemoveComponent);
+
+		std::map<unsigned int, PeerData> peers = host.getPeers();
+
+		host.broadcast(packetPrefix + packet);
 	}
 }

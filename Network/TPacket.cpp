@@ -1,10 +1,10 @@
 #pragma once
 #include "TPacket.h"
-#include <enet/enet.h>
+#include "enet/enet.h"
 #include "libs/compression/huffman.hpp"
 namespace TealEngine
 {
-	TPacket::TPacket(char* data, unsigned int dataSize) : TStruct(data, dataSize, true) {};////..
+	TPacket::TPacket(char* data, unsigned int dataSize, bool decompress) : TStruct(data, dataSize, decompress) {};////..
 	TPacket::TPacket(const TPacket& other) : TStruct(other) {};
 	TPacket::TPacket(TPacket& other) : TStruct(other) {};
 	TStruct TPacket::operator=(const TStruct& other) { return TStruct::operator=(other); }
@@ -12,20 +12,8 @@ namespace TealEngine
 	void* TPacket::createENetPacket(unsigned int packet_flags)
 	{
 		unsigned int messageSize = 0;
-		uint8_t* uncompressedMessage;
-		for (std::pair<unsigned int, void*> value : data)
-		{
-			messageSize += value.first + sizeof(value.first);
-		}
-		uncompressedMessage = new uint8_t[messageSize];
-		unsigned int cursor = 0;
-		for (std::pair<unsigned int, void*> value : data)
-		{
-			memcpy(uncompressedMessage + cursor, &value.first, sizeof(value.first));
-			cursor += sizeof(value.first);
-			memcpy(uncompressedMessage + cursor, value.second, value.first);
-			cursor += value.first;
-		}
+		uint8_t* uncompressedMessage = constructDataString(messageSize);
+		
 		uint8_t* compressedMessage;
 		int compressedSize, compressedSizeBits;
 		huffman::easyEncode(uncompressedMessage, messageSize, &compressedMessage, &compressedSize, &compressedSizeBits);

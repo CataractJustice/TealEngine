@@ -1,7 +1,17 @@
 #include "Component.h"
-
 namespace TealEngine 
 {
+
+	void Component::setFactoryName(std::string name) 
+	{
+		factoryName = name;
+	}
+
+	std::string Component::getFactoryName() 
+	{
+		return factoryName;
+	}
+
 	void Component::attachTo(GameNode* node) 
 	{
 		if (parrent != node) 
@@ -19,6 +29,7 @@ namespace TealEngine
 	void Component::onParrentChange() {};
 	void Component::onSleep() {};
 	void Component::onAttach() {};
+	void Component::onMessageReceive(TPacket& packet) {};
 
 	GameNode* Component::getParrent() { return parrent; }
 

@@ -250,6 +250,14 @@ namespace TealEngine {
 		if (this->parrent && toUpper) this->parrent->handleEvent(e);
 	}
 
+	//Network:
+
+	void GameNode::onMessageReceive(TPacket& packet) {
+		for (Component* component : components) {
+			component->onMessageReceive(packet);
+		}
+	}
+
 	GameNode::GameNode()
 	{
 		childNodes = list<GameNode*>(0);
@@ -283,5 +291,10 @@ namespace TealEngine {
 	bool GameNode::isNodeExist(GameNode* node)
 	{
 		return allNodes.find(node) != allNodes.end();
+	}
+
+	bool GameNode::isVisibleForPeer(const PeerData& peer) 
+	{
+		return true;
 	}
 }

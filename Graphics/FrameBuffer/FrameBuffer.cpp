@@ -4,6 +4,7 @@
 #include <glew.h>
 #include <GLFW/glfw3.h>
 #include "FrameBuffer.h"
+#include "System/Debug.h"
 namespace TealEngine
 {
 	void FrameBuffer::unbind()
@@ -68,7 +69,7 @@ namespace TealEngine
 		}
 		else if(id != 255)
 		{
-			std::cout << "FrameBuffer::attachTexture(GLuint texture, GLubyte id) ERROR: id should be lower than 16.";
+			TE_DEBUG_ERROR("FrameBuffer::attachTexture(GLuint texture, GLubyte id) ERROR: id should be lower than 16.");
 		}
 	}
 

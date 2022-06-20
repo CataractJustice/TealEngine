@@ -3,6 +3,7 @@
 #include "EventSystem/NetworkEvents/NetworkEvents.h"
 #include "PeerData.h"
 #include "System/Debug.h"
+#include "enet/enet.h"
 #include <queue>
 #include <thread>
 namespace TealEngine 

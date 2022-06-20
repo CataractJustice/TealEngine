@@ -1,0 +1,50 @@
+#version 330 core
+#define MAX_CASCADES 8
+in vec2 TexCoord;
+layout (location = 5) out vec4 LightColor;
+uniform sampler2D RenderTexture;
+uniform sampler2D AlbedoMap;
+uniform sampler2D PositionMap;
+uniform sampler2D NormalMap;
+uniform sampler2D SpecularMap;
+uniform sampler2D ShadowMap[MAX_CASCADES];
+uniform mat4 lightModel[MAX_CASCADES];
+uniform int resolution;
+uniform int cascades;
+uniform vec3 direction;
+uniform vec3 viewPos;
+uniform vec4 color;
+
+#define cascade_inner_bias 0.01f
+float lightCalc(vec3 position, vec3 normal)
+{
+float light = 9.0f;
+for(int k = 0; k < cascades; k++)
+{
+	vec4 fPos = lightModel[k] * vec4(position, 1.0);
+	vec3 proj = fPos.xyz / fPos.w;
+	proj = proj * 0.5 + 0.5; 
+	if(proj.x < 0.0f + cascade_inner_bias || proj.x > 1.0f - cascade_inner_bias || proj.y < 0.0f + cascade_inner_bias || proj.y > 1.0f - cascade_inner_bias || proj.z < 0.0f + cascade_inner_bias || proj.z > 1.0f - cascade_inner_bias)
+		continue;
+	else
+	{
+		light = 0.0f;
+		for(int i = -1; i <= 1; i++)
+			for(int j = -1; j <= 1; j++)
+				light += (proj.z - 0.001f < texture(ShadowMap[k], proj.xy + vec2(float(i), float(j)) / resolution).r) ? 1.0f : 0.0f;
+		break;
+	}
+}
+return min(1.0f, light / 9.0f);
+}
+
+void main()
+{
+	vec3 normal = texture(NormalMap, TexCoord).xyz;
+	vec3 position = vec3(texture(PositionMap, TexCoord));
+	vec3 viewReflection = normalize(-reflect(position - viewPos, normal));
+	vec4 spectex = texture(SpecularMap, TexCoord);
+	float spec = pow(max(0.0f,dot(viewReflection, direction)) * spectex.z, spectex.y) * spectex.x;
+	float diffuse = max(0.0f,dot(-normal, direction));
+	LightColor = texture(RenderTexture, TexCoord) + (vec4(color.xyz*color.w, 1.0) * (spec + diffuse) * (lightCalc(position, normal)) + 0.2f);
+}

@@ -3,6 +3,7 @@
 #include "Graphics/Shader/ShaderProgram.h"
 #include "Filesystem/loadStrFromFile.h"
 #include "libs/glm/glm.hpp"
+#include "GameNode/Component.h"
 using namespace glm;
 namespace TealEngine
 {
@@ -17,7 +18,7 @@ namespace TealEngine
 		MESH_ATTRIBS_SIZE
 	};
 
-	class SharedMesh : public GameNode3D
+	class SharedMesh : public Component
 	{
 	protected:
 		unsigned int VAO;

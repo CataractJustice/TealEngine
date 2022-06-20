@@ -1,11 +1,12 @@
 #pragma once
-#define TE_DEBUG
 #include <iostream>
 #include <string>
 using namespace std;
 
-
+#define TE_DEBUG
+#ifndef TE_DEBUG
 #define TE_NO_DEBUG
+#endif
 
 namespace TealEngine 
 {

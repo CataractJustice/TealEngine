@@ -16,12 +16,13 @@ namespace TealEngine {
 		{
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_STENCIL_TEST);
+			glDisable(GL_CULL_FACE);
 			shader->setUniform("offset", offset);
 			shader->setUniform("scale", scale);
 			MeshRenderer::render(&BasicMeshes::square, shader, GL_TRIANGLES);
 		}
 
-		void rednerTexture(GLuint texture, glm::vec2 offset, glm::vec2 scale)
+		void renderTexture(unsigned int texture, glm::vec2 offset, glm::vec2 scale)
 		{
 			ShaderProgram& shader = Resources::getShader("basic_2d");
 			shader.setTexture("tex", texture);

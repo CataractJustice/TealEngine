@@ -1,53 +1,53 @@
 #pragma once
-#include "GameNode/Entity/Entity.h"
 #include "THost.h"
 #include "TPacket.h"
 #include "GameNode/GameNode.h"
 #include "EventSystem/EventSystem.h"
 #include "EventSystem/EventListener.h"
-#include "GameNode/Prefab/PrefabFactory.h"
 #include <functional>
-enum MessageType
-{
-	CREATE_ENTITY_MSG,
-	DESTROY_ENTITY_MSG,
-	UPDATE_ENTITY_MSG
-};
 
 namespace TealEngine 
 {
+	typedef uint64_t NodeNetworkIDType;
+	typedef uint64_t ComponentNetworkIDType;
+
+	enum class ServerPacketEType {
+		BroadcastToNode,
+		BroadcastToComponent,
+		NewNode,
+		RemoveNode,
+		NewComponent,
+		RemoveComponent
+	};
+
 	class Server 
 	{
 	private:
-		std::map<unsigned int, Entity*> entities;
-		std::map<unsigned int, unsigned int> peerEntities;
+
+		std::map<unsigned int, GameNode*> peerEntities;
 		THost host;
 		GameNode* scene;
-		EventListener onConnectListener, onReciveListener;
+		EventListener onConnectListener, onReceiveListener;
 		
 		void onConnect(Event* e);
 
-		void sendEntityCreatedMsg(Entity* entity, PeerData peer);
-
-		void onChildAdded(Event* e);
-
-		void onChildRemoved(Event* e);
+		static NodeNetworkIDType getNodeId(GameNode* node);
+		static ComponentNetworkIDType getComponentId(Component* component);
 
 	public:
-		Entity* getPeerEntity(PeerData peer);
-
-		std::map<unsigned int, PeerData> getPeers();
-
-		void setPeerEntity(PeerData peer, Entity* entity);
-
-		void start(unsigned int port, unsigned int connections);
-
+		
+		void start(int port, int connections);
 		void update();
 
-		void sendEvent();
+		//sends messgae to node
+		void broadcastToNode(GameNode* node, TPacket& packet);
+		//sends message to component
+		void broadcastToComponent(Component* component, TPacket& packet);
 
-		void broadcastEntityData(unsigned int entityId);
+		void addNodeToNetwork(GameNode* node);
+		void removeNodeFromNetwork(GameNode* node);
 
-		void sendEntityData(Entity* entity, TPacket data, PeerData peer);
+		void addComonentToNetwork(Component* component);
+		void removeComponentFromNetwork(Component* component);
 	};
 }

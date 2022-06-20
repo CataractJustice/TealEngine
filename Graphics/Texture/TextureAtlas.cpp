@@ -19,7 +19,7 @@ namespace TealEngine
 		for (unsigned int i = 0; i < tlist.size(); i++)
 		{
 			textures[i] = Resources::getTexture(path + "/" + tlist[i]);
-			Render::rednerTexture(textures[i].id(), vec2(float(i) / float(tlist.size()), 0.0f), vec2(1.0f / float(tlist.size()), 1.0f));
+			Render::renderTexture(textures[i].id(), vec2(float(i) / float(tlist.size()), 0.0f), vec2(1.0f / float(tlist.size()), 1.0f));
 		}
 	}
 }

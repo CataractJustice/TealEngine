@@ -99,7 +99,7 @@ namespace TealEngine {
 
 		void setUniform(std::string name, glm::mat4* mat, int size) 
 		{ 
-			float* matv = new float[16 * size];
+			float* matv = new float[long(16 * size)];
 			for (int i = 0; i < size; i++)
 				memcpy(matv + i * 16, value_ptr(mat[i]), sizeof(float) * 16);
 			uniforms[name]->setm4fv(matv, size);

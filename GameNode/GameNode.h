@@ -4,6 +4,8 @@
 #include <map>
 #include <list>
 #include <set>
+#include "Network/PeerData.h"
+#include "Network/TPacket.h"
 #include "EventSystem/Event.h"
 #include "EventSystem/EventListener.h"
 #include "System/Debug.h"
@@ -17,13 +19,14 @@ enum NODE_RELATION
 };
 
 namespace TealEngine {
+
 class Component;
 	class GameNode
 	{
 	private:
 		static unordered_set<GameNode*> allNodes;
 		static map<string, set<GameNode*>> tagged;
-		string entityId;
+		
 		map<EventType, EventListener> eventListeners;
 		map<EventType, std::list<GameNode*>> eventSubscribedNodes;
 		set<string> tags;
@@ -53,8 +56,9 @@ class Component;
 
 		//component system
 
-		//detaches component if it attachet to anything and attaches it to this node
+		//detaches component if it's attached to anything and attaches it to this node
 		void attachComponent(Component* component);
+		//detaches components if they attached to anything and attaches them to this node
 		void attachComponents(const std::initializer_list<Component*>& component);
 		//detaches component if component is attachet to this node, else throws an error
 		void dettachComponent(Component* component);
@@ -72,9 +76,11 @@ class Component;
 
 		//returns length of path from root node to this node
 		unsigned short getHierarchyDepth();
+
 		[[deprecated]]
 		NODE_RELATION checkRelation(GameNode* node);
-		//yes, getParrent returns parrent node
+		
+		//returns parrent node, returns nullptr if node is an orphan
 		GameNode* getParrent();
 
 		//adds child nodes and calls handleEvent with CHILD_ADDED event
@@ -110,7 +116,7 @@ class Component;
 		{
 			T* castedParrent = dynamic_cast<T*>(parrent);
 			if (!castedParrent)
-				TE_DEBUG_WARNING("Parrent either does not exist or isnt the right type.");
+				TE_DEBUG_ERROR("Parrent either does not exist or isnt the right type.");
 			return castedParrent;
 		}
 		//returns all child nodes
@@ -125,7 +131,7 @@ class Component;
 
 		//enables/disables node, calls onSleep or onAwake for components
 		void setActive(bool active);
-		//called when parrent changed
+		//called when parrent changes
 		virtual void onParrentChange();
 		//usualy called every frame
 		virtual void update() final;
@@ -135,10 +141,21 @@ class Component;
 		void addEventListener(EventType type, eventListenerFunc ex);
 		//handleEvent will be called on param node when handleEvent on this node will be called with event of given type 
 		void subNodeToEvent(EventType type, GameNode* node);
-		//?
+		//a?
 		EventListener* getEventListener(EventType type);
 		//sends event to added event listeners
 		void handleEvent(Event* e, bool toLower = false, bool toUpper = true);
+
+		//Network:
+		
+		//Called whenever node recives a messgae, calls onMessageReceive(packet) for all comonents of this node
+		virtual void onMessageReceive(TPacket& packet);
+		//Server side method
+		//Should return true if you want to node to be 'visible' for given peer
+		//Server will send node itself and messages to node to given peer if node is 'visible' for them
+		//Should return false if server should not send any information about this node to given peer
+		//Returned value for certain peer might change during lifetime of the node
+		virtual bool isVisibleForPeer(const PeerData& peer);
 
 		GameNode();
 		virtual ~GameNode();

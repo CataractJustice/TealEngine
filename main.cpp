@@ -7,173 +7,96 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Light/Light.h"
 #include "Graphics/Mesh/MeshRenderer.h"
-#include "Assets/Sokoban/CameraController.h"
-#include "Assets/Sokoban/SocobanLevel.h"
-#include "Assets/Player.h"
 #include "Graphics/GUI/Text/Text.h"
+#include "Assets/FreeCam.h"
+#include "Assets/Voxel/ClientSideVoxelWorld.h"
 #include <thread>
 using namespace TealEngine;
 Camera* cam;
-CameraController* cameraController;
-SokobanLevel* level;
 Texture t, nt, ut;
 SharedMesh* um;
 DirectionLight* dlight;
-GameNode* scene = new GameNode();
-Player* p;
-
-#define w WALL
-#define b BOX
-#define p PLAYER
-#define t TARGET
-#define s BOX | TARGET
-
-unsigned int sokobanmap[] =
-{
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, 0, 0, 0, w, w, w, w, w, w,
-	w, w, w, w, w, t, p, b, 0, 0, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, 0, b, t, w, w, w, w, w, w,
-	w, w, w, w, w, t, w, w, b, 0, w, w, w, w, w, w,
-	w, w, w, w, w, 0, w, 0, t, 0, w, w, w, w, w, w,
-	w, w, w, w, w, b, 0, s, b, b, t, w, w, w, w, w,
-	w, w, w, w, w, 0, 0, 0, t, 0, 0, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
-	w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w
-};
+GameNode* scene = new GameNode3D();
 
 int main()
 {
 	Core::init();
 
+	ShaderProgram defaultmat = Resources::getShader("deffered");
+
+	defaultmat.setTexture("tex", Resources::getTexture("fighterbase.bmp").id());
+	defaultmat.setTexture("nmap", Resources::getTexture("bn.bmp").id());
+	defaultmat.setUniform("color", glm::vec4(1.0f));
+	Resources::addMaterial("default", defaultmat);
 
 	cam = new Camera();
-	cam->setPerspectiveProjection(90.0f, Graphics::Window::getScreenHeight() / Graphics::Window::getScreenWidth(), 0.01f, 32.0f);
-	cam->resize(Graphics::Window::getScreenWidth(), Graphics::Window::getScreenHeight());
+	cam->setPerspectiveProjection(90.0f, Graphics::window->getAspect(), 0.01f, 320.0f);
+	cam->resize(Graphics::window->getScreenWidth(), Graphics::window->getWindowHeight());
 	Core::Scene::renderer.setCamera(cam);
+	FreeCam* camcontroller = new FreeCam();
+	camcontroller->sensitivity = 0.01f;
+	cam->attachComponent(camcontroller);
+	scene->addChild(cam);
 	
-	//p = new Player();
-	//p->sensivity = 1;
-	//p->addChild(cam);
-	//scene->addChild(p);
-
-	cameraController = new CameraController();
-	cameraController->addChild(cam);
-	level = new SokobanLevel(16, 16);
-
-	for (int i = 0; i < 16; i++)
-		for (int j = 0; j < 16; j++)
-			level->tile(ivec2(i, j)) = std::rand() % 2;
-	level->loadLevel(sokobanmap);
-
-	scene->addChild(cameraController);
-	Transform t;
-	t.setScale(vec3(0.5));
-	t.translate(vec3(-8.0, 0.0, -8.0));
-	level->setTransform(t);
-	scene->addChild(level);
-
-	AmbientLight* alight = new AmbientLight();
-	alight->color = vec4(0.4f);
-	alight->SSAOarea = 1;
-	alight->SSAOstrength = 0.8f;
-	//scene->addChild(alight);
-
-	dlight = new DirectionLight(8192, 1, 32.0f);
+	dlight = new DirectionLight   (2048, 5, 32.0f);
 	dlight->color = vec4(1.0f);
-	scene->addChild(dlight);
+	dlight->setCascadeRatio(0, 1.0f);
+	dlight->setCascadeRatio(1, 2.0f);
+	dlight->setCascadeRatio(2, 4.0f);
+	dlight->setCascadeRatio(3, 8.0f);
+	dlight->setCascadeRatio(4, 16.0f);
 
-	Text text;
-	text.text = L"Suka Blyat'";
-	text.font = Resources::getFont("comicz.ttf");
-	text.scale = 1.5f;
-	text.getTransform().set(GUI_Y_OFFSET, 0.5, HEIGHT_PERCENTS);
-	//for (unsigned short i = 0; i < 4; i++)
-	//{
-	//	for (unsigned short j = 0; j < 4; j++)
-	//	{
-	//		for (unsigned short k = 0; k < 4; k++) 
-	//		{
-	//			//creating body and collider
-	//			RigidBody* testBody = new RigidBody(1.0f, vec3(randrange(-8.5f, 8.5f), randrange(-8.5f, 105.5f), randrange(-8.5f, 8.5f)));
-	//			Transform b2t;
-	//			b2t.setPosition(vec3(i*4, j*4 + 5.0f, k*4));
-	//			testBody->setTransform(b2t);
-	//			Collider* cubeCollider = new Collider(new btBoxShape(btVector3(1.0f, 1.0f, 1.0f)));
-	//			//append collider to body
-	//			testBody->addChild(cubeCollider);
-	//			//move center of the collider collider to center of the body;
-	//			
-	//			cubeCollider->setRelativeTransform(ct);
-	//			//creating new cube mesh node
-	//			SharedMesh* cubeMesh = new SharedMesh(*BasicMeshes::cube.sharedMesh());
-	//			//creating new mesh renderer, append it to shared mesh, set shader
-	//			((Mesh3DRenderer*)cubeMesh->addChild(new Mesh3DRenderer()))->setShader(&testShader);
-	//			//append mesh to body
-	//			testBody->addChild(cubeMesh);
-	//			scene->addChild(testBody);
-	//		}
-	//	}
-	//}
+	scene->attachComponent(dlight);
+
+	//Text text;
+	//text.font = &Resources::getFont("comici.ttf");
+	//text.getTransform().set(GUI_Y_OFFSET, 0.0, HEIGHT_PERCENTS);
+	//text.getTransform().set(GUI_X_OFFSET, 0.0, HEIGHT_PERCENTS);
+	//text.setScale(0.01f);
+	//scene->addChild(&text);
+
+
+	GameNode3D* cube = new GameNode3D();
+	Mesh3DRenderer* mr = new Mesh3DRenderer();
+	mr->setMesh(Resources::getModel("untitled.obj")->sharedMesh());
+	mr->setShader(&Resources::getMaterial("default"));
+	cube->attachComponent(mr);
+	cube->getRelativeTransform().translate(glm::vec3(0.0f, 0.0f, 15.0f));
+	scene->addChild(cube);
+
+	ClientSideVoxelWorld* vw = new ClientSideVoxelWorld(8, glm::ivec3(32), &Resources::getMaterial("default"), 1); 
+	GameNode3D* vwnode = new GameNode3D();
+	vwnode->attachComponent(vw);
+	vw->setRenderPosition(glm::vec3(32.0f));
+
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			for (int k = 0; k < 8; k++) {
+				VoxelData* chunk = new VoxelData(glm::ivec3(32));
+				for (int i1 = 0; i1 < 32; i1++) {
+					for (int j1 = 0; j1 < 32; j1++) {
+						for (int k1 = 0; k1 < 32; k1++) {
+							Voxel voxel;
+							voxel.amount = 1.0f - glm::length(glm::vec3(i1 - 16, j1 - 16, k1 - 16) / 16.0f);
+							chunk->quickSetVoxel(glm::ivec3(i1, j1, k1), voxel);
+						}
+					}
+				}
+				vw->loadChunk(glm::ivec3(i,j,k), chunk);
+			}
+		}
+	}
+
 	
-	////creating body and collider
-	//RigidBody* testBody2 = new RigidBody(0.0f, vec3(0.0f));
-	//Transform b2t;
-	//b2t.setPosition(vec3(0.0f, -10.0f, 0.0f));
-	//testBody2->setTransform(b2t);
-	//Collider* cubeCollider2 = new Collider(new btBoxShape(btVector3(100.0f, 1.0f, 100.0f)));
-	////append collider to body
-	//testBody2->addChild(cubeCollider2);
-	//cubeCollider2->setRelativeTransform(ct);
-	////creating new cube mesh node
-	//SharedMesh* cubeMesh2 = new SharedMesh(*BasicMeshes::cube.sharedMesh());
-	//Transform cmt;
-	//cmt.setScale(vec3(100.0f, 1.0f, 100.0f));
-	//cubeMesh2->setTransform(cmt);
-	////creating new mesh renderer, append it to shared mesh, set shader
-	//((Mesh3DRenderer*)cubeMesh2->addChild(new Mesh3DRenderer()))->setShader(&testShader);
-	////append mesh to body
-	//cubeCollider2->addChild(cubeMesh2);
-	//scene->addChild(testBody2);
-	
+	scene->addChild(vwnode);
 	Core::Scene::addNode(scene);
-	
-	
-	#define fpssamples 38
-	float fps[fpssamples];
-	unsigned short fpsi = 0;
 
-	while (!glfwWindowShouldClose(Graphics::Window::window)) 
+	while (!Graphics::window->shouldClose())
 	{
-		if(Input::Keyboard::isKeyPressed(GLFW_KEY_R))
-			level->loadLevel(sokobanmap);
-		
-		//clock.update();
 		Transform lightTransform;
+		//text.setText(std::to_wstring(cam->getRelativeTransform().getX()) + L"  " + std::to_wstring(cam->getRelativeTransform().getY()));
 		lightTransform.rotate(glfwGetTime() * 10.0f, vec3(0.0f, 1.0f, 0.0f));
 		lightTransform.rotate(90.0f, vec3(1.0f, 0.1f, 1.08f));
-		dlight->setTransform(lightTransform);
-
-		//fps[fpsi] = 1.0f / clock.deltaTime();
-		fpsi++;
-		fpsi %= fpssamples;
-
-		if (Input::Keyboard::isKeyPressed(GLFW_KEY_I))
-		{
-			float sec = 0.0f;
-			for (auto f : fps) 
-			{
-				sec += f;
-			}
-			std::cout << sec / float(fpssamples) << "\n";
-		}
-		//world->setRenderPosition(p->getWorldTransform().getPosition());
 		Core::Scene::update();
 	}
 }

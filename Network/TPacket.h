@@ -8,7 +8,7 @@ namespace TealEngine
 	private:
 		
 	public:
-		TPacket(char* data = nullptr, unsigned int dataSize = 0);
+		TPacket(char* data = nullptr, unsigned int dataSize = 0, bool decompress = true);
 		TPacket(const TPacket& other);
 		TPacket(TPacket& other);
 		TStruct operator=(const TStruct& other);

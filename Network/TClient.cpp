@@ -1,4 +1,3 @@
-#include "enet/enet.h"
 #include "TClient.h"
 namespace TealEngine 
 {
@@ -78,26 +77,26 @@ namespace TealEngine
 	{
 		while (eventsQueue.size())
 		{
-			Event* event = eventsQueue.front();
+			Event* e = eventsQueue.front();
 			eventsQueue.pop();
-			if (event->isInCategory(NETWORK_EVENTS))
+			if (e->isInCategory(NETWORK_EVENTS))
 			{
-				switch (event->getType())
+				switch (e->getType())
 				{
 				case PEER_CONNECTED:
-					onConnect(event);
+					onConnect(e);
 					break;
 				case MSG_RECIVED:
-					onRecive(event);
+					onRecive(e);
 					break;
 				case PEER_DISCONNECTED:
-					onDisconnect(event);
+					onDisconnect(e);
 					break;
 				default:
 					break;
 				}
 			}
-			delete event;
+			delete e;
 		}
 	}
 

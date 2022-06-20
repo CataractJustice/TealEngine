@@ -3,9 +3,12 @@
 #include "Mesh.h"
 #include "Graphics/Renderer/RenderUtil.h"
 namespace TealEngine{
-	class MeshRenderer : public GameNode
+	class MeshRenderer : public Component
 	{
+	private:
+
 	protected:
+		SharedMesh* mesh;
 		ShaderProgram* shader;
 		unsigned int mode;
 		
@@ -23,6 +26,10 @@ namespace TealEngine{
 			this->mode = mode;
 		}
 
+		void setMesh(SharedMesh* mesh) {
+			this->mesh = mesh;
+		}
+
 		void static render(SharedMesh* mesh, ShaderProgram* shader, unsigned int mode, unsigned int LOD = 0)
 		{
 			shader->use();
@@ -32,7 +39,7 @@ namespace TealEngine{
 		virtual void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0)
 		{
 			render(
-				(SharedMesh*)(this->parrent),
+				mesh,
 				shader ? shader : this->shader,
 				mode ? mode : this->mode,
 				LOD
@@ -61,9 +68,9 @@ namespace TealEngine{
 
 		void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0) override
 		{
-			if (((SharedMesh*)(this->parrent))->getLength() > 0) 
+			if (mesh->getLength() > 0) 
 			{	
-				Transform meshTransform = ((GameNode3D*)this->parrent)->getWorldTransform();
+				Transform meshTransform = ((GameNode3D*)getParrent())->getWorldTransform();
 				
 				//culling
 				vec4 screenPos = Render::VP_matrix * vec4(meshTransform.getPosition(), 1.0f);

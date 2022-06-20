@@ -15,6 +15,8 @@ namespace TealEngine
 		FontCharacter& c = characters[character];
 		c.texture = Texture(GL_TEXTURE_2D, GL_R8, GL_RED, GL_UNSIGNED_BYTE);
 		c.texture.create(FT_Face(face)->glyph->bitmap.width, FT_Face(face)->glyph->bitmap.rows, FT_Face(face)->glyph->bitmap.buffer);
+		c.texture.setParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		c.texture.setParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		c.size = glm::ivec2(FT_Face(face)->glyph->bitmap.width, FT_Face(face)->glyph->bitmap.rows);
 		c.bearing = glm::ivec2(FT_Face(face)->glyph->bitmap_left, FT_Face(face)->glyph->bitmap_top);
 		c.advance = FT_Face(face)->glyph->advance.x;

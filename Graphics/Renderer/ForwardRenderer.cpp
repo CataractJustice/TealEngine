@@ -29,33 +29,31 @@ namespace TealEngine {
 		renderModels(material);
 	}
 
-	void ForwardRenderer::push(MeshRenderer* mesh)
+	void ForwardRenderer::pop(GameNode* scene)
 	{
-		meshList.push_back(mesh);
-	}
-
-	void ForwardRenderer::pop(MeshRenderer* mesh)
-	{
-		meshList.remove(mesh);
-	}
-
-	void ForwardRenderer::pop(GameNode* node)
-	{
-		vector<MeshRenderer*> meshList = node->findChildsByType<MeshRenderer>(true);
-		for (auto mesh : meshList)
-			pop(mesh);
-
-		if(dynamic_cast<MeshRenderer*>(node))
-			pop((MeshRenderer*)node);
+		vector<GameNode*> nodes = scene->getAllChilds();
+		nodes.push_back(scene);
+		for (auto node : nodes)
+		{
+			std::vector<MeshRenderer*> meshes = node->findComponentsByType<MeshRenderer>();
+			for (auto mesh : meshes) 
+			{
+				meshList.remove(mesh);
+			}
+		}
 	}
 
 	void ForwardRenderer::push(GameNode* scene)
 	{
-		vector<GameNode*> s = scene->getChilds();
-		for (GameNode* node : s)
+		vector<GameNode*> nodes = scene->getAllChilds();
+		nodes.push_back(scene);
+		for (auto node : nodes)
 		{
-			if (dynamic_cast<MeshRenderer*>(node)) push((MeshRenderer*)node);
-			push(node);
+			std::vector<MeshRenderer*> meshes = node->findComponentsByType<MeshRenderer>();
+			for (auto mesh : meshes)
+			{
+				meshList.push_back(mesh);
+			}
 		}
 	}
 
@@ -117,6 +115,7 @@ namespace TealEngine {
 
 	void ForwardRenderer::applyConfig() 
 	{
+		glClearDepth(1.0);
 		if (this->depthClear) glClear(GL_DEPTH_BUFFER_BIT);
 		if (this->stencilClear) glClear(GL_STENCIL_BUFFER_BIT);
 
@@ -130,5 +129,10 @@ namespace TealEngine {
 		}
 
 		Render::VP_matrix = activeCamera->getPV();
+	}
+
+	std::list<MeshRenderer*>& ForwardRenderer::getMeshRendererList() 
+	{
+		return this->meshList;
 	}
 }
