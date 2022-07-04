@@ -2,7 +2,6 @@
 #include "GameNode.h"
 #include <unordered_set>
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
-#include "Network/Server.h"
 #include "Component.h"
 
 using namespace std;
@@ -182,7 +181,7 @@ namespace TealEngine {
 	{
 		return parrent;
 	}
-	bool GameNode::getActive() { return active; }
+	bool GameNode::getActive() { return active && (getParrent() ? getParrent()->getActive() : true); }
 	//events:
 	void GameNode::setActive(bool active) 
 	{
@@ -252,9 +251,9 @@ namespace TealEngine {
 
 	//Network:
 
-	void GameNode::onMessageReceive(TPacket& packet) {
+	void GameNode::onMessageReceive() {
 		for (Component* component : components) {
-			component->onMessageReceive(packet);
+			component->onMessageReceive();
 		}
 	}
 
@@ -269,6 +268,9 @@ namespace TealEngine {
 
 	GameNode::~GameNode()
 	{
+		//removing node from parrent child nodes
+		if (parrent) parrent->removeChild(this);
+
 		for (Component* comp : components)
 			comp->onDestroy();
 		//recursive delete all the child nodes
@@ -282,8 +284,6 @@ namespace TealEngine {
 		std::list<Component*> comps = components;
 		for (Component* comp : comps)
 			delete comp;
-		//removing node from parrent child nodes
-		if (parrent) parrent->removeChild(this);
 
 		allNodes.erase(this);
 	}
@@ -293,7 +293,7 @@ namespace TealEngine {
 		return allNodes.find(node) != allNodes.end();
 	}
 
-	bool GameNode::isVisibleForPeer(const PeerData& peer) 
+	bool GameNode::isVisibleForPeer() 
 	{
 		return true;
 	}

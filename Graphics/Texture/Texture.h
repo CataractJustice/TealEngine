@@ -9,7 +9,7 @@ namespace TealEngine
 {
 	class Texture 
 	{
-	private:
+	protected:
 		GLuint texture;
 		GLuint type, format, internalformat, dataType;
 		std::map<GLenum, GLenum> parameteries;
@@ -22,6 +22,7 @@ namespace TealEngine
 		void bind(int i);
 		void create(GLuint width, GLuint height, void* pixels = 0);
 		void loadFromFile(std::string path);
+		Texture& operator=(const Texture& t);
 		GLuint id();
 	};
 }

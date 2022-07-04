@@ -10,8 +10,8 @@ namespace TealEngine
 		return this->text;
 	}
 
-
 	void Text::setText(const wstring& text) {
+		if (!text.compare(this->text)) return;
 		this->text = text;
 		this->refresh();
 	}
@@ -58,7 +58,7 @@ namespace TealEngine
 		{
 			if (c == L'\n')
 			{
-				cursor = glm::vec2(0.0f, cursor.y - (float)font->getPixelSizes());
+				cursor = glm::vec2(0.0f, cursor.y + (float)font->getPixelSizes() * 1.5f);
 				continue;
 			}
 
@@ -98,6 +98,9 @@ namespace TealEngine
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		int i = 0;
 		for (vec4& charRect : charRects) {
+			if (text[i] == '\n') {
+				i++;
+			}
 			charRect = Math::map(glm::vec4(rect.x, rect.y, 0.0f, 0.0f), glm::vec4(rect.z, rect.w, rect.z - rect.x, rect.w - rect.y), glm::vec4(-1.0f, 1.0f, 0.0f, 0.0f), glm::vec4(1.0f, -1.0f, 1.0f, 1.0f), charRect);
 			Resources::getShader("basic_text").setTexture("tex", font->getCharacter(text[i]).texture.id());
 			i++;

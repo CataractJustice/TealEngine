@@ -1,4 +1,4 @@
-#define GLEW_STATIC
+/*#define GLEW_STATIC
 #pragma once
 #include <iostream>
 #define WIDTH 640
@@ -99,4 +99,4 @@ int main()
 		lightTransform.rotate(90.0f, vec3(1.0f, 0.1f, 1.08f));
 		Core::Scene::update();
 	}
-}
+}*/

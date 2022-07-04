@@ -45,7 +45,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -160,8 +160,8 @@
       </AddModuleNamesToAssembly>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>libs/glfw/lib/64;libs/glew/lib/Release/x64;libs/enet/Release;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;libs\BulletPhysics\lib\Debug\BulletDynamics_Debug.lib;libs\BulletPhysics\lib\Debug\BulletCollision_Debug.lib;libs\BulletPhysics\lib\Debug\LinearMath_Debug.lib;enet.lib;ws2_32.lib;winmm.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libs/glfw/lib/;libs/glew/lib/Release/x64;libs/freetype/release dll/win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32s.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,10 +181,8 @@
     <ClCompile Include="GameNode\Component.cpp" />
     <ClCompile Include="GameNode\ComponentFactory.cpp" />
     <ClCompile Include="GameNode\ComponentFactoryRegistrationList.cpp" />
-    <ClCompile Include="GameNode\NetworkComponents\DataComponent.cpp" />
     <ClCompile Include="GameNode\GameNode.cpp" />
     <ClCompile Include="GameNode\GameNode3D.cpp" />
-    <ClCompile Include="GameNode\NetworkComponents\NetworkTestComponent.cpp" />
     <ClCompile Include="GameNode\Transform.cpp" />
     <ClCompile Include="Graphics\FrameBuffer\FrameBuffer.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libs/glfw/include;libs/glew/include/GL;libs/BulletPhysics/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -213,12 +211,6 @@
     <ClCompile Include="Math\Noise.cpp" />
     <ClCompile Include="Math\PerlinNoise.cpp" />
     <ClCompile Include="Math\randrange.cpp" />
-    <ClCompile Include="Network\ClientNode.cpp" />
-    <ClCompile Include="Network\PacketTemplates.cpp" />
-    <ClCompile Include="Network\Server.cpp" />
-    <ClCompile Include="Network\TClient.cpp" />
-    <ClCompile Include="Network\THost.cpp" />
-    <ClCompile Include="Network\TPacket.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="System\Clock.cpp" />
     <ClCompile Include="System\Debug.cpp" />
@@ -253,10 +245,6 @@
     <ClInclude Include="EventSystem\MouseEvents\MouseEvents.h" />
     <ClInclude Include="EventSystem\MouseEvents\MouseMoveEvent.h" />
     <ClInclude Include="EventSystem\MouseEvents\WheelScrollEvent.h" />
-    <ClInclude Include="EventSystem\NetworkEvents\MsgReciveEvent.h" />
-    <ClInclude Include="EventSystem\NetworkEvents\NetworkEvents.h" />
-    <ClInclude Include="EventSystem\NetworkEvents\PeerConnectEvent.h" />
-    <ClInclude Include="EventSystem\NetworkEvents\PeerDisconnectEvent.h" />
     <ClInclude Include="EventSystem\WindowEvents\WindowEvents.h" />
     <ClInclude Include="EventSystem\WindowEvents\WindowResizeEvent.h" />
     <ClInclude Include="Filesystem\getDirectoryList.h" />
@@ -267,10 +255,8 @@
     <ClInclude Include="GameNode\Component.h" />
     <ClInclude Include="GameNode\ComponentFactory.h" />
     <ClInclude Include="GameNode\ComponentFactoryRegistrationList.h" />
-    <ClInclude Include="GameNode\NetworkComponents\DataComponent.h" />
     <ClInclude Include="GameNode\GameNode.h" />
     <ClInclude Include="GameNode\GameNode3D.h" />
-    <ClInclude Include="GameNode\NetworkComponents\NetworkTestComponent.h" />
     <ClInclude Include="GameNode\Transform.h" />
     <ClInclude Include="glm\common.hpp" />
     <ClInclude Include="glm\exponential.hpp" />
@@ -326,13 +312,6 @@
     <ClInclude Include="Math\Noise.h" />
     <ClInclude Include="Math\PerlinNoise.h" />
     <ClInclude Include="Math\randrange.h" />
-    <ClInclude Include="Network\ClientNode.h" />
-    <ClInclude Include="Network\PacketTemplates.h" />
-    <ClInclude Include="Network\PeerData.h" />
-    <ClInclude Include="Network\Server.h" />
-    <ClInclude Include="Network\TClient.h" />
-    <ClInclude Include="Network\THost.h" />
-    <ClInclude Include="Network\TPacket.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="System\Clock.h" />
     <ClInclude Include="System\Comparators\AddressComparator.h" />

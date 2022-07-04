@@ -30,7 +30,7 @@ namespace TealEngine
 		//called every time node is set to active after it was inactive
 		virtual void onAwake();
 		//
-		virtual void onMessageReceive(TPacket& packet);
+		virtual void onMessageReceive();
 		GameNode* getParrent();
 		//gets parrent if parrent is of type T, else throws an error
 		template<typename T>

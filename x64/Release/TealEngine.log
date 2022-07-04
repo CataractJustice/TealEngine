@@ -1,39 +1,6 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(519,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (coolANDnewmewGAMEaaaaa.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Core.cpp
-C:\Users\User\source\repos\tealengine\System\PreparedTStructSchema.h(21,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\System\TStruct.h(110,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\System\TStruct.h(116,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
-C:\Users\User\source\repos\tealengine\libs\glfw\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
-C:\Users\User\source\repos\tealengine\Network\ClientNode.h(1,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\User\source\repos\tealengine\Core.cpp(138,54): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\User\source\repos\tealengine\Core.cpp(201,33): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\Core.cpp(202,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  main.cpp
-C:\Users\User\source\repos\tealengine\System\PreparedTStructSchema.h(21,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\System\TStruct.h(110,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\System\TStruct.h(116,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\User\source\repos\tealengine\main.cpp(80,28): warning C4244: '=': conversion from 'float' to 'char', possible loss of data
-C:\Users\User\source\repos\tealengine\main.cpp(98,39): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (coolANDnewmewGAMEaaaaa.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Texture.cpp
+  Resources.cpp
   Generating Code...
-     Creating library C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.lib and object C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.exp
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
-LINK : warning LNK4286: symbol '__glewBindBuffer' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewBufferData' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewDeleteBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewGenBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewEnableVertexAttribArray' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewVertexAttribPointer' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewBindVertexArray' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewGenVertexArrays' defined in 'glew32s.lib(glew.obj)' is imported by 'Mesh.obj'
-LINK : warning LNK4286: symbol '__glewGetUniformLocation' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniform1fv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniform1iv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniform2fv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniform3fv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniform4fv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUniformMatrix4fv' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-LINK : warning LNK4286: symbol '__glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'Uniform.obj'
-glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
-  TealEngine.vcxproj -> C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.exe
+freetype.lib(freetype.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
+  TealEngine.vcxproj -> C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.lib

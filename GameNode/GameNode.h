@@ -4,8 +4,6 @@
 #include <map>
 #include <list>
 #include <set>
-#include "Network/PeerData.h"
-#include "Network/TPacket.h"
 #include "EventSystem/Event.h"
 #include "EventSystem/EventListener.h"
 #include "System/Debug.h"
@@ -121,12 +119,17 @@ class Component;
 		}
 		//returns all child nodes
 		std::vector<GameNode*> getChilds();
-		//returns childs, childs of childs an so on
+		//returns childs, childs of childs an so on in a single vector
 		std::vector<GameNode*> getAllChilds();
 		//returns childs with matching name
 		std::vector<GameNode*> findChildsByName(std::string name);
-		//
+		//node is active only if active property is true for it and all of its parrents
+		//use .getActiveProperty to get this exact node activity property
 		bool getActive();
+		//returns value of node activity property
+		//node can be innactive while having activity property set to true but any of it's parrent nodes is innactive
+		//use .getActive() to check if node is actually active
+		inline bool getActiveProperty() { return this->active; };
 		//events:
 
 		//enables/disables node, calls onSleep or onAwake for components
@@ -148,14 +151,14 @@ class Component;
 
 		//Network:
 		
-		//Called whenever node recives a messgae, calls onMessageReceive(packet) for all comonents of this node
-		virtual void onMessageReceive(TPacket& packet);
+		//Called whenever node recives a messgae, calls onMessageReceive(packet) for all components of this node
+		virtual void onMessageReceive();
 		//Server side method
 		//Should return true if you want to node to be 'visible' for given peer
 		//Server will send node itself and messages to node to given peer if node is 'visible' for them
 		//Should return false if server should not send any information about this node to given peer
 		//Returned value for certain peer might change during lifetime of the node
-		virtual bool isVisibleForPeer(const PeerData& peer);
+		virtual bool isVisibleForPeer();
 
 		GameNode();
 		virtual ~GameNode();

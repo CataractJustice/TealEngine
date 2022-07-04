@@ -29,7 +29,7 @@ namespace TealEngine
 	void Component::onParrentChange() {};
 	void Component::onSleep() {};
 	void Component::onAttach() {};
-	void Component::onMessageReceive(TPacket& packet) {};
+	void Component::onMessageReceive() {};
 
 	GameNode* Component::getParrent() { return parrent; }
 

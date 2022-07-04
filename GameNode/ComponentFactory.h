@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "NetworkComponents/DataComponent.h"
 #include <map>
 namespace TealEngine 
 {

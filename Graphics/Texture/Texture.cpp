@@ -86,4 +86,15 @@ namespace TealEngine
 	{
 		return this->texture;
 	}
+
+	Texture& Texture::operator=(const Texture& texture) {
+		glDeleteTextures(1, &this->texture);
+		this->parameteries = texture.parameteries;
+		this->dataType = texture.dataType;
+		this->format = texture.format;
+		this->internalformat = texture.internalformat;
+		this->texture = texture.texture;
+		this->type = texture.type;
+		return *this;
+	}
 }
