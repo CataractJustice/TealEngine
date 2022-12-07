@@ -26,6 +26,7 @@ namespace TealEngine {
 		if (loc == -1) TE_DEBUG_WARNING("Could not find uniform with name \"" + name + "\" in shader.");
 		glUniform1i(loc, this->texture.size());
 		this->texture[name] = std::pair<GLuint, GLuint>(texture.size(), 0);
+		textureArray[texture.size() - 1] = &texture[name];
 	}
 
 	void ShaderProgram::setTexture(std::string name, GLuint texture)
@@ -91,20 +92,29 @@ namespace TealEngine {
 
 	void ShaderProgram::use()
 	{
+		static GLuint currentProgram = -1;
+		static GLuint bindedTextures[64];
 		//if (usedMaterialId != materialId)
 		//{
+		if (program != currentProgram) {
 			glUseProgram(program);
-			usedMaterialId = materialId;
+		}
+		currentProgram = program;
+		usedMaterialId = materialId;
 
-			for (auto tex : texture)
-			{
-				glActiveTexture(GL_TEXTURE0 + tex.second.first);
-				glBindTexture(GL_TEXTURE_2D, tex.second.second);
-			}
-		//}
-		for (auto u : this->uniforms)
+		for (int i = 0; i < texture.size(); i++)
 		{
-			u.second->use();
+			if (bindedTextures[textureArray[i]->first] != textureArray[i]->second) 
+			{
+				glActiveTexture(GL_TEXTURE0 + textureArray[i]->first);
+				glBindTexture(GL_TEXTURE_2D, textureArray[i]->second);
+				bindedTextures[textureArray[i]->first] = textureArray[i]->second;
+			}
+		}
+		//}
+		for (int i = 0; i < uniforms.size(); i++)
+		{
+			uniformsArray[i]->use();
 		}
 	}
 

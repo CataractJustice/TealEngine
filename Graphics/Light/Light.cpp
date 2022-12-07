@@ -25,12 +25,12 @@ namespace TealEngine
 		shadowMapShader = Resources::getShader("empty_3d");
 	}
 
-	void Light::renderLightMap(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer)
+	void Light::renderLightMap(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer, GameNode* scene)
 	{
 		for (auto it = lights.begin(); it != lights.end(); it++)
 		{
 			Light* lightsource = (Light*)(*it);
-			lightsource->render(light, albedo, position, normal, specular, renderer);
+			lightsource->render(light, albedo, position, normal, specular, renderer, scene);
 		}
 	}
 
@@ -59,8 +59,8 @@ namespace TealEngine
 			//calc segment corner in sun coordinate system
 			segmentCorner = ((GameNode3D*)this->getParrent())->getWorldTransform().getMatrix() * glm::vec4(segmentCorner, 1.0f);
 
-			segmentMin = vec3(glm::min(segmentCorner.x, segmentMin.x), glm::min(segmentCorner.y, segmentMin.y), glm::min(segmentCorner.z, segmentMin.z));
-			segmentMax = vec3(glm::max(segmentCorner.x, segmentMax.x), glm::max(segmentCorner.y, segmentMax.y), glm::max(segmentCorner.z, segmentMax.z));
+			segmentMin = glm::min(segmentCorner, segmentMin);
+			segmentMax = glm::max(segmentCorner, segmentMax);
 		}
 		Transform camTransform = ((GameNode3D*)this->getParrent())->getRelativeTransform();
 		camTransform.setPosition(camera->getWorldTransform().getPosition() + camera->getWorldTransform().forward() * (currZ + zSegment) / 2.0f);
@@ -134,7 +134,7 @@ namespace TealEngine
 		
 	}
 
-	void DirectionLight::render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer)
+	void DirectionLight::render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer, GameNode* scene)
 	{
 		shadowMapRenderer.setDepthClear(true);
 		shadowMapRenderer.setDepthTest(true);
@@ -149,7 +149,7 @@ namespace TealEngine
 					shadowMapRenderer.setCamera(getShadowCamera(i));
 					shadowMapRenderer.fb.attachDepthTexture(getShadowCamera(i)->renderTexture.id());
 					shadowMapRenderer.fb.bind();
-					shadowMapRenderer.render(renderer->getMeshRendererList(), &shadowMapShader, true);
+					shadowMapRenderer.render(scene, &shadowMapShader, true);
 			}
 		}
 		//TE_DEBUG_INFO("Render direction light to light map");

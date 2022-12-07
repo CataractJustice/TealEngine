@@ -1,6 +1,0 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (coolANDnewmewGAMEaaaaa.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Texture.cpp
-  Resources.cpp
-  Generating Code...
-freetype.lib(freetype.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in opengl32.lib(OPENGL32.dll); second definition ignored
-  TealEngine.vcxproj -> C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.lib

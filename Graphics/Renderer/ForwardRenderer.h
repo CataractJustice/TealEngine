@@ -8,22 +8,19 @@ namespace TealEngine {
 	class ForwardRenderer
 	{
 	protected:
-		list<MeshRenderer*> meshList;
 		Camera* activeCamera;
 		ShaderProgram shader;
 		Texture depthTexture;
 		bool depthTest, stencilTest, colorClear, depthClear, stencilClear;
 		glm::vec4 clearColor;
 		void applyConfig();
-		void renderModels(ShaderProgram* shader = nullptr);
-		void renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader = nullptr);
+		void renderModels(GameNode* scene, ShaderProgram* shader = nullptr, MeshRenderer::RenderStage stage = (MeshRenderer::RenderStage)0);
+		void renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader = nullptr, MeshRenderer::RenderStage stage = (MeshRenderer::RenderStage)0);
 	public:
 		FrameBuffer fb;
 		virtual void resize(GLuint width, GLuint height);
+		virtual void render(GameNode* scene, ShaderProgram* material = NULL, bool depthOnly = false);
 		virtual void render(list<MeshRenderer*> meshList, ShaderProgram* material = NULL, bool depthOnly = false);
-		virtual void render(ShaderProgram* material = NULL);
-		virtual void push(GameNode* scene);
-		virtual void pop(GameNode* scene);
 		void setDepthTest(bool value);
 		void setStencilTest(bool value);
 		void setColorClear(bool value);
@@ -31,7 +28,6 @@ namespace TealEngine {
 		void setStencilClear(bool value);
 		void setClearColor(glm::vec4 color);
 		void setCamera(Camera* camera);
-		std::list<MeshRenderer*>& getMeshRendererList();
 		Camera* getActiveCamera();
 	};
 }

@@ -1,4 +1,3 @@
-#pragma once
 #include "EventListener.h"
 #include "EventPublisher.h"
 namespace TealEngine

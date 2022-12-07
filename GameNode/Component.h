@@ -1,6 +1,9 @@
 #pragma once
 #include "GameNode.h"
 
+#define RegisterComponent()\
+virtual std::string getComponentName() override {return typeid(*this).name();}
+
 namespace TealEngine 
 {
 	class Component 
@@ -12,10 +15,14 @@ namespace TealEngine
 		static std::vector<Component*> components;
 		void attachTo(GameNode* node);
 		std::string factoryName;
+		bool active;
 	public:
 
 		void setFactoryName(std::string name);
 		std::string getFactoryName();
+		bool isActive();
+		inline bool getActive() { return active; };
+		inline void setActive(bool active) { this->active = active; };
 
 		//called every frame
 		virtual void update();
@@ -29,8 +36,18 @@ namespace TealEngine
 		virtual void onSleep();
 		//called every time node is set to active after it was inactive
 		virtual void onAwake();
+		//called after 3D renderer to draw things over it
+		virtual void GUIrender();
+		//
+		virtual void imGUIrender();
+		//
+		virtual void render(ShaderProgram* shader, unsigned int stages);
+		//
+		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
 		//
 		virtual void onMessageReceive();
+		//
+		virtual void onCollision(const Physics::Collision& collision);
 		GameNode* getParrent();
 		//gets parrent if parrent is of type T, else throws an error
 		template<typename T>
@@ -41,6 +58,11 @@ namespace TealEngine
 				TE_DEBUG_ERROR("Parrent either does not exist or isnt the right type.");
 			return castedParrent;
 		}
-		~Component();
+		Component();
+		virtual ~Component();
+
+		virtual std::string getComponentName() { return "Unregistred Component"; };
+
+		void explorerDisplay();
 	};
 }

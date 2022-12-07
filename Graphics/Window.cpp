@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "EventSystem/WindowEvents/WindowResizeEvent.h"
-#include <glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 namespace TealEngine 
 {

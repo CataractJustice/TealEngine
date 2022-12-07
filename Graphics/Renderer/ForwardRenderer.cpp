@@ -16,6 +16,14 @@ namespace TealEngine {
 		fb.attachDepthTexture(depthTexture.id());
 	}
 
+	void ForwardRenderer::render(GameNode* scene, ShaderProgram* material, bool depthOnly)
+	{
+		if (!depthOnly)fb.attachTexture(activeCamera->renderTexture.id(), 0);
+		fb.bind();
+		applyConfig();
+		scene->render();
+	}
+
 	void ForwardRenderer::render(list<MeshRenderer*> meshList, ShaderProgram* material, bool depthOnly)
 	{
 		if(!depthOnly)fb.attachTexture(activeCamera->renderTexture.id(), 0);
@@ -24,52 +32,17 @@ namespace TealEngine {
 		renderModels(meshList, material);
 	}
 
-	void ForwardRenderer::render(ShaderProgram* material)
+	void ForwardRenderer::renderModels(GameNode* scene, ShaderProgram* shader, MeshRenderer::RenderStage stage)
 	{
-		renderModels(material);
+		scene->render(shader, (unsigned int)stage);
 	}
 
-	void ForwardRenderer::pop(GameNode* scene)
-	{
-		vector<GameNode*> nodes = scene->getAllChilds();
-		nodes.push_back(scene);
-		for (auto node : nodes)
-		{
-			std::vector<MeshRenderer*> meshes = node->findComponentsByType<MeshRenderer>();
-			for (auto mesh : meshes) 
-			{
-				meshList.remove(mesh);
-			}
-		}
-	}
-
-	void ForwardRenderer::push(GameNode* scene)
-	{
-		vector<GameNode*> nodes = scene->getAllChilds();
-		nodes.push_back(scene);
-		for (auto node : nodes)
-		{
-			std::vector<MeshRenderer*> meshes = node->findComponentsByType<MeshRenderer>();
-			for (auto mesh : meshes)
-			{
-				meshList.push_back(mesh);
-			}
-		}
-	}
-
-	void ForwardRenderer::renderModels(ShaderProgram* shader)
+	void ForwardRenderer::renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader, MeshRenderer::RenderStage stage)
 	{
 		for (MeshRenderer* mesh : meshList)
 		{
-			mesh->render(nullptr, Input::Keyboard::isKeyPressed(GLFW_KEY_9) ? GL_LINES : GL_TRIANGLES);
-		}
-	}
-
-	void ForwardRenderer::renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader)
-	{
-		for (MeshRenderer* mesh : meshList)
-		{
-			mesh->render();
+			if(mesh->isActive() && mesh->getRenderStage(stage))
+				mesh->render();
 		}
 	}
 
@@ -129,10 +102,6 @@ namespace TealEngine {
 		}
 
 		Render::VP_matrix = activeCamera->getPV();
-	}
-
-	std::list<MeshRenderer*>& ForwardRenderer::getMeshRendererList() 
-	{
-		return this->meshList;
+		Render::V_matrix = activeCamera->getWorldTransform().getMatrix();
 	}
 }

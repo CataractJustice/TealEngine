@@ -59,7 +59,7 @@ namespace TealEngine
 		vector<unsigned int> indices;
 		
 	public:
-
+		RegisterComponent();
 		bool validation();
 		void apply();
 

@@ -1,4 +1,3 @@
-#pragma once
 #include <map>
 #include <string>
 #include "Core.h"
@@ -7,7 +6,6 @@
 #include "Graphics/Mesh/MeshUtil.h"
 #include "Graphics/Renderer/RenderUtil.h"
 #include "Graphics/Renderer/DefferedRenderer.h"
-#include "Graphics/GUI/GUIRenderer.h"
 #include "EventSystem/WindowEvents/WindowEvents.h"
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Graphics/Mesh/MeshRenderer.h"
@@ -15,6 +13,10 @@
 #include <thread>
 #include "DefaultTags.h"
 #include "System/Debug.h"
+#include "Physics/3D/EasyPhysics/EasyPhysicsWorld.h"
+#include "libs/imgui/imgui.h"
+#include "libs/imgui/backends/imgui_impl_opengl3.h"
+#include "libs/imgui/backends/imgui_impl_glfw.h"
 
 
 namespace TealEngine
@@ -28,9 +30,7 @@ namespace TealEngine
 			Clock sceneclock;
 			EventListener rendererResizeEvent;
 			DefferedRenderer renderer;
-			GUIRenderer CoreGUIRenderer;
-			GameNode* rootNode;
-			GUIElement* GUIBody;
+			GameNode3D* rootNode;
 			
 #ifdef BULLET_PHYSICS
 			btDynamicsWorld* btEngine;
@@ -51,64 +51,67 @@ namespace TealEngine
 			}
 #endif
 
-			void onChildNodeAdd(Event* e)
-			{
-				if (e->getType() == CHILD_ADDED)
-				{
-					GameNode* node = ((ChildNodeAddEvent*)e)->node;
-
-					std::vector<GameNode*> childs = ((ChildNodeAddEvent*)e)->node->getAllChilds();
-
-					renderer.push(node);
-
-					if (node->hasTag(GUI_ELEMENT_TAG))
-						GUIBody->removeChild(node);
-
-					
-				}
-			}
-
-			void onChildNodeRemove(Event* e)
-			{
-				if (e->getType() == CHILD_REMOVED)
-				{
-					GameNode* node = ((ChildNodeRemoveEvent*)e)->node;
-					
-					renderer.pop(node);
-
-					if (node->hasTag(GUI_ELEMENT_TAG))
-						GUIBody->removeChild(node);
-				}
-			}
+			GameNode3D* getRoot() { return rootNode; }
 
 			void clearScene()
 			{
 				delete rootNode;
-				rootNode = new GameNode();
+				rootNode = new GameNode3D();
 			}
 
 			void update()
 			{
-				//TE_DEBUG_INFO("GameNode update pass.");
-				Scene::rootNode->updateAll();
+				static float updateTimer = 0.0f;
+				static bool debugInfo = false;
+				debugInfo = Input::Keyboard::isKeyPressed(GLFW_KEY_F1) ? true : debugInfo;
 				sceneclock.update();
+				updateTimer += sceneclock.deltaTime();
+				//TE_DEBUG_INFO("GameNode update pass.");
+				if(updateTimer >= 1.0f / 60.0f) 
+				{
+					updateTimer = 0.0f;
+					Scene::rootNode->updateAll();
+					GameNode::cleanUp();
+					Physics::EasyPhysics::EasyPhysicsWorld::instance.solveCollisions();
+					//TE_DEBUG_INFO("Render pass.");
+					Scene::renderer.render(Scene::rootNode);
 
-				//TE_DEBUG_INFO("Render pass.");
-				Scene::renderer.render();
+					//TE_DEBUG_INFO("Rendering to main buffer.");
+					FrameBuffer::unbind();
+					if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
+						Render::renderTexture(Input::Mouse::getScrollPos());
+					else
+						Render::renderTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
 
-				//TE_DEBUG_INFO("Rendering to main buffer.");
-				FrameBuffer::unbind();
-				if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
-					Render::renderTexture(Input::Mouse::getScrollPos());
-				else
-					Render::renderTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
+					//TE_DEBUG_INFO("GUI rendering.");
+					rootNode->GUIrender();
 
-				//TE_DEBUG_INFO("GUI rendering.");
-				CoreGUIRenderer.render();
+					ImGui_ImplOpenGL3_NewFrame();
+					ImGui_ImplGlfw_NewFrame();
+					ImGui::NewFrame();
+					rootNode->imGUIrender();
+					if (debugInfo) 
+					{
+						ImGui::Begin("Game Explorer", &debugInfo);
+						if (ImGui::TreeNode("Scene tree")) 
+						{
+							rootNode->displayNodeTree(false);
+							ImGui::TreePop();
+						}
+						if (ImGui::TreeNode("Textures"))
+						{
+							static int tid;
+							ImGui::InputInt("Texture id", &tid, 1, 10);
+							ImGui::Image(ImTextureID((long)tid), ImVec2(128.0f, 128.0f));
+							ImGui::TreePop();
+						}
+						ImGui::End();
+					}
+					ImGui::Render();
+					ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-				Graphics::display();
-				
-
+					Graphics::display();
+				}
 			}
 
 			float deltaTime() 
@@ -169,12 +172,19 @@ namespace TealEngine
 					Scene::renderer.getActiveCamera()->renderTexture.create(width, height);
 				});
 			Graphics::window->WindowResize.subscribe(&Scene::rendererResizeEvent);
-			Scene::rootNode = new GameNode();
-			Scene::rootNode->addEventListener(CHILD_ADDED, eventListenerFunc(&Scene::onChildNodeAdd));
-			Scene::rootNode->addEventListener(CHILD_REMOVED, eventListenerFunc(&Scene::onChildNodeRemove));
+			Scene::rootNode = new GameNode3D();
 
-			Scene::GUIBody = new GUIElement();
-			Scene::CoreGUIRenderer.push(Scene::GUIBody);
+			TE_DEBUG_INFO("Init Dear ImGUI");
+			// Setup Dear ImGui context
+			IMGUI_CHECKVERSION();
+			
+			ImGui::CreateContext();
+			ImGuiIO& io = ImGui::GetIO();
+			// Setup Platform/Renderer bindings
+			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)Graphics::window->gl_window_ptr_(), true);
+			ImGui_ImplOpenGL3_Init("#version 130");
+			// Setup Dear ImGui style
+			ImGui::StyleColorsLight();
 		}
 
 		bool isServer() 

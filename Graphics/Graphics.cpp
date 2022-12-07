@@ -6,11 +6,6 @@
 #include "libs/glm/vec2.hpp"
 #include "System/Debug.h"
 
-extern "C"
-{
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-}
-
 namespace TealEngine
 {
 	namespace Graphics

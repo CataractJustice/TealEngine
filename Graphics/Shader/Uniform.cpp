@@ -1,12 +1,9 @@
 #include "Uniform.h"
-#include <glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 void Uniform::uset(void* values, int typesize, int size, int type) 
 {
-	if (this->value)
-		delete[] this->value;
-	this->value = new char[typesize * size];
 	memcpy(this->value, values, typesize * size);
 	this->type = type;
 	this->size = size;

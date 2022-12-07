@@ -4,6 +4,7 @@
 #include "Resources.h"
 #include "System/Input.h"
 #include "Graphics/Renderer/DefferedRenderer.h"
+#include "GameNode/GameNode3D.h"
 namespace TealEngine 
 {
 	namespace Core 
@@ -34,6 +35,7 @@ namespace TealEngine
 			void clearScene();
 			void update();
 			float deltaTime();
+			GameNode3D* getRoot();
 		}
 
 		extern std::map<std::string, std::string> settings;

@@ -5,8 +5,6 @@
 
 namespace TealEngine 
 {
-#define NODE_TREE_AABB true
-#define SINGLE_NODE_AABB false
 	class GameNode3D : public GameNode
 	{
 	private:
@@ -21,6 +19,7 @@ namespace TealEngine
 	public:
 
 		GameNode3D();
+		~GameNode3D();
 
 		//do not try to modify game node world transform through this reference
 		virtual Transform& getWorldTransform();
@@ -32,5 +31,7 @@ namespace TealEngine
 		virtual Transform& getRelativeTransform();
 
 		virtual void setRelativeTransform(const Transform& transform);
+
+		void displayNodeTree(bool windowBegin) override;
 	};
 }

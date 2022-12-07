@@ -1,4 +1,4 @@
-#include <glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Mesh.h"
 #include "System/Debug.h"
@@ -21,7 +21,7 @@ namespace TealEngine
 		this->attribs[target] = false;
 	}
 
-	void SharedMesh::render(unsigned int LOD, GLuint mode) 
+	void SharedMesh::render(unsigned int LOD, unsigned int mode)
 	{
 		glBindVertexArray(VAO);
 		glDrawElements(mode, getLODIndex(LOD + 1) - getLODIndex(LOD), GL_UNSIGNED_INT, (void*)(getLODIndex(LOD) * sizeof(unsigned int)));
@@ -91,7 +91,7 @@ namespace TealEngine
 
 	Mesh::Mesh(unsigned int usage)
 	{
-		if (usage == unsigned int(-1))
+		if (usage == ((unsigned int)(-1)))
 			usage = GL_STATIC_DRAW;
 		this->usage = usage;
 		ilength = new GLuint(0);

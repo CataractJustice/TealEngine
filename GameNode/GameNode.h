@@ -7,7 +7,9 @@
 #include "EventSystem/Event.h"
 #include "EventSystem/EventListener.h"
 #include "System/Debug.h"
-using namespace std;
+#include "Physics/Collision.h"
+#include <queue>
+
 enum NODE_RELATION 
 {
 	THIS_NODE,
@@ -17,20 +19,25 @@ enum NODE_RELATION
 };
 
 namespace TealEngine {
-
+	class ShaderProgram;
 class Component;
 	class GameNode
 	{
 	private:
 		static unordered_set<GameNode*> allNodes;
 		static map<string, set<GameNode*>> tagged;
+		static std::queue<GameNode*> destroyQueue;
 		
 		map<EventType, EventListener> eventListeners;
 		map<EventType, std::list<GameNode*>> eventSubscribedNodes;
 		set<string> tags;
-		bool active;
+		bool willBeDestroyed;
 		unsigned short hierarchyDepth;
+		static unsigned int lastId;
 	protected:
+		bool active;
+		unsigned int id;
+		bool onDestroyHasBeenCalled;
 		string name;
 		list<GameNode*> childNodes;
 		list<Component*> components;
@@ -159,6 +166,25 @@ class Component;
 		//Should return false if server should not send any information about this node to given peer
 		//Returned value for certain peer might change during lifetime of the node
 		virtual bool isVisibleForPeer();
+
+		//
+		virtual void onCollision(const Physics::Collision& collision, bool eventDown = true, bool eventUp = true);
+		//
+		void GUIrender();
+		//
+		void imGUIrender();
+		//
+		void render(ShaderProgram* shader = nullptr, unsigned int stages = 0);
+
+		//
+		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
+
+		virtual void displayNodeTree(bool windowBegin = true);
+
+		//deletes node when it's possible
+		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
+
+		static void cleanUp();
 
 		GameNode();
 		virtual ~GameNode();

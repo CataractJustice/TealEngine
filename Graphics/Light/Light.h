@@ -31,8 +31,8 @@ namespace TealEngine
 	public:
 		vec4 color;
 		Light();
-		virtual void render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer) = 0;
-		static void renderLightMap(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer);
+		virtual void render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer, GameNode* scene) = 0;
+		static void renderLightMap(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer, GameNode* scene);
 	};
 
 	class DirectionLight : public Light 
@@ -59,6 +59,6 @@ namespace TealEngine
 
 		GLuint shadowCascades();
 		DirectionLight(GLuint shadow_resolution, GLuint cascades = 3U, GLfloat shadowFar = 250.0f);
-		virtual void render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer);
+		virtual void render(Texture& light, Texture& albedo, Texture& position, Texture& normal, Texture& specular, DefferedRenderer* renderer, GameNode* scene);
 	};
 }

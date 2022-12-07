@@ -10,6 +10,6 @@ namespace TealEngine {
 		ShaderProgram empty3D;
 	public:
 		void resize(GLuint width, GLuint height);
-		void render();
+		void render(GameNode* scene);
 	};
 }

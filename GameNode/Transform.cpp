@@ -79,9 +79,9 @@ namespace TealEngine {
 		return position[3];
 	}
 
-	float Transform::getX() { return position[3][0]; }
-	float Transform::getY() { return position[3][1]; }
-	float Transform::getZ() { return position[3][2]; }
+	float& Transform::getX() { return position[3][0]; }
+	float& Transform::getY() { return position[3][1]; }
+	float& Transform::getZ() { return position[3][2]; }
 
 	void Transform::setScale(const vec3& vector)
 	{
@@ -121,7 +121,7 @@ namespace TealEngine {
 		onChange();
 	}
 
-	void Transform::setRotation(glm::quat& q) 
+	void Transform::setRotation(glm::quat q) 
 	{
 		rotation = glm::mat4(q);
 		onChange();
@@ -130,6 +130,17 @@ namespace TealEngine {
 	glm::quat Transform::getRotation()
 	{
 		return quat_cast(rotation);
+	}
+
+
+	void Transform::lookAt(const glm::vec3& target, const glm::vec3& up) 
+	{
+		this->rotation = glm::lookAt(glm::vec3(0.0f), target, up);
+		onChange();
+	}
+	void Transform::lookAt(const glm::vec3& from, const glm::vec3& target, const glm::vec3& up) 
+	{
+		lookAt(target - from, up);
 	}
 
 	vec3 Transform::forward()

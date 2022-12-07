@@ -34,9 +34,9 @@ namespace TealEngine {
 
 		glm::vec3 getPosition();
 
-		float getX();
-		float getY();
-		float getZ();
+		float& getX();
+		float& getY();
+		float& getZ();
 
 		void setScale(const glm::vec3& vector);
 
@@ -50,7 +50,10 @@ namespace TealEngine {
 
 		void setRotation(float angle, const glm::vec3& axis);
 
-		void setRotation(glm::quat&);
+		void setRotation(glm::quat);
+
+		void lookAt(const glm::vec3& target, const glm::vec3& up);
+		void lookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
 
 		glm::quat getRotation();
 

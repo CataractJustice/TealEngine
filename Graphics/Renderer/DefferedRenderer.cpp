@@ -28,12 +28,12 @@ namespace TealEngine {
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 	}
-	void DefferedRenderer::render()
+	void DefferedRenderer::render(GameNode* scene)
 	{
 		//TE_DEBUG_INFO("Configuring framebuffer.");
 		fb.bind();
 		fb.attachTexture(activeCamera->renderTexture.id(), 0);
-		//fb.enable(0);
+		fb.enable(0);
 		fb.enable(1);
 		fb.enable(2);
 		fb.enable(3);
@@ -45,7 +45,7 @@ namespace TealEngine {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		//TE_DEBUG_INFO("Rendering models.");
-		renderModels();
+		renderModels(scene, nullptr, MeshRenderer::RenderStage::Lit);
 		
 		//light pass
 		fb.disable(1);
@@ -54,13 +54,16 @@ namespace TealEngine {
 		fb.disable(4);
 		fb.apply();
 		//TE_DEBUG_INFO("Rendering light.");
-		Light::renderLightMap(light, albedo, position, normal, specular, this);
+		Light::renderLightMap(light, albedo, position, normal, specular, this, scene);
 		fb.disable(5);
 		fb.apply();
 		//TE_DEBUG_INFO("Combining lightmap with albedomap.");
+		combineLightShader.setTexture("Unlit", activeCamera->renderTexture.id());
 		combineLightShader.setTexture("AlbedoMap", albedo.id());
 		combineLightShader.setTexture("LightMap", light.id());
 		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 		Render::renderShader(&combineLightShader);
+		scene->postProcess(getActiveCamera()->renderTexture.id(), albedo.id(), position.id(), normal.id(), specular.id(), light.id());
 	}
 }

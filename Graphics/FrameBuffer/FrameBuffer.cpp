@@ -1,7 +1,6 @@
-#pragma once
 #define GLEW_STATIC
 #include <iostream>
-#include <glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "FrameBuffer.h"
 #include "System/Debug.h"

@@ -69,7 +69,15 @@ namespace TealEngine
 		stbi_set_flip_vertically_on_load(true);
 		int width, height, nrChannels;
 		unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-
+		if (nrChannels == 4) 
+		{
+			this->format = GL_RGBA;
+			this->internalformat = GL_RGBA;
+		}
+		else if (nrChannels == 3) {
+			this->format = GL_RGB;
+			this->internalformat = GL_RGB;
+		}
 		if (data)
 		{
 			this->create(width, height, data);

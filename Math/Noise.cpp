@@ -7,7 +7,7 @@
 
 	float Noise::get(int x, int y, int z)
 	{
-		std::srand(seed + unsigned int(x * z + z * y - x * y));
+		std::srand(seed + (unsigned int)(x * z + z * y - x * y));
 		std::rand();
 		return randrange(0.0f, 1.0f);
 	}

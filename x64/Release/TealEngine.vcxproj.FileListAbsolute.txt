@@ -1,2 +1,0 @@
-C:\Users\User\source\repos\SokobanGame\x64\Release\TealEngine.lib.lastcodeanalysissucceeded
-C:\Users\User\source\repos\tealengine\x64\Release\TealEngine.lib

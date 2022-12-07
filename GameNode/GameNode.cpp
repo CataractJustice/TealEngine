@@ -1,8 +1,8 @@
-#pragma once
 #include "GameNode.h"
 #include <unordered_set>
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Component.h"
+#include "libs/imgui/imgui.h"
 
 using namespace std;
 namespace TealEngine {
@@ -85,34 +85,6 @@ namespace TealEngine {
 		return hierarchyDepth;
 	}
 
-	[[deprecated("Buggy and non consistent method, not even sure why it exist")]]
-	NODE_RELATION GameNode::checkRelation(GameNode* node)
-	{
-		if (getParrent() == node)
-			return PARRENT_NODE;
-
-		//if nodes appears to be on the same layer of hierarchy then its not related nodes or the same node
-		if (node->getHierarchyDepth() == getHierarchyDepth())
-		{
-			if (node == this)
-				return THIS_NODE;
-			else
-				return NOT_RELATED_NODE;
-		}
-		//if another node is on a higher layer then it's either non relater or parrent node 
-		else if (node->getHierarchyDepth() < getHierarchyDepth())
-		{
-			if (getParrent() == nullptr)
-				return NOT_RELATED_NODE;
-
-			return getParrent()->checkRelation(node);
-		}
-		else
-		{
-			return (node->checkRelation(this) == PARRENT_NODE) ? CHILD_NODE : NOT_RELATED_NODE;
-		}
-	}
-
 	GameNode* GameNode::addChild(GameNode* node)
 	{
 		node->setParrent(this);
@@ -187,11 +159,13 @@ namespace TealEngine {
 	{
 		if(active && !this->active)
 			for (Component* comp : components)
-				comp->onAwake();
+				if (comp->getActive())
+					comp->onAwake();
 		else
 			if(!active && this->active)
 				for (Component* comp : components)
-					comp->onSleep();
+					if (comp->getActive())
+						comp->onSleep();
 		this->active = active;
 	}
 	void GameNode::onParrentChange() 
@@ -201,12 +175,15 @@ namespace TealEngine {
 	};
 	void GameNode::update()
 	{
+		if (!active) return;
 		for (Component* comp : components)
-			comp->update();
+			if(comp->getActive())
+				comp->update();
 	};
 
 	void GameNode::updateAll()
 	{
+		if (!active) return;
 		//recursive update all the child nodes
 		for (GameNode* node : childNodes)
 		{
@@ -252,38 +229,49 @@ namespace TealEngine {
 	//Network:
 
 	void GameNode::onMessageReceive() {
+		if (!active) return;
 		for (Component* component : components) {
-			component->onMessageReceive();
+			if (component->getActive())
+				component->onMessageReceive();
 		}
 	}
 
 	GameNode::GameNode()
 	{
+		willBeDestroyed = false;
 		childNodes = list<GameNode*>(0);
 		components = list<Component*>(0);
 		parrent = NULL;
 		hierarchyDepth = 0;
 		allNodes.insert(this);
+		active = true;
+		id = lastId;
+		lastId++;
 	}
 
 	GameNode::~GameNode()
 	{
 		//removing node from parrent child nodes
 		if (parrent) parrent->removeChild(this);
-
-		for (Component* comp : components)
-			comp->onDestroy();
+		if(!onDestroyHasBeenCalled)
+			if(components.size())
+				for (Component* comp : components)
+					if (comp->getActive())
+						comp->onDestroy();
+		onDestroyHasBeenCalled = true;
 		//recursive delete all the child nodes
 		//using temporal list of nodes cuz node destructor will modify childNodes list
 		list<GameNode*> nodes = childNodes;
-		if(childNodes.size() > 0)
+		if(childNodes.size())
 			for (GameNode* node : nodes)
 			{
 				delete node;
 			}
 		std::list<Component*> comps = components;
-		for (Component* comp : comps)
-			delete comp;
+
+		if (components.size())
+			for (Component* comp : comps)
+				delete comp;
 
 		allNodes.erase(this);
 	}
@@ -297,4 +285,127 @@ namespace TealEngine {
 	{
 		return true;
 	}
+
+	void GameNode::onCollision(const Physics::Collision& collision, bool eventDown, bool eventUp) 
+	{
+		if (!active) return;
+		for (Component* comp : components) 
+		{
+			if (comp->getActive())
+				comp->onCollision(collision);
+		}
+
+		if(eventUp && this->parrent)
+			this->parrent->onCollision(collision, false);
+
+		if(eventDown) 
+		{
+			for(GameNode* node : childNodes) 
+			{
+				node->onCollision(collision, true, false);
+			}
+		}
+	}
+
+	void GameNode::GUIrender()
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->GUIrender();
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->GUIrender();
+		}
+	}
+
+	void GameNode::imGUIrender()
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->imGUIrender();
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->imGUIrender();
+		}
+	}
+
+	void GameNode::render(ShaderProgram* shader, unsigned int stages)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->render(shader, stages);
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->render(shader, stages);
+		}
+	}
+
+	void GameNode::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->postProcess(unlitColor, litColor, position, normal, specular, light);
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->postProcess(unlitColor, litColor, position, normal, specular, light);
+		}
+	}
+
+	void GameNode::cleanUp() 
+	{
+		while(destroyQueue.size()) 
+		{
+			delete destroyQueue.front();
+			destroyQueue.pop();
+		}
+	}
+
+
+	void GameNode::displayNodeTree(bool windowBegin) 
+	{
+		if(windowBegin) 
+		{
+			ImGui::Begin("Node tree");
+		}
+		if(ImGui::TreeNode(((this->name.length() ? this->name : std::string("unnamed")) + " [" + std::to_string(id) + "]").c_str()))
+		{
+			ImGui::Checkbox("Active", &active);
+			if (ImGui::TreeNode("Components")) 
+			{
+				for (Component* comp : components)
+				{
+					comp->explorerDisplay();
+				}
+				ImGui::TreePop();
+			}
+			for(GameNode* node : this->childNodes) 
+			{
+				node->displayNodeTree(false);
+			}
+			ImGui::TreePop();
+		}
+		if(windowBegin) 
+		{
+			ImGui::End();
+		}
+	}
+
+	std::queue<GameNode*> GameNode::destroyQueue;
+	unsigned int GameNode::lastId = 0;
 }

@@ -15,7 +15,7 @@ class Uniform
 protected:
 	std::string name;
 	unsigned int location;
-	char* value;
+	char value[1024];
 	int bytesize;
 	int size;
 	int type;
@@ -41,8 +41,8 @@ public:
 	
 	Uniform(Uniform& uniform) 
 	{
-		value = new char[uniform.getByteSize()];
-		memcpy(value, uniform.valueptr(), uniform.getByteSize());
+		if(uniform.getByteSize() > 0 && uniform.getByteSize() < 1024)
+			memcpy(value, uniform.valueptr(), uniform.getByteSize());
 		this->bytesize = uniform.bytesize;
 		this->location = uniform.location;
 		this->name = uniform.name;
@@ -52,10 +52,8 @@ public:
 
 	Uniform& operator=(Uniform& other) 
 	{
-		if (value)
-			delete[] value;
-		value = new char[other.getByteSize()];
-		memcpy(value, other.valueptr(), other.getByteSize());
+		if (other.getByteSize() > 0 && other.getByteSize() < 1024)
+			memcpy(value, other.valueptr(), other.getByteSize());
 		this->bytesize = other.bytesize;
 		this->location = other.location;
 		this->name = other.name;

@@ -11,6 +11,7 @@ namespace TealEngine {
 	{
 		using namespace Graphics;
 		glm::mat4 VP_matrix;
+		glm::mat4 V_matrix;
 
 		void renderShader(ShaderProgram* shader, glm::vec2 offset, glm::vec2 scale)
 		{

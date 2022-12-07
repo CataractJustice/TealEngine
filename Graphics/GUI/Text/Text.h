@@ -1,11 +1,11 @@
 #pragma once
-#include "Graphics/GUI/GUIElement.h"
+#include "GameNode/Component.h"
 #include "Graphics/Renderer/RenderUtil.h"
 #include "Font.h"
 namespace TealEngine 
 {
 	class FrameBuffer;
-	class Text : public GUIElement
+	class Text : public Component
 	{
 	private:
 		Texture texture;
@@ -17,6 +17,7 @@ namespace TealEngine
 		void refresh();
 		static FrameBuffer TextRenderBuffer;
 	public:
+		glm::vec2 screenPosition;
 		Font* font;
 		const wstring& getText();
 		void setText(const wstring& text);
@@ -25,6 +26,6 @@ namespace TealEngine
 		const glm::vec4& getColor();
 		void setColor(const glm::vec4& color);
 		//displays text
-		void render();
+		void GUIrender() override;
 	};
 }

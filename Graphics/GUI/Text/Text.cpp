@@ -32,7 +32,7 @@ namespace TealEngine
 		this->color = color;
 	}
 	//displays text
-	void Text::render() {
+	void Text::GUIrender() {
 		if (rect.w == rect.y)
 			return;
 		glDisable(GL_DEPTH_TEST);
@@ -40,10 +40,7 @@ namespace TealEngine
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glm::vec4 renderRect = rect / (rect.w - rect.y) * scale;
 		Render::renderTexture(texture.id(), 
-			glm::vec2(
-				getTransform().getParamRealValue(GUITransformParam::GUI_X_OFFSET) + renderRect.x, 
-				getTransform().getParamRealValue(GUITransformParam::GUI_Y_OFFSET) + renderRect.y
-			),
+			this->screenPosition,
 			glm::vec2(renderRect.z - renderRect.x, renderRect.w - renderRect.y)
 		);
 		glDisable(GL_BLEND);
@@ -58,7 +55,7 @@ namespace TealEngine
 		{
 			if (c == L'\n')
 			{
-				cursor = glm::vec2(0.0f, cursor.y + (float)font->getPixelSizes() * 1.5f);
+				cursor = glm::vec2(0.0f, cursor.y + (float)font->getPixelSizes() * 2.0f);
 				continue;
 			}
 
