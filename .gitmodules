@@ -4,3 +4,6 @@
 [submodule "libs/glew"]
 	path = libs/glew
 	url = https://github.com/nigels-com/glew.git
+[submodule "libs/freetype2"]
+	path = libs/freetype2
+	url = https://github.com/aseprite/freetype2.git
