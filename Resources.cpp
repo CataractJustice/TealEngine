@@ -1,9 +1,13 @@
-#pragma once
-#include "Filesystem/getDirectoryList.h"
-#include "Filesystem/getFilesInDir.h"
+#include "FileSystem/getDirectoryList.h"
+#include "FileSystem/getFilesInDir.h"
 #include "Resources.h"
 #include "System/Debug.h"
 #include <map>
+#include <fstream>
+#include "NlohmannJson/json.hpp"
+
+using Json = nlohmann::json;
+
 namespace TealEngine
 {
 	namespace Resources
@@ -25,23 +29,23 @@ namespace TealEngine
 			vector<string> itemList = getDirectoryList(path + "/models");
 			for (int i = 0; i < itemList.size(); i++)
 			{
+				TE_DEBUG_INFO("Model [" + std::to_string(i) + "/" + std::to_string(itemList.size()) + "]: " + itemList[i]    );
 				models[itemList[i]] = new Mesh();
 				models[itemList[i]]->load(path + "/models/" + itemList[i]);
 			}
 
 			TE_DEBUG_INFO("Loading shaders.");
 			//Shaders loading
-			char shaderName[256], vertName[256], fragName[256];
-			FILE* linkListFile = fopen((path + "/shaders/link.txt").c_str(), "r");
-			while (fscanf(linkListFile, "%s %s %s", &shaderName, &vertName, &fragName) != EOF)
+			std::ifstream shaderProgramsFile(path + "/shaders/shaderprograms.json");
+			Json shaderPrograms = Json::parse(shaderProgramsFile);
+			for(Json shaderProgram : shaderPrograms) 
 			{
 				Shader vert, frag;
-				vert.loadFromFile(path + "/shaders/" + vertName, GL_VERTEX_SHADER);
-				frag.loadFromFile(path + "/shaders/" + fragName, GL_FRAGMENT_SHADER);
-				shaders[shaderName] = ShaderProgram();
-				shaders[shaderName].link(vert.id(), frag.id());
+				vert.loadFromFile(std::string(path + "/shaders/") + (std::string)shaderProgram["vert"], GL_VERTEX_SHADER);
+				frag.loadFromFile(std::string(path + "/shaders/") + (std::string)shaderProgram["frag"], GL_FRAGMENT_SHADER);
+				shaders[(std::string)shaderProgram["name"]] = ShaderProgram();
+				shaders[(std::string)shaderProgram["name"]].link(vert.id(), frag.id());
 			}
-			fclose(linkListFile);
 
 			TE_DEBUG_INFO("Loading textures.");
 			//Textures loading

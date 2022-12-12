@@ -1,4 +1,3 @@
-#pragma once
 #define GLEW_STATIC
 #include "Graphics.h"
 #include "System/Clock.h"

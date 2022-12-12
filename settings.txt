@@ -1,2 +1,0 @@
-resource_pack:res
-title:Sokoban~~~

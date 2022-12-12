@@ -1,7 +1,8 @@
 #include <map>
 #include <string>
 #include "Core.h"
-#include "Filesystem/loadStrFromFile.h"
+#include <fstream>
+#include "FileSystem/loadStrFromFile.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/Mesh/MeshUtil.h"
 #include "Graphics/Renderer/RenderUtil.h"
@@ -17,39 +18,28 @@
 #include "libs/imgui/imgui.h"
 #include "libs/imgui/backends/imgui_impl_opengl3.h"
 #include "libs/imgui/backends/imgui_impl_glfw.h"
+#include "NlohmannJson/json.hpp"
+#include "GameNode/ComponentLoader.h"
 
+using Json = nlohmann::json;
 
 namespace TealEngine
 {
 	namespace Core
 	{
-		
-		std::map<std::string, std::string> settings;
 		namespace Scene
 		{
 			Clock sceneclock;
 			EventListener rendererResizeEvent;
 			DefferedRenderer renderer;
 			GameNode3D* rootNode;
+			ComponentLoader componentLoader;
 			
-#ifdef BULLET_PHYSICS
-			btDynamicsWorld* btEngine;
-			void addNode(GameNode* node)
-			{
-				rootNode->addChild(node);
-				std::vector<RigidBody*> bodies = node->findChildsByType<RigidBody>(true);
-				for (RigidBody* body : bodies)
-				{
-					btRigidBody* btBody = body->getBody();
-					btEngine->addRigidBody(btBody);
-				}
-			}
-#else
+			
 			void addNode(GameNode* node)
 			{
 				rootNode->addChild(node);
 			}
-#endif
 
 			GameNode3D* getRoot() { return rootNode; }
 
@@ -81,7 +71,7 @@ namespace TealEngine
 					if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
 						Render::renderTexture(Input::Mouse::getScrollPos());
 					else
-						Render::renderTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
+						if(Scene::renderer.getActiveCamera()) Render::renderTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
 
 					//TE_DEBUG_INFO("GUI rendering.");
 					rootNode->GUIrender();
@@ -118,37 +108,58 @@ namespace TealEngine
 			{
 				return sceneclock.deltaTime();
 			}
-		}
 
-		float quadratic(float x) {
-			return x * x;
+			GameNode3D* nodeFromJson(Json& json) 
+			{
+				GameNode3D* node = new GameNode3D();
+				Json& components = json["components"];
+
+				if(json.find("components") != json.cend()) 
+				{
+					for(Json& componentJson : components)
+					{
+						std::string componentClass = componentJson["class"];
+						node->attachComponent(componentLoader.createComponent(componentClass));
+					}
+				}
+
+				if(json.find("nodes") != json.cend()) 
+				{
+					Json& subNodes = json["nodes"];
+					for(Json& subNodeJson : subNodes) 
+					{
+						GameNode3D* subNode = nodeFromJson(subNodeJson);
+						node->addChild(subNode);
+					}
+				}
+
+				if(json.find("name") != json.cend()) 
+				{
+					node->rename(json["name"]);
+				}
+				
+				return node;
+			}
+
+			void loadFromJson(std::string path) 
+			{
+				std::ifstream sceneFile(path);
+				Json sceneJson = Json::parse(sceneFile);
+				rootNode = nodeFromJson(sceneJson);
+			}
 		}
 
 		void init()
 		{
 			TE_DEBUG_INFO("loading settings file.");
-			int settingsLoadErrorCode = 0;
-			std::string settingsStr = loadStrFromFile("settings.txt", &settingsLoadErrorCode);
-			if (settingsLoadErrorCode)
-			{
-				TE_DEBUG_ERROR("Could not find settings.txt file");
-			}
-			int fpos = 0;
-			int epos = 0;
-			settings["resource_pack"] = "res";
-			while (epos != std::string::npos)
-			{
-				fpos = settingsStr.find(":");
-				epos = settingsStr.find("\n");
-				string first = settingsStr.substr(0, fpos);
-				string second = settingsStr.substr(size_t(fpos + 1), size_t(epos - fpos - 1));
-				settings[first] = second;
-				settingsStr = settingsStr.substr(size_t(epos + 1), size_t(settingsStr.length() - epos - 1));
-			}
+			
+			std::fstream settingsFile("settings.json");
+			Json settingsJson = Json::parse(settingsFile);
+
 			TE_DEBUG_INFO("Graphics initialization.");
-			Graphics::init(settings["title"]);
+			Graphics::init(settingsJson["title"]);
 			TE_DEBUG_INFO("Loading resources.");
-			Resources::load(settings["resource_pack"]);
+			Resources::load(settingsJson["resources"]);
 			TE_DEBUG_INFO("Generating models.");
 			BasicMeshes::init();
 			TE_DEBUG_INFO("Initializing input.");
@@ -168,11 +179,16 @@ namespace TealEngine
 					unsigned int height = ((WindowResizeEvent*)(e))->height;
 
 					Scene::renderer.resize(width, height);
-					Scene::renderer.getActiveCamera()->setPerspectiveProjection(Scene::renderer.getActiveCamera()->getFOV(), float(width) / float(height), Scene::renderer.getActiveCamera()->getNear(), Scene::renderer.getActiveCamera()->getFar());
-					Scene::renderer.getActiveCamera()->renderTexture.create(width, height);
+					if(Scene::renderer.getActiveCamera()) 
+					{
+						Scene::renderer.getActiveCamera()->setPerspectiveProjection(Scene::renderer.getActiveCamera()->getFOV(), float(width) / float(height), Scene::renderer.getActiveCamera()->getNear(), Scene::renderer.getActiveCamera()->getFar());
+						Scene::renderer.getActiveCamera()->renderTexture.create(width, height);
+					}
 				});
 			Graphics::window->WindowResize.subscribe(&Scene::rendererResizeEvent);
-			Scene::rootNode = new GameNode3D();
+
+			Scene::componentLoader.loadDir("mods");
+			Scene::loadFromJson(settingsJson["scene"]);
 
 			TE_DEBUG_INFO("Init Dear ImGUI");
 			// Setup Dear ImGui context
@@ -185,6 +201,8 @@ namespace TealEngine
 			ImGui_ImplOpenGL3_Init("#version 130");
 			// Setup Dear ImGui style
 			ImGui::StyleColorsLight();
+			
+			TE_DEBUG_INFO("Init finished");
 		}
 
 		bool isServer() 

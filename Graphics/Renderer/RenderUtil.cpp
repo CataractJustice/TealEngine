@@ -1,4 +1,3 @@
-#pragma once
 #include "RenderUtil.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/Mesh/Mesh.h"

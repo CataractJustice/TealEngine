@@ -9,25 +9,6 @@ namespace TealEngine
 {
 	namespace Core 
 	{
-		//initializing
-		//
-		//loading scene
-		//	loading resources
-		//	loading objects
-		//
-		//updating scene
-		//	window events
-		//	render 
-		//	update | fixed update
-		//		physic engine
-		//			check collisions
-		//			create collision evens
-		//			apply forces
-		//loop
-
-		//scene
-		//	GameNodes
-		//	Renderer	
 		namespace Scene 
 		{
 			extern DefferedRenderer renderer;
@@ -36,6 +17,7 @@ namespace TealEngine
 			void update();
 			float deltaTime();
 			GameNode3D* getRoot();
+			void loadFromJson();
 		}
 
 		extern std::map<std::string, std::string> settings;

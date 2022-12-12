@@ -2,17 +2,6 @@
 #include "libs/imgui/imgui.h"
 namespace TealEngine 
 {
-
-	void Component::setFactoryName(std::string name) 
-	{
-		factoryName = name;
-	}
-
-	std::string Component::getFactoryName() 
-	{
-		return factoryName;
-	}
-
 	void Component::attachTo(GameNode* node) 
 	{
 		if (parrent != node) 
@@ -44,21 +33,11 @@ namespace TealEngine
 
 	GameNode* Component::getParrent() { return parrent; }
 
-	Component::Component() : active(true) {};
+	Component::Component() : active(true), parrent(nullptr) {};
 
 	Component::~Component() 
 	{
 		if (parrent)
 			parrent->dettachComponent(this);
-	}
-
-	void Component::explorerDisplay() 
-	{
-		if(ImGui::TreeNode(getComponentName().c_str())) 
-		{
-			ImGui::Text("Properties");
-			ImGui::Checkbox("Active", &active);
-			ImGui::TreePop();
-		}
 	}
 }

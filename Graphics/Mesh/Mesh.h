@@ -1,7 +1,7 @@
 #pragma once
 #include "GameNode/GameNode3D.h"
 #include "Graphics/Shader/ShaderProgram.h"
-#include "Filesystem/loadStrFromFile.h"
+#include "FileSystem/loadStrFromFile.h"
 #include "libs/glm/glm.hpp"
 #include "GameNode/Component.h"
 using namespace glm;
@@ -18,7 +18,7 @@ namespace TealEngine
 		MESH_ATTRIBS_SIZE
 	};
 
-	class SharedMesh : public Component
+	class SharedMesh
 	{
 	protected:
 		unsigned int VAO;
@@ -59,7 +59,6 @@ namespace TealEngine
 		vector<unsigned int> indices;
 		
 	public:
-		RegisterComponent();
 		bool validation();
 		void apply();
 
@@ -83,8 +82,8 @@ namespace TealEngine
 		unsigned int getLength() override;
 		
 		//Modify
-		void addMesh(Mesh mesh);
-		void addMesh(Mesh mesh, mat4 transform, bool noRotation = false);
+		void addMesh(Mesh* mesh);
+		void addMesh(Mesh* mesh, mat4 transform, bool noRotation = false);
 		void calcNormals();
 		void calcTangets();
 		void clear();

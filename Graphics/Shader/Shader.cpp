@@ -1,11 +1,10 @@
-#pragma once
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
 #include "Shader.h"
-#include "Filesystem/loadStrFromFile.h"
+#include "FileSystem/loadStrFromFile.h"
 namespace TealEngine
 {
 	void Shader::loadFromFile(std::string path, unsigned int type)

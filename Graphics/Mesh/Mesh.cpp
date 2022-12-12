@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "Mesh.h"
 #include "System/Debug.h"
+#include <fstream>
 #include <limits>
 namespace TealEngine
 {
@@ -95,6 +96,9 @@ namespace TealEngine
 			usage = GL_STATIC_DRAW;
 		this->usage = usage;
 		ilength = new GLuint(0);
+		this->LODsCount = 0;
+		this->VBO = 0;
+		this->EBO = 0;
 	}
 
 	void Mesh::apply()
@@ -168,7 +172,7 @@ namespace TealEngine
 				}
 			}
 
-			if (VBO == NULL) 
+			if (!VBO) 
 			{
 				glGenBuffers(1, &VBO);
 				glGenBuffers(1, &EBO);
@@ -253,51 +257,69 @@ namespace TealEngine
 		vector<vec2> UVs;
 		vector<vec3> normals;
 		
-		FILE* file = fopen(path.c_str(), "r");
-		
+		std::ifstream file(path);
+
 		while (true) 
 		{
-			char header[256];
 			vec3 v3;
-			vec2 v2;
-			int indices[9];
 
-			int scanres = fscanf(file, "%s", header);
-			
-			if (scanres == EOF) 
+			if (file.eof()) 
 			{
 				break;
 			}
-			
-			else if (strcmp(header, "v") == 0) 
+
+			std::string word;
+			file >> word;
+
+			if(word == "v") 
 			{
-				fscanf(file, "%f %f %f", &v3.x, &v3.y, &v3.z);
+				file >> v3.x;
+				file >> v3.y;
+				file >> v3.z;
 				vertices.push_back(v3);
 			}
-			
-			else if (strcmp(header, "vt") == 0)
+			else
+			if(word == "vt") 
 			{
-				fscanf(file, "%f %f", &v2.x, &v2.y);
-				UVs.push_back(v2);
+				file >> v3.x;
+				file >> v3.y;
+				UVs.push_back(glm::vec2(v3.x, v3.y));
 			}
-			else if (strcmp(header, "vn") == 0)
+			else
+			if(word == "vn") 
 			{
-				fscanf(file, "%f %f %f", &v3.x, &v3.y, &v3.z);
+				file >> v3.x;
+				file >> v3.y;
+				file >> v3.z;
 				normals.push_back(v3);
 			}
-			else if (strcmp(header, "f") == 0)
+			else
+			if(word == "f") 
 			{
-				fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d", &indices[0], &indices[1], &indices[2], &indices[3], &indices[4], &indices[5], &indices[6], &indices[7], &indices[8]);
-				for (int i = 0; i < 9; i++) indices[i]--;
-				for (int j = 0; j < 3; j++)
+				for (int i = 0; i < 3; i++)
 				{
+					char triangleStr[256];
+					file >> triangleStr;
+					int indices[3];
+					char* c = triangleStr;
+					char* i1 = triangleStr;
+					while(*c != '/') c++;
+					*c = 0;
+					char* i2 = ++c;
+					while(*c != '/') c++;
+					*c = 0;
+					char* i3 = ++c;
+
+					indices[0] = std::atoi(i1) - 1;
+					indices[1] = std::atoi(i2) - 1;
+					indices[2] = std::atoi(i3) - 1;
+					
 					this->indices.push_back(this->indices.size());
-					this->vertices.push_back(vertices[indices[j * 3]]);
-					this->UVs.push_back(UVs[indices[j * 3 + 1]]);
-					this->normals.push_back(normals[indices[j * 3 + 2]]);
+					this->vertices.push_back(vertices[indices[0]]);
+					this->UVs.push_back(UVs[indices[1]]);
+					this->normals.push_back(normals[indices[2]]);
 				}
 			}
-			
 		}
 		
 		//this->removeDoubles();
@@ -318,44 +340,44 @@ namespace TealEngine
 		apply();
 	}
 
-	void Mesh::addMesh(Mesh mesh)
+	void Mesh::addMesh(Mesh* mesh)
 	{
 		unsigned offset = this->vertices.size();
-		for (int i = 0; i < mesh.indices.size(); i++) this->indices.push_back(mesh.indices[i] + offset);
-		if (this->attribs[MESH_ATTRIBS::VERTICES])this->vertices.insert(this->vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
-		if (this->attribs[MESH_ATTRIBS::NORMAL])this->normals.insert(this->normals.end(), mesh.normals.begin(), mesh.normals.end());
-		if (this->attribs[MESH_ATTRIBS::TANGET])this->tangets.insert(this->tangets.end(), mesh.tangets.begin(), mesh.tangets.end());
-		if (this->attribs[MESH_ATTRIBS::UV])this->UVs.insert(this->UVs.end(), mesh.UVs.begin(), mesh.UVs.end());
-		if (this->attribs[MESH_ATTRIBS::COLOR])this->colors.insert(this->colors.end(), mesh.colors.begin(), mesh.colors.end());
+		for (int i = 0; i < mesh->indices.size(); i++) this->indices.push_back(mesh->indices[i] + offset);
+		if (this->attribs[MESH_ATTRIBS::VERTICES]) for (int i = 0; i < mesh->vertices.size(); i++) this->vertices.push_back(mesh->vertices[i]);
+		if (this->attribs[MESH_ATTRIBS::NORMAL])  for (int i = 0; i < mesh->normals.size(); i++) this->normals.push_back(mesh->normals[i]);
+		if (this->attribs[MESH_ATTRIBS::TANGET]) for (int i = 0; i < mesh->tangets.size(); i++) this->tangets.push_back(mesh->tangets[i]);
+		if (this->attribs[MESH_ATTRIBS::UV]) for (int i = 0; i < mesh->UVs.size(); i++) this->UVs.push_back(mesh->UVs[i]);
+		if (this->attribs[MESH_ATTRIBS::COLOR]) for (int i = 0; i < mesh->colors.size(); i++) this->colors.push_back(mesh->colors[i]);
 	}
 
-	void Mesh::addMesh(Mesh mesh, mat4 transform, bool noRotation)
+	void Mesh::addMesh(Mesh* mesh, mat4 transform, bool noRotation)
 	{
 		unsigned offset = this->vertices.size();
-		for (int i = 0; i < mesh.indices.size(); i++)
-			this->indices.push_back(mesh.indices[i] + offset);
-		if (this->attribs[MESH_ATTRIBS::VERTICES])for (int i = 0; i < mesh.vertices.size(); i++) {vertices.push_back(vec3 (transform * vec4(mesh.vertices[i], 1.0f)));}
+		for (int i = 0; i < mesh->indices.size(); i++)
+			this->indices.push_back(mesh->indices[i] + offset);
+		if (this->attribs[MESH_ATTRIBS::VERTICES])for (int i = 0; i < mesh->vertices.size(); i++) {vertices.push_back(vec3 (transform * vec4(mesh->vertices[i], 1.0f)));}
 		if (this->attribs[MESH_ATTRIBS::NORMAL]) {
 			if(noRotation)
 			{
-				for (int i = 0; i < mesh.normals.size(); i++) normals.push_back(mesh.normals[i]);
+				for (int i = 0; i < mesh->normals.size(); i++) normals.push_back(mesh->normals[i]);
 				if (this->attribs[MESH_ATTRIBS::TANGET])
 				{
-					for (int i = 0; i < mesh.tangets.size(); i++) tangets.push_back(mesh.tangets[i]);
+					for (int i = 0; i < mesh->tangets.size(); i++) tangets.push_back(mesh->tangets[i]);
 				}
 			}
 			else 
 			{
 				mat4 nmodel = glm::transpose(glm::inverse(transform));
-				for (int i = 0; i < mesh.normals.size(); i++) normals.push_back(vec3(nmodel * vec4(mesh.normals[i], 0.0f)));
+				for (int i = 0; i < mesh->normals.size(); i++) normals.push_back(vec3(nmodel * vec4(mesh->normals[i], 0.0f)));
 				if (this->attribs[MESH_ATTRIBS::TANGET])
 				{
-					for (int i = 0; i < mesh.tangets.size(); i++) tangets.push_back(vec3(nmodel * vec4(mesh.tangets[i], 0.0f)));
+					for (int i = 0; i < mesh->tangets.size(); i++) tangets.push_back(vec3(nmodel * vec4(mesh->tangets[i], 0.0f)));
 				}
 			}
 		}
-		if (this->attribs[MESH_ATTRIBS::UV])this->UVs.insert(this->UVs.end(), mesh.UVs.begin(), mesh.UVs.end());
-		if (this->attribs[MESH_ATTRIBS::COLOR])this->colors.insert(this->colors.end(), mesh.colors.begin(), mesh.colors.end());
+		if (this->attribs[MESH_ATTRIBS::UV])this->UVs.insert(this->UVs.end(), mesh->UVs.begin(), mesh->UVs.end());
+		if (this->attribs[MESH_ATTRIBS::COLOR])this->colors.insert(this->colors.end(), mesh->colors.begin(), mesh->colors.end());
 	}
 
 	//M
@@ -538,7 +560,9 @@ namespace TealEngine
 
 	Mesh::~Mesh()
 	{
-		glDeleteBuffers(1, &VBO);
-		glDeleteBuffers(1, &EBO);
+		if(VBO)
+			glDeleteBuffers(1, &VBO);
+		if(EBO)
+			glDeleteBuffers(1, &EBO);
 	}
 }

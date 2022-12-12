@@ -386,14 +386,6 @@ namespace TealEngine {
 		if(ImGui::TreeNode(((this->name.length() ? this->name : std::string("unnamed")) + " [" + std::to_string(id) + "]").c_str()))
 		{
 			ImGui::Checkbox("Active", &active);
-			if (ImGui::TreeNode("Components")) 
-			{
-				for (Component* comp : components)
-				{
-					comp->explorerDisplay();
-				}
-				ImGui::TreePop();
-			}
 			for(GameNode* node : this->childNodes) 
 			{
 				node->displayNodeTree(false);

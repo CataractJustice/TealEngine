@@ -1,8 +1,7 @@
 #pragma once
 #include "GameNode.h"
 
-#define RegisterComponent()\
-virtual std::string getComponentName() override {return typeid(*this).name();}
+#define RegisterComponent()
 
 namespace TealEngine 
 {
@@ -17,9 +16,6 @@ namespace TealEngine
 		std::string factoryName;
 		bool active;
 	public:
-
-		void setFactoryName(std::string name);
-		std::string getFactoryName();
 		bool isActive();
 		inline bool getActive() { return active; };
 		inline void setActive(bool active) { this->active = active; };
@@ -60,9 +56,5 @@ namespace TealEngine
 		}
 		Component();
 		virtual ~Component();
-
-		virtual std::string getComponentName() { return "Unregistred Component"; };
-
-		void explorerDisplay();
 	};
 }

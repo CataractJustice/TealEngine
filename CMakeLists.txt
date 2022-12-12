@@ -2,27 +2,78 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(TealEngine VERSION 0.0.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-file(GLOB_RECURSE CPP_SOURCES Debug/*.cpp DevTools/*.cpp EventSystem/*.cpp GameNode/*.cpp Graphics/*.cpp Math/*.cpp Physics/*.cpp System/*.cpp Utils/*.cpp)
+file(GLOB_RECURSE
+SUBDIR_SOURCES
+DevTools/*.cpp 
+EventSystem/*.cpp 
+FileSystem/*.cpp 
+GameNode/*.cpp 
+Graphics/*.cpp 
+Math/*.cpp 
+Physics/*.cpp 
+System/*.cpp
+NlohmannJson/*.cpp 
+Utils/*.cpp
+)
 
-add_executable(${PROJECT_NAME} main.cpp Core.cpp Resources.cpp libs/imgui/backends/imgui_impl_opengl3.cpp libs/imgui/backends/imgui_impl_glfw.cpp ${CPP_SOURCES})
+set(SOURCES ${SUBDIR_SOURCES} 
+Core.cpp 
+Resources.cpp
+libs/imgui/imgui.cpp
+libs/imgui/imgui_tables.cpp
+libs/imgui/imgui_draw.cpp
+libs/imgui/imgui_widgets.cpp
+libs/imgui/backends/imgui_impl_opengl3.cpp 
+libs/imgui/backends/imgui_impl_glfw.cpp
+)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ./)
+add_executable(${PROJECT_NAME}Launcher
+main.cpp
+${SOURCES}
+)
 
+add_library(${PROJECT_NAME} SHARED
+${SOURCES}
+)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ./libs/)
-target_include_directories(${PROJECT_NAME} PRIVATE ./libs/imgui)
+add_subdirectory(libs/glfw)
+add_subdirectory(libs/freetype2)
 
-find_package(glfw3 REQUIRED)
-target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIR})
+set(INCLUDE_DIRS
+PUBLIC ./ 
+PUBLIC ./libs 
+PUBLIC ./libs/imgui 
+PUBLIC ./libs/glfw/include 
+PUBLIC ./libs/glew-2.2.0/include
+PUBLIC ./libs/freetype2/include
+PUBLIC ${OPENGL_INCLUDE_DIR}
+)
 
-find_package(GLEW REQUIRED)
-target_link_libraries(${MAIN} GLEW::GLEW)
+target_include_directories(${PROJECT_NAME} ${INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME}Launcher ${INCLUDE_DIRS})
 
-find_package(Freetype REQUIRED)
-target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${FREETYPE_INCLUDE_DIRS})
+set(LINK_DIRS
+PUBLIC libs/glfw/src
+PUBLIC libs/glew/lib
+PUBLIC libs/freetype2
+)
 
+target_link_directories(${PROJECT_NAME} ${LINK_DIRS})
+target_link_directories(${PROJECT_NAME}Launcher ${LINK_DIRS})
+
+set(LINK_LIBS 
+${OPENGL_LIBRARY}
+PUBLIC glfw
+PUBLIC glfw3
+PUBLIC GLEW
+PUBLIC GL
+PUBLIC ${OPENGL_LIBRARY}
+PUBLIC freetype
+)
+
+target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
+target_link_libraries(${PROJECT_NAME}Launcher ${LINK_LIBS})

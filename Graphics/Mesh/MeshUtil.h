@@ -18,7 +18,7 @@ namespace TealEngine
 				FRONT,
 				BACK
 			};
-			Mesh getCubeFace(CubeFace face);
+			Mesh* getCubeFace(CubeFace face);
 		}
 
 		void init();

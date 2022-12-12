@@ -30,6 +30,7 @@ namespace TealEngine {
 	}
 	void DefferedRenderer::render(GameNode* scene)
 	{
+		if(!activeCamera) return;
 		//TE_DEBUG_INFO("Configuring framebuffer.");
 		fb.bind();
 		fb.attachTexture(activeCamera->renderTexture.id(), 0);

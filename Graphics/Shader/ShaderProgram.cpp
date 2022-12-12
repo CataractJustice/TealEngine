@@ -1,7 +1,6 @@
-#pragma once
 #define GLEW_STATIC
 #include "ShaderProgram.h"
-#include "Filesystem/loadStrFromFile.h"
+#include "FileSystem/loadStrFromFile.h"
 #include "Graphics/Graphics.h"
 #include "System/Debug.h"
 #include <iostream>

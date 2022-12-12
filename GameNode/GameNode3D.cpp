@@ -119,15 +119,7 @@ namespace TealEngine
 			{
 				transform.setRotation(glm::quat(glm::vec3(rotation[0], rotation[1], rotation[2])));
 			}
-
-			if (ImGui::TreeNode("Components"))
-			{
-				for (Component* comp : components)
-				{
-					comp->explorerDisplay();
-				}
-				ImGui::TreePop();
-			}
+			
 			for (GameNode* node : this->childNodes)
 			{
 				node->displayNodeTree(false);

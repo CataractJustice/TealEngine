@@ -3,6 +3,8 @@
 #include "FreeTypeUtil.h"
 #include "Graphics/Texture/Texture.h"
 #include "libs/glm/vec2.hpp"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <map>
 namespace TealEngine 
 {
@@ -20,7 +22,7 @@ namespace TealEngine
 	class Font 
 	{
 	private:
-		void* face;
+		FT_Face face;
 		int height;
 		std::map<font_char_type, FontCharacter> characters;
 

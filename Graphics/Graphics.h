@@ -1,5 +1,5 @@
 #pragma once
-#include "libs/glew/include/GL/glew.h"
+#include "libs/glew-2.2.0/include/GL/glew.h"
 #include "libs/glfw/include/GLFW/glfw3.h"
 #include <string>
 #include "EventSystem/EventPublisher.h"
