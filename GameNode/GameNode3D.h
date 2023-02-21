@@ -2,17 +2,22 @@
 #include "Transform.h"
 #include "GameNode.h"
 #include "EventSystem/EventListener.h"
+#include "NlohmannJson/json.hpp"
+#include "Properties/TransformProp.h"
+
+using Json = nlohmann::json;
 
 namespace TealEngine 
 {
 	class GameNode3D : public GameNode
 	{
 	private:
-		Transform lastWorldTransform, lastTransfrom, lastParrentWorldTransform;
-		unsigned int transformLastModifyStamp, parrentWorldTransformLastModifyStamp;
-		bool hasGameNode3DParrent;
+		Transform lastWorldTransform, lastTransfrom, lastParentWorldTransform;
+		unsigned int transformLastModifyStamp, parentWorldTransformLastModifyStamp;
+		bool hasGameNode3DParent;
 
-		void setParrent(GameNode* parrent) override;
+		void setParent(GameNode* parent) override;
+		TransformProp* transformProp;
 
 	protected:
 		Transform transform;
@@ -32,6 +37,9 @@ namespace TealEngine
 
 		virtual void setRelativeTransform(const Transform& transform);
 
-		void displayNodeTree(bool windowBegin) override;
+		static GameNode3D* nodeFromJson(const Json& json);
+		static GameNode3D* loadNodeFromJsonFile(const std::filesystem::path& path);
+		Json toJson() override;
+		void displayProps() override;
 	};
 }

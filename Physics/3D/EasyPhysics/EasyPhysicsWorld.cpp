@@ -10,7 +10,7 @@ void TealEngine::Physics::EasyPhysics::EasyPhysicsWorld::solveCollisions()
 	const float gridScale = 4.0f;
 	for (auto it = colliders.begin(); it != colliders.end(); it++)
 	{
-		glm::vec3 pos = (*it)->getParrentOfType<GameNode3D>()->getRelativeTransform().getPosition();
+		glm::vec3 pos = (*it)->getParentOfType<GameNode3D>()->getRelativeTransform().getPosition();
 		glm::ivec3 gridPos = glm::ivec3(pos / gridScale) - glm::ivec3(pos.x < 0.0f, pos.y < 0.0f, pos.z < 0.0f);
 
 		if (((EasyCollider*)(*it))->radius > gridScale)
@@ -43,8 +43,8 @@ void TealEngine::Physics::EasyPhysics::EasyPhysicsWorld::solveCollisions()
 				bool c2coll = (*it2)->canCollideWith(*it);
 				EasyCollider* c1 = (EasyCollider*)(*(it));
 				EasyCollider* c2 = (EasyCollider*)(*(it2));
-				GameNode3D* p1 = c1->getParrentOfType<GameNode3D>();
-				GameNode3D* p2 = c2->getParrentOfType<GameNode3D>();
+				GameNode3D* p1 = c1->getParentOfType<GameNode3D>();
+				GameNode3D* p2 = c2->getParentOfType<GameNode3D>();
 				Transform& t1 = p1->getRelativeTransform();
 				Transform& t2 = p2->getRelativeTransform();
 				if (c1coll || c2coll)

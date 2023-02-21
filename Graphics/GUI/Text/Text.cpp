@@ -2,15 +2,26 @@
 #include "Resources.h"
 #include "Graphics/FrameBuffer/FrameBuffer.h"
 #include "Math/map.h"
+#include "GameNode/ComponentFactory.h"
+
 namespace TealEngine
 {
-
 	Font* font;
-	const wstring& Text::getText() {
+
+	Text::Text() 
+	{
+		addProp(new StringKeyMapValuePointerProp(&font, &Resources::getFontsMap()), "Font");
+		addProp(new StringProp(&text), "Text");
+		addProp(new ColorProp(glm::value_ptr(color)), "Color");
+		addProp(new FloatProp(&scale), "Font scale");
+		addProp(new FloatVecProp(glm::value_ptr(this->screenPosition), 2), "Screen position");
+	}
+
+	const std::string& Text::getText() {
 		return this->text;
 	}
 
-	void Text::setText(const wstring& text) {
+	void Text::setText(const std::string& text) {
 		if (!text.compare(this->text)) return;
 		this->text = text;
 		this->refresh();
@@ -33,6 +44,12 @@ namespace TealEngine
 	}
 	//displays text
 	void Text::GUIrender() {
+
+		static float oldScale = this->scale;
+		static std::string oldText = this->text;
+		static Font* oldFont = this->font;
+		if(oldScale != scale || oldText != text || oldFont != font) refresh();
+
 		if (rect.w == rect.y)
 			return;
 		glDisable(GL_DEPTH_TEST);
@@ -51,9 +68,9 @@ namespace TealEngine
 		std::vector<glm::vec4>  charRects;
 		charRects.reserve(this->text.length());
 		glm::vec2 cursor(0.0f);
-		for (wchar_t c : text)
+		for (char c : text)
 		{
-			if (c == L'\n')
+			if (c == '\n')
 			{
 				cursor = glm::vec2(0.0f, cursor.y + (float)font->getPixelSizes() * 2.0f);
 				continue;
@@ -108,4 +125,6 @@ namespace TealEngine
 	}
 
 	FrameBuffer Text::TextRenderBuffer;
+
+	EXPORT_COMPONENT(Text);
 }

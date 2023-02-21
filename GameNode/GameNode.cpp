@@ -1,23 +1,28 @@
-#include "GameNode.h"
+#include "GameNode3D.h"
 #include <unordered_set>
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Component.h"
 #include "libs/imgui/imgui.h"
-
+#include "ComponentFactory.h"
+#include "libs/tinyfiledialogs.h"
+#include <fstream>
+#include "Core.h"
+#include "Editor/Actions/NodeCreateAction.h"
+#include "Editor/Actions/NodeDeleteAction.h"
 using namespace std;
 namespace TealEngine {
 
 	unordered_set<GameNode*> GameNode::allNodes = unordered_set<GameNode*>(8192);
 	map<string, set<GameNode*>> GameNode::tagged = map<string, set<GameNode*>>();
 
-	//sets parrent of a node, calls GameNode::onParrentChange after setting new parrent
-	void GameNode::setParrent(GameNode* parrent)
+	//sets parent of a node, calls GameNode::onParentChange after setting new parent
+	void GameNode::setParent(GameNode* parent)
 	{
-		if (this->parrent)
-			this->parrent->removeChild(this);
-		this->parrent = parrent;
-		this->hierarchyDepth = parrent->getHierarchyDepth() + 1;
-		onParrentChange();
+		if (this->parent)
+			this->parent->removeChild(this);
+		this->parent = parent;
+		this->hierarchyDepth = parent->getHierarchyDepth() + 1;
+		onParentChange();
 	}
 
 	const std::string& GameNode::getName() { return name; }
@@ -69,10 +74,10 @@ namespace TealEngine {
 	}
 	void GameNode::dettachComponent(Component* component) 
 	{
-		if (component->getParrent() == this) 
+		if (component->getParent() == this) 
 		{
 			components.remove(component);
-			component->parrent = nullptr;
+			component->parent = nullptr;
 		}
 		else
 		{
@@ -87,7 +92,7 @@ namespace TealEngine {
 
 	GameNode* GameNode::addChild(GameNode* node)
 	{
-		node->setParrent(this);
+		node->setParent(this);
 		this->childNodes.push_back(node);
 		ChildNodeAddEvent e = ChildNodeAddEvent(node);
 		handleEvent(&e);
@@ -101,12 +106,12 @@ namespace TealEngine {
 
 	void GameNode::removeChild(GameNode* node)
 	{
-		if (node->getParrent() == this) 
+		if (node->getParent() == this) 
 		{
 			this->childNodes.remove(node);
 			ChildNodeRemoveEvent e = ChildNodeRemoveEvent(node);
 			handleEvent(&e);
-			node->parrent = nullptr;
+			node->parent = nullptr;
 		}
 		else
 		{
@@ -149,11 +154,11 @@ namespace TealEngine {
 		return res;
 	}
 
-	GameNode* GameNode::getParrent()
+	GameNode* GameNode::getParent()
 	{
-		return parrent;
+		return parent;
 	}
-	bool GameNode::getActive() { return active && (getParrent() ? getParrent()->getActive() : true); }
+	bool GameNode::getActive() { return active && (getParent() ? getParent()->getActive() : true); }
 	//events:
 	void GameNode::setActive(bool active) 
 	{
@@ -168,17 +173,20 @@ namespace TealEngine {
 						comp->onSleep();
 		this->active = active;
 	}
-	void GameNode::onParrentChange() 
+	void GameNode::onParentChange() 
 	{
 		for (Component* comp : components)
-			comp->onParrentChange();
+			comp->onParentChange();
 	};
 	void GameNode::update()
 	{
 		if (!active) return;
 		for (Component* comp : components)
-			if(comp->getActive())
+			if(comp->getActive()) 
+			{
 				comp->update();
+				comp->editorUpdate();
+			}
 	};
 
 	void GameNode::updateAll()
@@ -191,6 +199,20 @@ namespace TealEngine {
 		}
 		//update this node
 		this->update();
+	}
+
+	void GameNode::editorUpdate() 
+	{
+		if(!active) return;
+
+		for(GameNode* node : childNodes) 
+		{
+			node->editorUpdate();
+		}
+		for(Component* component : components) 
+		{
+			component->editorUpdate();
+		}
 	}
 
 	void GameNode::addEventListener(EventType type, eventListenerFunc ex)
@@ -223,7 +245,7 @@ namespace TealEngine {
 				child->handleEvent(e, true);
 		}
 		
-		if (this->parrent && toUpper) this->parrent->handleEvent(e);
+		if (this->parent && toUpper) this->parent->handleEvent(e);
 	}
 
 	//Network:
@@ -241,18 +263,20 @@ namespace TealEngine {
 		willBeDestroyed = false;
 		childNodes = list<GameNode*>(0);
 		components = list<Component*>(0);
-		parrent = NULL;
+		parent = NULL;
 		hierarchyDepth = 0;
 		allNodes.insert(this);
 		active = true;
-		id = lastId;
-		lastId++;
+		id = 0;
+		GameNode::idMap[id] = this;
+		this->loadedFromFilePath = "";
 	}
 
 	GameNode::~GameNode()
 	{
-		//removing node from parrent child nodes
-		if (parrent) parrent->removeChild(this);
+		if(GameNode::selectedNode == this) GameNode::selectedNode = nullptr;
+		//removing node from parent child nodes
+		if (parent) parent->removeChild(this);
 		if(!onDestroyHasBeenCalled)
 			if(components.size())
 				for (Component* comp : components)
@@ -295,8 +319,8 @@ namespace TealEngine {
 				comp->onCollision(collision);
 		}
 
-		if(eventUp && this->parrent)
-			this->parrent->onCollision(collision, false);
+		if(eventUp && this->parent)
+			this->parent->onCollision(collision, false);
 
 		if(eventDown) 
 		{
@@ -322,18 +346,18 @@ namespace TealEngine {
 		}
 	}
 
-	void GameNode::imGUIrender()
+	void GameNode::imGuiRender(const std::string& windowName)
 	{
 		if (!active) return;
 		for (Component* comp : components)
 		{
 			if (comp->getActive())
-				comp->imGUIrender();
+				comp->imGuiRender(windowName);
 		}
 
 		for (GameNode* node : childNodes)
 		{
-			node->imGUIrender();
+			node->imGuiRender(windowName);
 		}
 	}
 
@@ -349,6 +373,21 @@ namespace TealEngine {
 		for (GameNode* node : childNodes)
 		{
 			node->render(shader, stages);
+		}
+	}
+
+	void GameNode::renderId()
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->renderId();
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->renderId();
 		}
 	}
 
@@ -377,27 +416,149 @@ namespace TealEngine {
 	}
 
 
-	void GameNode::displayNodeTree(bool windowBegin) 
+	void GameNode::displayNodeTree() 
 	{
-		if(windowBegin) 
+		ImGuiTreeNodeFlags nodeFlags = 
+		ImGuiTreeNodeFlags_AllowItemOverlap | 
+		ImGuiTreeNodeFlags_OpenOnArrow | 
+		ImGuiTreeNodeFlags_OpenOnDoubleClick |
+		ImGuiTreeNodeFlags_SpanAvailWidth;
+		if(GameNode::getSelectedNode() == this) { nodeFlags |= ImGuiTreeNodeFlags_Selected; }
+
+		std::string nodeLabel = (this->name.length() ? this->name : std::string("unnamed"));
+		std::string nodeId = std::to_string((long)this);
+
+		bool treeOpen = ImGui::TreeNodeEx((nodeLabel + "###" + nodeId).c_str(), nodeFlags);
+
+		if(ImGui::BeginDragDropSource()) 
 		{
-			ImGui::Begin("Node tree");
+			ImGui::Text("%s", this->name.c_str());
+			GameNode* lvalueThis = this;
+			ImGui::SetDragDropPayload("GameNode", &lvalueThis, sizeof(GameNode*));
+			ImGui::EndDragDropSource();
 		}
-		if(ImGui::TreeNode(((this->name.length() ? this->name : std::string("unnamed")) + " [" + std::to_string(id) + "]").c_str()))
+
+		if(ImGui::BeginDragDropTarget()) 
 		{
+			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GameNode")) 
+			{
+				GameNode* childNode = *((GameNode**)payload->Data);
+				if(childNode != this && childNode->parent != this) 
+				{
+					this->addChild(childNode);
+				}
+			}
+
+			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeFilePath")) 
+			{
+				std::ifstream nodefile((char*)payload->Data);
+				GameNode* loadedNode = GameNode3D::nodeFromJson(Json::parse(nodefile));
+				this->addChild(loadedNode);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if(ImGui::IsItemClicked(1)) 
+		{
+			GameNode::setSelectedNode(this);
+		}
+		
+		if(ImGui::BeginPopupContextItem()) 
+		{
+			if(ImGui::MenuItem("Add empty child")) 
+			{
+				GameNode* newNode = new GameNode3D();
+				this->addChild(newNode);
+				Core::actionList.pushAction(new NodeCreateAction(newNode));
+			}
+			if(this->getParent()) 
+			{
+				if(ImGui::MenuItem("Delete this node and its childs")) 
+				{
+					Core::actionList.pushAction(new NodeDeleteAction(this)); 
+					this->destroy();
+				};
+			}
+			ImGui::EndPopup();
+		}
+		
+		if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete node");
+		
+		if(treeOpen)
+		{
+			ImGui::InputText("name", &this->name);
 			ImGui::Checkbox("Active", &active);
 			for(GameNode* node : this->childNodes) 
 			{
-				node->displayNodeTree(false);
+				node->displayNodeTree();
 			}
 			ImGui::TreePop();
 		}
-		if(windowBegin) 
+	}
+
+	Json GameNode::toJson() 
+	{
+		return Json("");
+	}
+
+	int GameNode::getId() 
+	{
+		if(!id) 
 		{
-			ImGui::End();
+			while(idMap.find(++lastId) != idMap.cend());
+			idMap[lastId] = this;
+			id = lastId;
+		}
+		return this->id;
+	}
+	
+	void GameNode::setId(int id) 
+	{
+		GameNode::idMap.erase(this->id);
+		auto newIdIt = idMap.find(id);
+		if(newIdIt != GameNode::idMap.cend()) 
+		{
+			return;
+		}
+		this->id = id;
+		GameNode::idMap[id] = this;
+	}
+
+	void GameNode::displayProps() 
+	{
+		for(Component* comp : components) 
+		{
+			comp->displayProps();
 		}
 	}
 
+	GameNode* GameNode::getNodeById(int id) 
+	{
+		auto it = GameNode::idMap.find(id);
+		return ((it == GameNode::idMap.cend()) ? nullptr : it->second);
+	}
+
+	void GameNode::setNodeFilePath(std::filesystem::path path) 
+	{
+		this->loadedFromFilePath = path.string();
+	}
+
+	void GameNode::save() 
+	{
+		if(loadedFromFilePath.length() != 0)
+		this->saveAs(this->loadedFromFilePath);
+	}
+	void GameNode::saveAs(const std::filesystem::path& path) 
+	{
+		std::ofstream savefile(path);
+		savefile << this->toJson();
+		savefile.close();
+	}
+
+	std::map<int, GameNode*> GameNode::idMap;
 	std::queue<GameNode*> GameNode::destroyQueue;
-	unsigned int GameNode::lastId = 0;
+	unsigned int GameNode::lastId = 1;
+	GameNode* GameNode::selectedNode = nullptr;
+	GameNode* GameNode::getSelectedNode() { return GameNode::selectedNode;  }
+	void GameNode::setSelectedNode(GameNode* node) { GameNode::selectedNode = node; }
 }

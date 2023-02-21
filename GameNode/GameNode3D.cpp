@@ -2,6 +2,9 @@
 #include "DefaultTags.h"
 #include "Component.h"
 #include "libs/imgui/imgui.h"
+#include "ComponentFactory.h"
+#include "libs/glm/gtc/type_ptr.hpp"
+#include <fstream>
 using namespace glm;
 
 namespace TealEngine
@@ -9,7 +12,8 @@ namespace TealEngine
 	GameNode3D::GameNode3D()
 	{
 		addTag(GAME_NODE_3D_TAG);
-		hasGameNode3DParrent = false;
+		hasGameNode3DParent = false;
+		this->transformProp = new TransformProp(&this->getRelativeTransform());
 	}
 
 	GameNode3D::~GameNode3D() 
@@ -21,40 +25,40 @@ namespace TealEngine
 		onDestroyHasBeenCalled = true;
 	}
 
-	void GameNode3D::setParrent(GameNode* parrent)
+	void GameNode3D::setParent(GameNode* parent)
 	{
-		GameNode::setParrent(parrent);
-		if (parrent) 
-			hasGameNode3DParrent = parrent->hasTag(GAME_NODE_3D_TAG);
+		GameNode::setParent(parent);
+		if (parent) 
+			hasGameNode3DParent = parent->hasTag(GAME_NODE_3D_TAG);
 		else 
-			hasGameNode3DParrent = false;
+			hasGameNode3DParent = false;
 	}
 
 	Transform& GameNode3D::getWorldTransform()
 	{
-		if (hasGameNode3DParrent)
+		if (hasGameNode3DParent)
 		{
-			Transform& parrentTransform = ((GameNode3D*)parrent)->getWorldTransform();
-			bool parrentTransformModified = parrentTransform.getLastModifyStamp() != parrentWorldTransformLastModifyStamp;
+			Transform& parentTransform = ((GameNode3D*)parent)->getWorldTransform();
+			bool parentTransformModified = parentTransform.getLastModifyStamp() != parentWorldTransformLastModifyStamp;
 			bool transformModified = transformLastModifyStamp != transform.getLastModifyStamp();
-			if (parrentTransformModified || transformModified)
+			if (parentTransformModified || transformModified)
 			{
-				parrentWorldTransformLastModifyStamp = parrentTransform.getLastModifyStamp();
+				parentWorldTransformLastModifyStamp = parentTransform.getLastModifyStamp();
 				transformLastModifyStamp = transform.getLastModifyStamp();
 				
 				bool shouldUpdate = false;
 				
-				if (parrentTransformModified)
-					if (!(lastParrentWorldTransform == parrentTransform)) shouldUpdate = true;
+				if (parentTransformModified)
+					if (!(lastParentWorldTransform == parentTransform)) shouldUpdate = true;
 				
 				if (!shouldUpdate && transformModified)
 					if (!(lastTransfrom == transform)) shouldUpdate = true;
 				
 				if (shouldUpdate)
 				{
-					lastWorldTransform = transform * parrentTransform;
+					lastWorldTransform = transform * parentTransform;
 					lastTransfrom = transform;
-					lastParrentWorldTransform = parrentTransform;
+					lastParentWorldTransform = parentTransform;
 				}
 			}
 			return lastWorldTransform;
@@ -65,8 +69,8 @@ namespace TealEngine
 
 	void GameNode3D::setWorldTransform(Transform transform)
 	{
-		if (dynamic_cast<GameNode3D*>(parrent))
-			this->transform = transform / ((GameNode3D*)parrent)->getWorldTransform();
+		if (dynamic_cast<GameNode3D*>(parent))
+			this->transform = transform / ((GameNode3D*)parent)->getWorldTransform();
 		else
 			this->transform = transform;
 	}
@@ -86,49 +90,84 @@ namespace TealEngine
 		this->transform = transform;
 	}
 
-	void GameNode3D::displayNodeTree(bool windowBegin)
+	GameNode3D* GameNode3D::nodeFromJson(const Json& json) 
 	{
-		if (windowBegin)
+		GameNode3D* node = new GameNode3D();
+		
+		auto componentsIt = json.find("components");
+		
+		if(componentsIt != json.cend()) 
 		{
-			ImGui::Begin("Node tree");
+			for(const Json& componentJson : *componentsIt)
+			{
+				Component* comp = Component::fromJson(componentJson);
+				if(comp) 
+				{
+					node->attachComponent(comp);
+				}
+			}
 		}
-		if (ImGui::TreeNode(((this->name.length() ? this->name : std::string("unnamed3D")) + " [" + std::to_string(id) + "]").c_str()))
+		
+		if(json.find("nodes") != json.cend()) 
 		{
-			ImGui::Checkbox("Active", &active);
-
-			float pos[3] = { transform.getX(), transform.getY(), transform.getZ() };
-			float oldPos[3] = { transform.getX(), transform.getY(), transform.getZ() };
-			ImGui::InputFloat3("Position", pos);
-			if(memcmp(pos, oldPos, sizeof(float[3])))
+			const Json& subNodes = json["nodes"];
+			for(const Json& subNodeJson : subNodes) 
 			{
-				transform.setPosition(glm::vec3(pos[0], pos[1], pos[2]));
+				GameNode3D* subNode = nodeFromJson(subNodeJson);
+				node->addChild(subNode);
 			}
-
-			glm::vec3 oldScale = transform.getScale();
-			float scale[3] = { oldScale.x, oldScale.y, oldScale.z };
-			ImGui::InputFloat3("Scale", scale);
-			if (scale[0] != oldScale.x || scale[1] != oldScale.y || scale[2] != oldScale.z)
-			{
-				transform.setScale(glm::vec3(scale[0], scale[1], scale[2]));
-			}
-
-			glm::quat oldRotation = transform.getRotation();
-			float rotation[3] = { oldRotation.x, oldRotation.y, oldRotation.z };
-			ImGui::InputFloat3("Roatation", rotation);
-			if (rotation[0] != oldRotation.x || rotation[1] != oldRotation.y || rotation[2] != oldRotation.z)
-			{
-				transform.setRotation(glm::quat(glm::vec3(rotation[0], rotation[1], rotation[2])));
-			}
-			
-			for (GameNode* node : this->childNodes)
-			{
-				node->displayNodeTree(false);
-			}
-			ImGui::TreePop();
 		}
-		if (windowBegin)
+		if(json.find("name") != json.cend()) 
 		{
-			ImGui::End();
+			node->rename(json["name"]);
 		}
+
+		if(json.find("id") != json.cend()) 
+		{
+			node->setId(json["id"]);
+		}
+		
+		if(json.find("transform") != json.cend()) 
+		{
+			node->transformProp->set(json["transform"]);
+		}
+		return node;
+	}
+
+	Json GameNode3D::toJson()
+	{
+		Json json;
+		json["name"] = this->name;
+		json["id"] = this->id;
+		json["transform"] = this->transformProp->get();
+		json["filepath"] = this->loadedFromFilePath;
+		std::vector<Json> componentsJson;
+		for(Component* comp : components) 
+		{
+			componentsJson.push_back(comp->toJson());
+		}
+		json["components"] = componentsJson;
+
+		std::vector<Json> nodesJson;
+		for(GameNode* node : childNodes) 
+		{
+			nodesJson.push_back(((GameNode3D*)node)->toJson());
+		}
+		json["nodes"] = nodesJson;
+		return json;
+	}
+
+	GameNode3D* GameNode3D::loadNodeFromJsonFile(const std::filesystem::path& path) 
+	{
+		std::ifstream file(path);
+		GameNode3D* node = GameNode3D::nodeFromJson(Json::parse(file));
+		node->setNodeFilePath(path);
+		return node;
+	}
+
+	void GameNode3D::displayProps() 
+	{
+		this->transformProp->display("Transform");
+		GameNode::displayProps();
 	}
 }

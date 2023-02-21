@@ -13,14 +13,16 @@ namespace TealEngine
 	namespace Resources
 	{
 		std::map<std::string, Font> fonts;
-		std::map<std::string, Mesh*> models;
+		std::map<std::string, Mesh> models;
 		std::map<std::string, ShaderProgram> shaders;
 		std::map<std::string, Texture> textures;
 		std::map<std::string, ShaderProgram> materials;
 
-		void MaterialsInit()
-		{
-		}
+		std::map<std::string, Font>& getFontsMap() {return fonts;};
+		std::map<std::string, Mesh>& getModelsMap() {return models;};
+		std::map<std::string, ShaderProgram>& getShadersMap() {return shaders;};
+		std::map<std::string, Texture>& getTexturesMap() {return textures;};
+		std::map<std::string, ShaderProgram>& getMaterialsMap() {return materials;};
 
 		void load(std::string path)
 		{
@@ -30,22 +32,12 @@ namespace TealEngine
 			for (int i = 0; i < itemList.size(); i++)
 			{
 				TE_DEBUG_INFO("Model [" + std::to_string(i) + "/" + std::to_string(itemList.size()) + "]: " + itemList[i]    );
-				models[itemList[i]] = new Mesh();
-				models[itemList[i]]->load(path + "/models/" + itemList[i]);
+				models[itemList[i]] = Mesh();
+				models[itemList[i]].load(path + "/models/" + itemList[i]);
 			}
 
 			TE_DEBUG_INFO("Loading shaders.");
-			//Shaders loading
-			std::ifstream shaderProgramsFile(path + "/shaders/shaderprograms.json");
-			Json shaderPrograms = Json::parse(shaderProgramsFile);
-			for(Json shaderProgram : shaderPrograms) 
-			{
-				Shader vert, frag;
-				vert.loadFromFile(std::string(path + "/shaders/") + (std::string)shaderProgram["vert"], GL_VERTEX_SHADER);
-				frag.loadFromFile(std::string(path + "/shaders/") + (std::string)shaderProgram["frag"], GL_FRAGMENT_SHADER);
-				shaders[(std::string)shaderProgram["name"]] = ShaderProgram();
-				shaders[(std::string)shaderProgram["name"]].link(vert.id(), frag.id());
-			}
+			ShaderProgram::loadShadersFromJson(shaders, path + "/shaders/shaderprograms.json");
 
 			TE_DEBUG_INFO("Loading textures.");
 			//Textures loading
@@ -66,9 +58,6 @@ namespace TealEngine
 				fonts[item] = Font(path + "/fonts/" + item);
 				fonts[item].setPixelSizes(64);
 			}
-
-			TE_DEBUG_INFO("Generating materials.");
-			MaterialsInit();
 		}
 
 		bool isResourceExist(RESOURCE_TYPE resourceType, std::string key) 
@@ -104,7 +93,7 @@ namespace TealEngine
 		}
 
 
-		Mesh* getModel(std::string key)
+		Mesh& getModel(std::string key)
 		{
 			if (!isResourceExist(MODEL_RESOURCE, key))
 			{
@@ -113,7 +102,7 @@ namespace TealEngine
 			return models[key];
 		}
 
-		Texture getTexture(std::string key)
+		Texture& getTexture(std::string key)
 		{
 			if (!isResourceExist(TEXTURE_RESOURCE, key))
 			{
@@ -122,7 +111,7 @@ namespace TealEngine
 			return textures[key];
 		}
 
-		void addMaterial(std::string key, ShaderProgram& material) 
+		void addMaterial(std::string key, const ShaderProgram& material) 
 		{
 			materials[key] = material;
 		}
@@ -148,6 +137,127 @@ namespace TealEngine
 		Font& getDefaultFont() 
 		{
 			return fonts["comici.ttf"];
+		}
+
+		const char** getCStrListOfResources(RESOURCE_TYPE type) 
+		{
+			static const char* list[4096];
+			int i = 0;
+			switch(type) 
+			{
+				case RESOURCE_TYPE::FONT_RESOURCE:
+					for(auto& p : fonts) 
+					{
+						list[i++] = p.first.c_str();
+					}
+				break;
+
+				case RESOURCE_TYPE::MATERIAL_RESOURCE:
+					for(auto& p : materials) 
+					{
+						list[i++] = p.first.c_str();
+					}
+				break;
+
+				case RESOURCE_TYPE::MODEL_RESOURCE:
+					for(auto& p : models) 
+					{
+						list[i++] = p.first.c_str();
+					}
+				break;
+
+				case RESOURCE_TYPE::SHADER_RESOURCE:
+					for(auto& p : shaders) 
+					{
+						list[i++] = p.first.c_str();
+					}
+				break;
+				case RESOURCE_TYPE::TEXTURE_RESOURCE:
+					for(auto& p : textures) 
+					{
+						list[i++] = p.first.c_str();
+					}
+				break;
+			}
+
+			return list;
+		}
+
+		int getResoucesCount(RESOURCE_TYPE type) 
+		{
+			switch(type) 
+			{
+				case RESOURCE_TYPE::FONT_RESOURCE:
+					return fonts.size();
+				break;
+
+				case RESOURCE_TYPE::MATERIAL_RESOURCE:
+					return materials.size();
+				break;
+
+				case RESOURCE_TYPE::MODEL_RESOURCE:
+					return models.size();
+				break;
+
+				case RESOURCE_TYPE::SHADER_RESOURCE:
+					return shaders.size();
+				break;
+				case RESOURCE_TYPE::TEXTURE_RESOURCE:
+					return textures.size();
+				break;
+			}
+
+			return 0;
+		}
+		
+		void renameResouce(RESOURCE_TYPE type, const std::string& nameFrom, const std::string& nameTo) 
+		{
+			switch(type) 
+			{
+				case RESOURCE_TYPE::FONT_RESOURCE:
+				{
+					if(fonts.find(nameFrom) == fonts.cend()) return;
+					auto node = fonts.extract(nameFrom);
+					node.key() = nameTo;
+					fonts.insert(std::move(node));
+				}
+				break;
+
+				case RESOURCE_TYPE::MATERIAL_RESOURCE:
+				{
+					if(materials.find(nameFrom) == materials.cend()) return;
+					auto node = materials.extract(nameFrom);
+					node.key() = nameTo;
+					materials.insert(std::move(node));
+				}
+				break;
+
+				case RESOURCE_TYPE::MODEL_RESOURCE:
+				{
+					if(models.find(nameFrom) == models.cend()) return;
+					auto node = models.extract(nameFrom);
+					node.key() = nameTo;
+					models.insert(std::move(node));
+				}
+				break;
+
+				case RESOURCE_TYPE::SHADER_RESOURCE:
+				{
+					if(shaders.find(nameFrom) == shaders.cend()) return;
+					auto node = shaders.extract(nameFrom);
+					node.key() = nameTo;
+					shaders.insert(std::move(node));
+				}
+				break;
+				case RESOURCE_TYPE::TEXTURE_RESOURCE:
+				{
+					if(textures.find(nameFrom) == textures.cend()) return;
+					auto node = textures.extract(nameFrom);
+					node.key() = nameTo;
+					textures.insert(std::move(node));
+				}
+				break;
+			}
 		}
 	}
 }

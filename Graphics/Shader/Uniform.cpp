@@ -64,10 +64,35 @@ void Uniform::use()
 	}
 }
 
-Uniform::Uniform(unsigned int shader, std::string name)
+Uniform::Uniform(unsigned int shader, std::string name, int type)
 {
 	this->name = name;
+	this->type = type;
+	this->size = 1;
 	glUseProgram(shader);
+	switch (type)
+	{
+	case GL_FLOAT:
+		bytesize = sizeof(float);
+		break;
+	case GL_INT:
+		bytesize = sizeof(int);
+		break;
+	case GL_FLOAT_VEC2:
+		bytesize = sizeof(float) * 2;
+		break;
+	case GL_FLOAT_VEC3:
+		bytesize = sizeof(float) * 3;
+		break;
+	case GL_FLOAT_VEC4:
+		bytesize = sizeof(float) * 4;
+		break;
+	case GL_FLOAT_MAT4:
+		bytesize = sizeof(float) * 16;
+		break;
+	default:
+		break;
+	}
 	this->location = glGetUniformLocation(shader, name.c_str());
 	if (this->location == -1) std::cout << "TemplateUniform<T>::constructor(GLuint, name) ERROR: \"" << name << "\" uniform is undefined in shader.\n";
 }

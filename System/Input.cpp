@@ -8,6 +8,8 @@ namespace TealEngine
 	{
 		namespace Mouse
 		{
+			glm::vec2 deltaMPos = glm::vec2(0.0f, 0.0f);
+			double deltaSPos = 0.0;
 			EventPublisher WheelScroll, MouseMove, MouseButtonPress, MouseButtonRelease;
 			bool mButton[3] = {0};
 			double scrollPos = 0;
@@ -52,6 +54,15 @@ namespace TealEngine
 			}
 
 			double getScrollPos() { return scrollPos; }
+
+			glm::vec2 getDeltaMousePos() 
+			{
+				return deltaMPos;
+			}
+			double getDeltaScrollPos() 
+			{
+				return deltaSPos;
+			}
 		}
 
 		namespace Keyboard
@@ -95,6 +106,18 @@ namespace TealEngine
 			glfwSetCursorPosCallback(wptr, Mouse::moveCallback);
 			glfwSetMouseButtonCallback(wptr, Mouse::buttonCallback);
 			glfwSetScrollCallback(wptr, Mouse::wheelCallback);
+		}
+
+		void inputUpdate() 
+		{
+			static glm::vec2 lastMousePos = Mouse::getMousePos();
+			static double lastScrollPos = Mouse::getScrollPos();
+
+			Mouse::deltaMPos = Mouse::getMousePos() - lastMousePos;
+			Mouse::deltaSPos = Mouse::getScrollPos() - lastScrollPos;
+
+			lastMousePos = Mouse::getMousePos();
+			lastScrollPos = Mouse::getScrollPos();
 		}
 	}
 }

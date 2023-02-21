@@ -62,9 +62,9 @@ namespace TealEngine
 		}
 
 		//tanget
-		if (tangets.size() > 0 && vertices.size() != tangets.size())
+		if (tangents.size() > 0 && vertices.size() != tangents.size())
 		{
-			throw "Vertices and tangets length do not match up.\n";
+			throw "Vertices and tangents length do not match up.\n";
 		}
 
 		//UV
@@ -92,12 +92,8 @@ namespace TealEngine
 
 	Mesh::Mesh(unsigned int usage)
 	{
-		if (usage == ((unsigned int)(-1)))
-			usage = GL_STATIC_DRAW;
-		this->usage = usage;
 		ilength = new GLuint(0);
 		this->LODsCount = 0;
-		this->VBO = 0;
 		this->EBO = 0;
 	}
 
@@ -105,118 +101,98 @@ namespace TealEngine
 	{
 		if (validation())
 		{
-			unsigned int stride = 3, uvOffset, colorOffset;
-			stride += 3 * (normals.size() > 0);
-			stride += 3 * (tangets.size() > 0);
-			uvOffset = stride;
-			stride += 2 * (UVs.size() > 0);
-			colorOffset = stride;
-			stride += 4 * (colors.size() > 0);
+			vector<float> verticesFloat;
+			vector<float> normalsFloat;
+			vector<float> tangentsFloat;
+			vector<float> UVsFloat;
+			vector<float> colorsFloat;
+			vector<float> bitangentsFloat;
 
-			unsigned int dataLength = vertices.size() * 3 + normals.size() * 6 + UVs.size() * 2 + colors.size() * 4;
-			GLfloat* verticesArray = new GLfloat[dataLength];
-			unsigned int p = 0;
-
-			for (unsigned int i = 0; i < vertices.size(); i++)
+			for(int i = 0; i < vertices.size(); i++) 
 			{
-				//vertices
-				verticesArray[p] = vertices[i].x;
-				p++;
-				verticesArray[p] = vertices[i].y;
-				p++;
-				verticesArray[p] = vertices[i].z;
-				p++;
-
-				//normals
-				if (normals.size() > 0)
+				verticesFloat.push_back(vertices[i].x);
+				verticesFloat.push_back(vertices[i].y);
+				verticesFloat.push_back(vertices[i].z);
+				if(normals.size()) 
 				{
-					verticesArray[p] = normals[i].x;
-					p++;
-					verticesArray[p] = normals[i].y;
-					p++;
-					verticesArray[p] = normals[i].z;
-					p++;
-
-
-					//tangets
-					if (tangets.size() > 0) {
-						verticesArray[p] = tangets[i].x;
-						p++;
-						verticesArray[p] = tangets[i].y;
-						p++;
-						verticesArray[p] = tangets[i].z;
-						p++;
-					}
+					normalsFloat.push_back(normals[i].x);
+					normalsFloat.push_back(normals[i].y);
+					normalsFloat.push_back(normals[i].z);
 				}
-
-				//UVs
-				if (UVs.size() > 0)
+				if(tangents.size())
 				{
-					verticesArray[p] = UVs[i].x;
-					p++;
-					verticesArray[p] = UVs[i].y;
-					p++;
+					tangentsFloat.push_back(tangents[i].x);
+					tangentsFloat.push_back(tangents[i].y);
+					tangentsFloat.push_back(tangents[i].z);
 				}
-
-				//color
-				if (colors.size() > 0)
+				if(UVs.size())
 				{
-					verticesArray[p] = colors[i].x;
-					p++;
-					verticesArray[p] = colors[i].y;
-					p++;
-					verticesArray[p] = colors[i].z;
-					p++;
-					verticesArray[p] = colors[i].w;
-					p++;
+					UVsFloat.push_back(UVs[i].x);
+					UVsFloat.push_back(UVs[i].y);
+				}
+				if(colors.size()) 
+				{
+					colorsFloat.push_back(colors[i].x);
+					colorsFloat.push_back(colors[i].y);
+					colorsFloat.push_back(colors[i].z);
+					colorsFloat.push_back(colors[i].w);
+				}
+				if(bitangents.size())
+				{
+					bitangentsFloat.push_back(bitangents[i].x);
+					bitangentsFloat.push_back(bitangents[i].y);
+					bitangentsFloat.push_back(bitangents[i].z);
 				}
 			}
 
-			if (!VBO) 
+			VB.clearVertexAttributes();
+			if(this->vertices.size()) 
 			{
-				glGenBuffers(1, &VBO);
+				VertexAttribute& VA = VB.addVertexAttribute(0, 3);
+				VA.data = verticesFloat.data();
+				VA.vertices = verticesFloat.size() / 3;
+			}
+			if(this->normals.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(1, 3);
+				VA.data = normalsFloat.data();
+				VA.vertices = normalsFloat.size() / 3;
+			}
+			if(this->tangents.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(2, 3);
+				VA.data = tangentsFloat.data();
+				VA.vertices = tangentsFloat.size() / 3;
+			}
+			if(this->UVs.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(3, 2);
+				VA.data = UVsFloat.data();
+				VA.vertices = UVsFloat.size() / 2;
+			}
+			if(this->colors.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(4, 4);
+				VA.data = colorsFloat.data();
+				VA.vertices = colorsFloat.size() / 4;
+			}
+			if(this->bitangents.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(5, 3);
+				VA.data = bitangentsFloat.data();
+				VA.vertices = bitangentsFloat.size() / 3;
+			}
+			VB.setBufferUsage(GL_STATIC_DRAW);
+			VB.build();
+			if (!EBO) 
+			{
 				glGenBuffers(1, &EBO);
-				glGenVertexArrays(1, &VAO);
 			}
-
-			glBindVertexArray(VAO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * dataLength, verticesArray, usage);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), usage);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*stride, (GLvoid*)0);														
-			glEnableVertexAttribArray(0);
-			if (normals.size() > 0) 
-			{
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*stride, (GLvoid*)(sizeof(GLfloat) * 3));			
-				glEnableVertexAttribArray(1);
-				
-				if (tangets.size() > 0) 
-				{ 
-					glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*stride, (GLvoid*)(sizeof(GLfloat) * 6));
-					glEnableVertexAttribArray(2); 
-				}
-			}
-			if (UVs.size() > 0) 
-			{ 
-				glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*stride, (GLvoid*)(sizeof(GLfloat) * uvOffset));		
-				glEnableVertexAttribArray(3); 
-			}
-			if (colors.size() > 0) 
-			{ 
-				glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*stride, (GLvoid*)(sizeof(GLfloat) * colorOffset));
-				glEnableVertexAttribArray(4); 
-			}
-
-
-
-			glBindVertexArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
 			*this->ilength = this->indices.size();
-			delete[] verticesArray;
+			this->VAO = VB.getVAO();
 		}
 	}
 
@@ -231,9 +207,9 @@ namespace TealEngine
 		this->normals = normals;
 	}
 
-	void Mesh::setTangets(std::vector<vec3> tangets)
+	void Mesh::setTangents(std::vector<vec3> tangents)
 	{
-		this->tangets = tangets;
+		this->tangents = tangents;
 	}
 
 	void Mesh::setUVs(std::vector<vec2> UVs)
@@ -324,7 +300,7 @@ namespace TealEngine
 		
 		//this->removeDoubles();
 		//this->calcNormals();
-		this->calcTangets();
+		this->calcTangents();
 		this->apply();
 	}
 
@@ -332,7 +308,7 @@ namespace TealEngine
 	{
 		this->vertices.clear();
 		this->normals.clear();
-		this->tangets.clear();
+		this->tangents.clear();
 		this->UVs.clear();
 		this->colors.clear();
 		this->indices.clear();
@@ -346,7 +322,7 @@ namespace TealEngine
 		for (int i = 0; i < mesh->indices.size(); i++) this->indices.push_back(mesh->indices[i] + offset);
 		if (this->attribs[MESH_ATTRIBS::VERTICES]) for (int i = 0; i < mesh->vertices.size(); i++) this->vertices.push_back(mesh->vertices[i]);
 		if (this->attribs[MESH_ATTRIBS::NORMAL])  for (int i = 0; i < mesh->normals.size(); i++) this->normals.push_back(mesh->normals[i]);
-		if (this->attribs[MESH_ATTRIBS::TANGET]) for (int i = 0; i < mesh->tangets.size(); i++) this->tangets.push_back(mesh->tangets[i]);
+		if (this->attribs[MESH_ATTRIBS::TANGET]) for (int i = 0; i < mesh->tangents.size(); i++) this->tangents.push_back(mesh->tangents[i]);
 		if (this->attribs[MESH_ATTRIBS::UV]) for (int i = 0; i < mesh->UVs.size(); i++) this->UVs.push_back(mesh->UVs[i]);
 		if (this->attribs[MESH_ATTRIBS::COLOR]) for (int i = 0; i < mesh->colors.size(); i++) this->colors.push_back(mesh->colors[i]);
 	}
@@ -363,7 +339,7 @@ namespace TealEngine
 				for (int i = 0; i < mesh->normals.size(); i++) normals.push_back(mesh->normals[i]);
 				if (this->attribs[MESH_ATTRIBS::TANGET])
 				{
-					for (int i = 0; i < mesh->tangets.size(); i++) tangets.push_back(mesh->tangets[i]);
+					for (int i = 0; i < mesh->tangents.size(); i++) tangents.push_back(mesh->tangents[i]);
 				}
 			}
 			else 
@@ -372,7 +348,7 @@ namespace TealEngine
 				for (int i = 0; i < mesh->normals.size(); i++) normals.push_back(vec3(nmodel * vec4(mesh->normals[i], 0.0f)));
 				if (this->attribs[MESH_ATTRIBS::TANGET])
 				{
-					for (int i = 0; i < mesh->tangets.size(); i++) tangets.push_back(vec3(nmodel * vec4(mesh->tangets[i], 0.0f)));
+					for (int i = 0; i < mesh->tangents.size(); i++) tangents.push_back(vec3(nmodel * vec4(mesh->tangents[i], 0.0f)));
 				}
 			}
 		}
@@ -381,12 +357,14 @@ namespace TealEngine
 	}
 
 	//M
-	void Mesh::calcTangets()
+	void Mesh::calcTangents()
 	{
 		if (validation())
 		{
 			std::vector<vec3> t;
+			std::vector<vec3> b;
 			for (int i = 0; i < vertices.size(); i++) t.push_back(vec3(0.0f));
+			for (int i = 0; i < vertices.size(); i++) b.push_back(vec3(0.0f));
 			for (unsigned int i = 0; i < indices.size(); i += 3)
 			{
 				int index = indices[i];
@@ -399,13 +377,20 @@ namespace TealEngine
 				deltaUV[1] = UVs[indices[i + 2]] - UVs[index];
 
 				GLfloat r = 1.0f / (deltaUV[0].x * deltaUV[1].y - deltaUV[1].x * deltaUV[0].y);
-				vec3 tanget = (deltaPos[0] * deltaUV[1].y - deltaPos[1] * deltaUV[0].y) * r;
-				t[index] += tanget;
-				t[indices[i + 1]] += tanget;
-				t[indices[i + 2]] += tanget;
+				vec3 tangent = (deltaPos[0] * deltaUV[1].y - deltaPos[1] * deltaUV[0].y) * r;
+				t[index] += tangent;
+				t[indices[i + 1]] += tangent;
+				t[indices[i + 2]] += tangent;
+				
+				vec3 btangent = (deltaPos[0] * deltaUV[1].x - deltaPos[1] * deltaUV[0].x) * r;
+				b[index] += btangent;
+				b[indices[i + 1]] += btangent;
+				b[indices[i + 2]] += btangent;
 			}
 			for (int i = 0; i < vertices.size(); i++) t[i] = normalize(t[i]);
-			this->tangets = t;
+			for (int i = 0; i < vertices.size(); i++) b[i] = normalize(b[i]);
+			this->tangents = t;
+			this->bitangents = b;
 			if (!validation())
 			{
 				TE_DEBUG_ERROR("Indices should include all vertices")
@@ -509,13 +494,13 @@ namespace TealEngine
 			int ind = this->indices[j];
 			p.push_back(this->vertices[ind]);
 			if (!this->normals.empty())n.push_back(this->normals[ind]);
-			if (!this->tangets.empty())t.push_back(this->tangets[ind]);
+			if (!this->tangents.empty())t.push_back(this->tangents[ind]);
 			if (!this->UVs.empty())uv.push_back(this->UVs[ind]);
 			if (!this->colors.empty())c.push_back(this->colors[ind]);
 		}
 		this->vertices = p;
 		this->normals = n;
-		this->tangets = t;
+		this->tangents = t;
 		this->UVs = uv;
 		this->colors = c;
 	}
@@ -538,7 +523,7 @@ namespace TealEngine
 	//O
 	vector<vec3> Mesh::getVertices() { return vertices; }
 	vector<vec3> Mesh::getNormals() { return normals; }
-	vector<vec3> Mesh::getTangets() { return tangets; }
+	vector<vec3> Mesh::getTangents() { return tangents; }
 	vector<vec2> Mesh::getUVs() { return UVs; }
 	vector<vec4> Mesh::getColors() { return colors; }
 	vector<unsigned int> Mesh::getIndices() { return indices; }
@@ -560,8 +545,6 @@ namespace TealEngine
 
 	Mesh::~Mesh()
 	{
-		if(VBO)
-			glDeleteBuffers(1, &VBO);
 		if(EBO)
 			glDeleteBuffers(1, &EBO);
 	}

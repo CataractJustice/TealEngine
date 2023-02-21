@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Texture.h"
 #include "libs/stb_image.h"
+#include "System/Debug.h"
 
 namespace TealEngine
 {
@@ -61,6 +62,8 @@ namespace TealEngine
 
 		glTexImage2D(this->type, 0, this->internalformat, width, height, 0, this->format, dataType, pixels);
 		glBindTexture(this->type, 0);
+		this->width = width;
+		this->height = height;
 	}
 
 	void Texture::loadFromFile(std::string path)
@@ -83,10 +86,11 @@ namespace TealEngine
 		}
 		else
 		{
-			
-			std::cout << "Texture2D::loadFromFile(string) ERROR: failed load image \"" << path << "\".\n";
+			TE_DEBUG_ERROR("Failed to load image");
 		}
 		stbi_image_free(data);
+		this->width = width;
+		this->height = height;
 	}
 
 	GLuint Texture::id()
@@ -102,6 +106,23 @@ namespace TealEngine
 		this->internalformat = texture.internalformat;
 		this->texture = texture.texture;
 		this->type = texture.type;
+		this->width = texture.width;
+		this->height = texture.height;
 		return *this;
+	}
+
+	Texture::~Texture() 
+	{
+		glDeleteTextures(1, &this->texture);
+	}
+	
+	int Texture::getInt32(int x, int y) 
+	{
+		int* pixels = new int[width * height];
+		glBindTexture(this->type, this->texture);
+		glGetTexImage(this->type, 0, GL_RED_INTEGER, GL_INT, pixels);
+		int p = ((int*)pixels)[x + (height - y - 1) * width];
+		delete pixels;
+		return p;
 	}
 }

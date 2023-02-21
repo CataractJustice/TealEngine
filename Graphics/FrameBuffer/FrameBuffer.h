@@ -20,5 +20,7 @@ namespace TealEngine
 		~FrameBuffer();
 		GLuint getDepthTexture();
 		GLuint getAttachedTextureId(GLuint index);
+		inline GLuint getWidth() const { return width; }
+		inline GLuint getHeight() const { return height; }
 	};
 }

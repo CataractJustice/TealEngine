@@ -2,6 +2,7 @@
 #include "libs/glm/glm.hpp"
 #include "Mesh.h"
 #include "Graphics/Renderer/RenderUtil.h"
+#include "MeshRenderer.h"
 namespace TealEngine{
 	class MeshRenderer : public Component
 	{
@@ -61,12 +62,13 @@ namespace TealEngine{
 
 		virtual void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0)
 		{
-			render(
-				mesh,
-				shader ? shader : this->shader,
-				mode ? mode : this->mode,
-				LOD
-			);
+			if((this->shader || shader) && this->mesh)
+				render(
+					mesh,
+					shader ? shader : this->shader,
+					mode ? mode : this->mode,
+					LOD
+				);
 		}
 
 		virtual void render(ShaderProgram* shader, unsigned int stages) override 
@@ -78,10 +80,9 @@ namespace TealEngine{
 	class Mesh3DRenderer : public MeshRenderer 
 	{
 	private:
-		std::map<std::string, Uniform*>::iterator model, nModel, PV, V;
+		std::map<std::string, Uniform>::iterator model, nModel, PV, V;
 
 	public:
-		RegisterComponent();
 
 		void setShader(ShaderProgram* shader) override
 		{
@@ -89,37 +90,43 @@ namespace TealEngine{
 			this->shader->setUniform("model", mat4(1.0f));
 			this->shader->setUniform("n_model", mat4(1.0f));
 			this->shader->setUniform("pv_mat", mat4(1.0f));
-			this->shader->setUniform("v_mat", mat4(1.0f));
 			model = shader->getUniformIterator("model");
 			nModel = shader->getUniformIterator("n_model");
 			PV = shader->getUniformIterator("pv_mat");
-			V = shader->getUniformIterator("v_mat");
 		}
 
+		void onPropSet(const std::string& propName) override
+		{
+			if(shader)
+				this->setShader(this->shader);
+		}
+		void renderId() override;
+		
 		void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0) override
 		{
+			if((!shader && !this->shader) || !this->mesh) return;
 			if (mesh->getLength() > 0) 
 			{	
-				Transform meshTransform = ((GameNode3D*)getParrent())->getWorldTransform();
+				Transform meshTransform = ((GameNode3D*)getParent())->getWorldTransform();
 				
-				//culling
 				vec4 screenPos = Render::VP_matrix * vec4(meshTransform.getPosition(), 1.0f);
+				//to-do: culling
 				if (true) 
 				{
 					ShaderProgram* targetShader = shader ? shader : this->shader;
-					if (shader)
+					
+					//to-do safely cache uniform iterators
+					if (shader || true)
 					{
 						targetShader->setUniform("model", meshTransform.getMatrix());
 						targetShader->setUniform("n_model", meshTransform.getNormalsModel());
 						targetShader->setUniform("pv_mat", Render::VP_matrix);
-						targetShader->setUniform("v_mat", Render::V_matrix);
 					}
 					else
 					{
 						targetShader->setUniform(model, meshTransform.getMatrix());
 						targetShader->setUniform(nModel, meshTransform.getNormalsModel());
 						targetShader->setUniform(PV, Render::VP_matrix);
-						targetShader->setUniform(V, Render::V_matrix);
 					}
 					MeshRenderer::render(targetShader, mode ? mode : this->mode, 0);
 				}

@@ -4,6 +4,7 @@
 #include "FileSystem/loadStrFromFile.h"
 #include "libs/glm/glm.hpp"
 #include "GameNode/Component.h"
+#include "VertexBuffer.h"
 using namespace glm;
 namespace TealEngine
 {
@@ -47,16 +48,18 @@ namespace TealEngine
 	class Mesh : public SharedMesh
 	{
 	private:
-		unsigned int VBO, EBO;
-		unsigned int usage;
+		unsigned int EBO;
+		VertexBuffer VB;
 
 	protected:
 		vector<vec3> vertices;
 		vector<vec3> normals;
-		vector<vec3> tangets;
+		vector<vec3> tangents;
+		vector<vec3> bitangents;
 		vector<vec2> UVs;
 		vector<vec4> colors;
 		vector<unsigned int> indices;
+		std::string name;
 		
 	public:
 		bool validation();
@@ -65,7 +68,7 @@ namespace TealEngine
 		//Input
 		void setVertices(std::vector<vec3> vertices);
 		void setNormals(std::vector<vec3> normals);
-		void setTangets(std::vector<vec3> tangets);
+		void setTangents(std::vector<vec3> tangents);
 		void setUVs(std::vector<vec2> UVs);
 		void setColors(std::vector<vec4> colors);
 		void setIndices(std::vector<unsigned int> indices);
@@ -75,7 +78,7 @@ namespace TealEngine
 		vector<vec3> getVertices();
 		vector<vec3> getTriangles();
 		vector<vec3> getNormals();
-		vector<vec3> getTangets();
+		vector<vec3> getTangents();
 		vector<vec2> getUVs();
 		vector<vec4> getColors();
 		vector<unsigned int> getIndices();
@@ -85,7 +88,7 @@ namespace TealEngine
 		void addMesh(Mesh* mesh);
 		void addMesh(Mesh* mesh, mat4 transform, bool noRotation = false);
 		void calcNormals();
-		void calcTangets();
+		void calcTangents();
 		void clear();
 		void load(string path);
 		void removeDoubles();
@@ -95,5 +98,8 @@ namespace TealEngine
 		void setLODIndex(unsigned int LOD, unsigned int index);
 		~Mesh();
 		Mesh(unsigned int usage = -1);
+
+		inline void setName(const std::string& name) { this->name = name; };
+		inline std::string getName() { return this->name; };
 	};
 }

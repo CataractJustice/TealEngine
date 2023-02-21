@@ -1,0 +1,31 @@
+#version 330 core
+
+layout (location = 0) out vec4 UnlitColor;
+layout (location = 1) out vec4 FragColor;
+layout (location = 2) out vec3 FragPosition;
+layout (location = 3) out vec3 FragNormal;
+layout (location = 4) out vec4 FragSpecular;
+
+in vec2 TexCoord;
+in vec3 FragPos;
+in vec3 Normal;
+in mat3 TBN;
+in vec4 Color;
+uniform sampler2D tex;
+uniform sampler2D specmap;
+uniform sampler2D nmap;
+uniform vec4 color = vec4(1.0f);
+uniform vec3 spec = vec3(1.0f);
+void main()
+{
+	UnlitColor = vec4(0.0f);
+    FragColor = texture(tex, TexCoord) * Color * color;
+	FragPosition = FragPos;
+	vec3 ln = texture(nmap, TexCoord).rgb * 2.0 - 1.0;
+	FragNormal = normalize(TBN * ln);
+	vec4 specvec = texture(specmap, TexCoord);
+	specvec.x *= spec.x;
+	specvec.y *= spec.y;
+	specvec.z *= spec.z;
+	FragSpecular = specvec;
+}

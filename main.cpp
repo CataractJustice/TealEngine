@@ -6,6 +6,6 @@ int main()
 
 	while(!TealEngine::Graphics::window->shouldClose()) 
 	{
-		TealEngine::Core::Scene::update();
+		TealEngine::Core::update();
 	}
 }

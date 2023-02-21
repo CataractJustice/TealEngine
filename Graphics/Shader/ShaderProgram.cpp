@@ -4,6 +4,9 @@
 #include "Graphics/Graphics.h"
 #include "System/Debug.h"
 #include <iostream>
+#include <fstream>
+#include "NlohmannJson/json.hpp"
+using Json = nlohmann::json;
 namespace TealEngine {
 
 	GLuint ShaderProgram::lastMaterialId = 0;
@@ -27,6 +30,14 @@ namespace TealEngine {
 		this->texture[name] = std::pair<GLuint, GLuint>(texture.size(), 0);
 		textureArray[texture.size() - 1] = &texture[name];
 	}
+
+	void ShaderProgram::tryAddUniform(std::string name, int type) 
+		{
+			if (uniforms.find(name) == uniforms.cend()) 
+			{
+				uniforms[name] = Uniform(program, name, type);
+			}
+		}
 
 	void ShaderProgram::setTexture(std::string name, GLuint texture)
 	{
@@ -70,7 +81,10 @@ namespace TealEngine {
 			glGetActiveUniform(program, i, buffersize, &namelength, &arraysize, &type, namebuffer);
 			if (namebuffer[namelength - 1] == ']')
 				namebuffer[namelength - 3] = 0; //getting rid of "[0]" from the end of an uniform name
-			tryAddUniform(namebuffer);
+			if(type == GL_SAMPLER_2D)
+				addTexture(namebuffer);
+			else
+				tryAddUniform(namebuffer, type);
 		}
 		delete[] namebuffer;
 		
@@ -93,11 +107,9 @@ namespace TealEngine {
 	{
 		static GLuint currentProgram = -1;
 		static GLuint bindedTextures[64];
-		//if (usedMaterialId != materialId)
-		//{
-		if (program != currentProgram) {
-			glUseProgram(program);
-		}
+
+		glUseProgram(program);
+
 		currentProgram = program;
 		usedMaterialId = materialId;
 
@@ -110,15 +122,94 @@ namespace TealEngine {
 				bindedTextures[textureArray[i]->first] = textureArray[i]->second;
 			}
 		}
-		//}
-		for (int i = 0; i < uniforms.size(); i++)
+		
+		for (auto& upair : uniforms)
 		{
-			uniformsArray[i]->use();
+			upair.second.use();
 		}
 	}
 
-	GLuint ShaderProgram::id()
+	GLuint ShaderProgram::id() const
 	{
 		return program;
+	}
+
+	ShaderProgram::ShaderProgram() 
+	{
+		materialId = lastMaterialId++;
+		this->program = 0;
+	}
+
+	ShaderProgram::ShaderProgram(const ShaderProgram& sp) : ShaderProgram()
+	{
+		program = sp.program;
+		uniforms.clear();
+		for (auto& upair : sp.uniforms) 
+		{
+			uniforms[upair.first] = upair.second;
+		}
+		
+		this->texture = sp.texture; 
+		int i = 0;
+		for (auto& t : texture)
+		{
+			textureArray[i] = &t.second;
+			i++;
+		}
+	}
+
+	ShaderProgram& ShaderProgram::operator=(const ShaderProgram& sp) 
+	{
+		program = sp.program;
+		uniforms.clear();
+		for (auto& upair : sp.uniforms)
+		{
+			uniforms[upair.first] = upair.second;
+		}
+		this->texture = sp.texture;
+		int i = 0;
+		for (auto& t : texture)
+		{
+			textureArray[i] = &t.second;
+			i++;
+		}
+		return *this;
+	}
+
+	ShaderProgram::~ShaderProgram() 
+	{
+		//for (std::pair<std::string, std::pair<unsigned short, Uniform*>> u : uniform)
+		//	delete u.second.second;
+	}
+	
+	void ShaderProgram::setUniform(std::string name, glm::mat4* mat, int size) 
+	{ 
+		float* matv = new float[long(16 * size)];
+		for (int i = 0; i < size; i++)
+			memcpy(matv + i * 16, value_ptr(mat[i]), sizeof(float) * 16);
+		uniforms[name].setm4fv(matv, size);
+		delete[] matv;
+	}
+	
+	std::map<std::string, Uniform>::iterator ShaderProgram::getUniformIterator(std::string name) 
+	{
+		return uniforms.find(name);
+	}
+
+	void ShaderProgram::loadShadersFromJson(std::map<std::string, ShaderProgram>& shadersMap, const std::string& linkingJsonFilePath) 
+	{
+		std::ifstream jsonFile(linkingJsonFilePath);
+		Json json = Json::parse(jsonFile);
+		for(auto& shaderJson : json.items()) 
+		{
+			if(shadersMap.find(shaderJson.key()) != shadersMap.cend()) continue;
+
+			std::string folderPath = linkingJsonFilePath.substr(0, linkingJsonFilePath.find_last_of('/'));
+			Shader vert, frag;
+			vert.loadFromFile(folderPath + "/" + (std::string)shaderJson.value()["vert"], GL_VERTEX_SHADER);
+			frag.loadFromFile(folderPath + "/" + (std::string)shaderJson.value()["frag"], GL_FRAGMENT_SHADER);
+			shadersMap[shaderJson.key()] = ShaderProgram();
+			shadersMap[shaderJson.key()].link(vert.id(), frag.id());
+		}
 	}
 }

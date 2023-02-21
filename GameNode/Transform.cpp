@@ -127,9 +127,19 @@ namespace TealEngine {
 		onChange();
 	}
 
+	void Transform::setRotationMatrix(glm::mat4 rotation) 
+	{
+		this->rotation = rotation;
+	}
+
 	glm::quat Transform::getRotation()
 	{
 		return quat_cast(rotation);
+	}
+
+	glm::mat4 Transform::getRotationMatrix() 
+	{
+		return this->rotation;
 	}
 
 

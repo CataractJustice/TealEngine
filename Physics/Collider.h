@@ -42,7 +42,7 @@ namespace TealEngine
 
 			inline bool canCollideWith(Collider* collider) 
 			{
-				return (colliderCollidesWith & collider->colliderCanBeCollided) && ((getParrent() != collider->getParrent()) || (canSelfCollide && collider->canBeSelfCollidedWith));
+				return (colliderCollidesWith & collider->colliderCanBeCollided) && ((getParent() != collider->getParent()) || (canSelfCollide && collider->canBeSelfCollidedWith));
 			}
 		};
 	}

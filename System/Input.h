@@ -9,6 +9,8 @@ namespace TealEngine
 		{
 			bool isButtonPressed(unsigned int button);
 			glm::vec2 getMousePos();
+			glm::vec2 getDeltaMousePos();
+			double getDeltaScrollPos();
 			double getScrollPos();
 			extern EventPublisher WheelScroll, MouseMove, MouseButtonPress, MouseButtonRelease;
 		}
@@ -19,6 +21,7 @@ namespace TealEngine
 			extern EventPublisher KeyPress, keyRepeat, KeyRelease;
 		}
 
+		void inputUpdate();
 		void init();
 	}
 }

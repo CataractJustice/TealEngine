@@ -49,6 +49,7 @@ namespace TealEngine {
 		void globalRotate(float angle, const glm::vec3& axis);
 
 		void setRotation(float angle, const glm::vec3& axis);
+		void setRotationMatrix(glm::mat4 rotation);
 
 		void setRotation(glm::quat);
 
@@ -56,6 +57,7 @@ namespace TealEngine {
 		void lookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
 
 		glm::quat getRotation();
+		glm::mat4 getRotationMatrix();
 
 		glm::vec3 forward();
 

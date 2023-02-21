@@ -102,6 +102,6 @@ namespace TealEngine {
 		}
 
 		Render::VP_matrix = activeCamera->getPV();
-		Render::V_matrix = activeCamera->getWorldTransform().getMatrix();
+		Render::V_matrix = activeCamera->getParentOfType<GameNode3D>()->getWorldTransform().getMatrix();
 	}
 }

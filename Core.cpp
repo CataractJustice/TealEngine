@@ -6,7 +6,7 @@
 #include "Graphics/Graphics.h"
 #include "Graphics/Mesh/MeshUtil.h"
 #include "Graphics/Renderer/RenderUtil.h"
-#include "Graphics/Renderer/DefferedRenderer.h"
+#include "Graphics/Renderer/DeferredRenderer.h"
 #include "EventSystem/WindowEvents/WindowEvents.h"
 #include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Graphics/Mesh/MeshRenderer.h"
@@ -19,7 +19,17 @@
 #include "libs/imgui/backends/imgui_impl_opengl3.h"
 #include "libs/imgui/backends/imgui_impl_glfw.h"
 #include "NlohmannJson/json.hpp"
-#include "GameNode/ComponentLoader.h"
+#include "System/DLLoader.h"
+#include "GameNode/ComponentFactory.h"
+#include "Editor/UI/UISpace.h"
+#include "Editor/UI/EditorUI/TreeDisplay.h"
+#include "Editor/UI/EditorUI/CameraViewport.h"
+#include "Editor/UI/EditorUI/GameNodePropsWindow.h"
+#include "Graphics/Renderer/IdRenderer.h"
+#include "Editor/UI/SelectedObjectOutlinePostProcess.h"
+#include "Editor/UI/EditorUI/ComponentsExplorer.h"
+#include "Editor/UI/EditorUI/GameAssetsBrowser.h"
+#include "Editor/UI/EditorUI/ProjectPropertiesWindow.h"
 
 using Json = nlohmann::json;
 
@@ -27,187 +37,253 @@ namespace TealEngine
 {
 	namespace Core
 	{
-		namespace Scene
+		DeferredRenderer renderer;
+		IdRenderer idRenderer;
+		GameNode3D* sceneRoot;
+		Clock sceneclock;
+		UISpace uiSpace;
+		GameNode3D* idCameraNode;
+		Camera* idCamera;
+		ActionList actionList;
+		Project currentProject;
+
+		Json originalSceneJson;
+
+		GameAssetsBrowser* gameAssetsBrowser;
+		bool modulesNeedReload = false;
+		void requestModulesReload() { modulesNeedReload = true; }
+
+		GameNode3D* nextScene = nullptr;
+
+		enum EngineState 
 		{
-			Clock sceneclock;
-			EventListener rendererResizeEvent;
-			DefferedRenderer renderer;
-			GameNode3D* rootNode;
-			ComponentLoader componentLoader;
-			
-			
-			void addNode(GameNode* node)
-			{
-				rootNode->addChild(node);
-			}
+			GAME_STOPPED,
+			GAME_PLAYING,
+			GAME_PAUSED
+		};
 
-			GameNode3D* getRoot() { return rootNode; }
+		EngineState engineState = EngineState::GAME_STOPPED;
 
-			void clearScene()
+		void update()
+		{
+			//capping update rate to a 60 fps here
+			//to-do:
+			//-add unfixed update with delta time passed as an argument
+			//-add a way to customize update rate
+			//-maybe add a way to make multiple update rates?
+			static float updateTimer = 0.0f;
+			sceneclock.update();
+			updateTimer += sceneclock.deltaTime();
+			if(updateTimer >= 1.0f / 60.0f) 
 			{
-				delete rootNode;
-				rootNode = new GameNode3D();
-			}
-
-			void update()
-			{
-				static float updateTimer = 0.0f;
-				static bool debugInfo = false;
-				debugInfo = Input::Keyboard::isKeyPressed(GLFW_KEY_F1) ? true : debugInfo;
-				sceneclock.update();
-				updateTimer += sceneclock.deltaTime();
-				//TE_DEBUG_INFO("GameNode update pass.");
-				if(updateTimer >= 1.0f / 60.0f) 
+				if(modulesNeedReload) 
 				{
-					updateTimer = 0.0f;
-					Scene::rootNode->updateAll();
-					GameNode::cleanUp();
-					Physics::EasyPhysics::EasyPhysicsWorld::instance.solveCollisions();
-					//TE_DEBUG_INFO("Render pass.");
-					Scene::renderer.render(Scene::rootNode);
-
-					//TE_DEBUG_INFO("Rendering to main buffer.");
-					FrameBuffer::unbind();
-					if (Input::Keyboard::isKeyPressed(GLFW_KEY_0))
-						Render::renderTexture(Input::Mouse::getScrollPos());
-					else
-						if(Scene::renderer.getActiveCamera()) Render::renderTexture(Scene::renderer.getActiveCamera()->renderTexture.id());
-
-					//TE_DEBUG_INFO("GUI rendering.");
-					rootNode->GUIrender();
-
-					ImGui_ImplOpenGL3_NewFrame();
-					ImGui_ImplGlfw_NewFrame();
-					ImGui::NewFrame();
-					rootNode->imGUIrender();
-					if (debugInfo) 
+					currentProject.buildLibs();
+					
+					if(sceneRoot && gameAssetsBrowser && gameAssetsBrowser->getParent() == sceneRoot)
+						sceneRoot->dettachComponent(gameAssetsBrowser);
+						
+					Json currentScene = sceneRoot->toJson();
+					if(sceneRoot) delete sceneRoot;
+					sceneRoot = nullptr;
+					
+					currentProject.loadLibs();
+					if(!nextScene) 
 					{
-						ImGui::Begin("Game Explorer", &debugInfo);
-						if (ImGui::TreeNode("Scene tree")) 
-						{
-							rootNode->displayNodeTree(false);
-							ImGui::TreePop();
-						}
-						if (ImGui::TreeNode("Textures"))
-						{
-							static int tid;
-							ImGui::InputInt("Texture id", &tid, 1, 10);
-							ImGui::Image(ImTextureID((long)tid), ImVec2(128.0f, 128.0f));
-							ImGui::TreePop();
-						}
-						ImGui::End();
-					}
-					ImGui::Render();
-					ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-					Graphics::display();
-				}
-			}
-
-			float deltaTime() 
-			{
-				return sceneclock.deltaTime();
-			}
-
-			GameNode3D* nodeFromJson(Json& json) 
-			{
-				GameNode3D* node = new GameNode3D();
-				Json& components = json["components"];
-
-				if(json.find("components") != json.cend()) 
-				{
-					for(Json& componentJson : components)
-					{
-						std::string componentClass = componentJson["class"];
-						node->attachComponent(componentLoader.createComponent(componentClass));
+						setScene(GameNode3D::nodeFromJson(currentScene));
 					}
 				}
-
-				if(json.find("nodes") != json.cend()) 
+				if(nextScene) 
 				{
-					Json& subNodes = json["nodes"];
-					for(Json& subNodeJson : subNodes) 
-					{
-						GameNode3D* subNode = nodeFromJson(subNodeJson);
-						node->addChild(subNode);
-					}
+					if(sceneRoot && gameAssetsBrowser && gameAssetsBrowser->getParent() == sceneRoot)
+						sceneRoot->dettachComponent(gameAssetsBrowser);
+					if(sceneRoot) delete sceneRoot;
+					sceneRoot = nextScene;
+					sceneRoot->attachComponent(new TreeDisplay(EditorWindowNames::gameSceneTree));
+					sceneRoot->attachComponent(new CameraViewport(EditorWindowNames::gameViewport));
+					sceneRoot->attachComponent(new GameNodePropsWindow());
+					sceneRoot->attachComponent(new ComponentsExplorer());
+					sceneRoot->attachComponent(gameAssetsBrowser);
+					sceneRoot->attachComponent(new SelectedObjectOutlinePostProcess());
+					sceneRoot->attachComponent(new ProjectPropertiesWindow());
+					nextScene = nullptr;
 				}
-
-				if(json.find("name") != json.cend()) 
+				modulesNeedReload = false;
+				//reset timer used for frame capping
+				updateTimer = 0.0f;
+				//
+				Input::inputUpdate();
+				//run game logics
+				if(engineState == EngineState::GAME_PLAYING) 
 				{
-					node->rename(json["name"]);
+					sceneRoot->updateAll();
+				}
+				else 
+				{
+					sceneRoot->editorUpdate();
 				}
 				
-				return node;
-			}
+				//destruct deleted objects
+				GameNode::cleanUp();
+				//update physics
+				Physics::EasyPhysics::EasyPhysicsWorld::instance.solveCollisions();
 
-			void loadFromJson(std::string path) 
-			{
-				std::ifstream sceneFile(path);
-				Json sceneJson = Json::parse(sceneFile);
-				rootNode = nodeFromJson(sceneJson);
+				//render ids
+				if(renderer.getActiveCamera()) 
+				{
+					if(idCamera->renderTexture.getWidth() != renderer.getActiveCamera()->renderTexture.getWidth() || idCamera->renderTexture.getHeight() != renderer.getActiveCamera()->renderTexture.getHeight())
+					{
+						idCamera->renderTexture.create(renderer.getActiveCamera()->renderTexture.getWidth(), renderer.getActiveCamera()->renderTexture.getHeight());
+						idRenderer.resize(idCamera->renderTexture.getWidth(), idCamera->renderTexture.getHeight());
+					}
+					idCameraNode->setRelativeTransform(renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform());
+					switch(renderer.getActiveCamera()->getProjectionType()) 
+					{
+						case CameraProjectionType::PERSPECTIVE_CAMERA_PROJECTION:
+						idCamera->setPerspectiveProjection(renderer.getActiveCamera()->getFOV(), renderer.getActiveCamera()->getAspect(), renderer.getActiveCamera()->getNear(), renderer.getActiveCamera()->getFar());
+						break;
+						case CameraProjectionType::ORTHO_CAMERA_PROJECTION:
+						//idCamera->setOrthoProjection(renderer.getActiveCamera()->width, );
+						break;
+					}
+					idRenderer.render(sceneRoot);
+				}
+				
+				//render game
+				renderer.render(sceneRoot);
+				//render ui
+				sceneRoot->GUIrender();
+				FrameBuffer::unbind();
+
+				//start ImGUi frame
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+				uiSpace.display();
+				ImGui::Render();
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				//
+				Graphics::display();
 			}
 		}
 
 		void init()
 		{
-			TE_DEBUG_INFO("loading settings file.");
-			
+			TE_DEBUG_INFO("loading settings file.");	
 			std::fstream settingsFile("settings.json");
 			Json settingsJson = Json::parse(settingsFile);
 
 			TE_DEBUG_INFO("Graphics initialization.");
 			Graphics::init(settingsJson["title"]);
+
 			TE_DEBUG_INFO("Loading resources.");
 			Resources::load(settingsJson["resources"]);
+
 			TE_DEBUG_INFO("Generating models.");
 			BasicMeshes::init();
+
 			TE_DEBUG_INFO("Initializing input.");
 			Input::init();
-			TE_DEBUG_INFO("Initializing light.");
+
+			TE_DEBUG_INFO("Loading and linking light shaders.");
 			lightInit();
 
 			TE_DEBUG_INFO("Initializing renderer.");
-			Scene::renderer.resize(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
-			Scene::renderer.setDepthTest(true);
-			Scene::renderer.setDepthClear(true);
-			Scene::renderer.setColorClear(true);
-			Scene::renderer.setClearColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-			Scene::rendererResizeEvent = std::function<void(Event*)>([] (Event* e) 
-				{		
-					unsigned int width = ((WindowResizeEvent*)(e))->width;
-					unsigned int height = ((WindowResizeEvent*)(e))->height;
+			renderer.resize(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
+			renderer.setDepthTest(true);
+			renderer.setDepthClear(true);
+			renderer.setColorClear(true);
+			renderer.setClearColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-					Scene::renderer.resize(width, height);
-					if(Scene::renderer.getActiveCamera()) 
-					{
-						Scene::renderer.getActiveCamera()->setPerspectiveProjection(Scene::renderer.getActiveCamera()->getFOV(), float(width) / float(height), Scene::renderer.getActiveCamera()->getNear(), Scene::renderer.getActiveCamera()->getFar());
-						Scene::renderer.getActiveCamera()->renderTexture.create(width, height);
-					}
-				});
-			Graphics::window->WindowResize.subscribe(&Scene::rendererResizeEvent);
+			IdRenderer::loadIdShader();
+			idRenderer.setDepthTest(true);
+			idRenderer.setDepthClear(true);
+			idRenderer.setColorClear(true);
+			idRenderer.setClearColor(vec4(0.0f, 0.0f, 0.0f, 0.0f));
 
-			Scene::componentLoader.loadDir("mods");
-			Scene::loadFromJson(settingsJson["scene"]);
 
-			TE_DEBUG_INFO("Init Dear ImGUI");
-			// Setup Dear ImGui context
+			TE_DEBUG_INFO("Initializing Dear ImGUI");
 			IMGUI_CHECKVERSION();
-			
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO();
+			io.Fonts->AddFontFromFileTTF("./res/fonts/DroidSansMono.ttf", 18.0f);
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 			// Setup Platform/Renderer bindings
 			ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)Graphics::window->gl_window_ptr_(), true);
 			ImGui_ImplOpenGL3_Init("#version 130");
 			// Setup Dear ImGui style
-			ImGui::StyleColorsLight();
-			
-			TE_DEBUG_INFO("Init finished");
-		}
+			ImGui::StyleColorsDark();
 
+			ShaderProgram defaultMaterial = Resources::getShader("deferred");
+			defaultMaterial.setTexture("tex", Resources::getTexture("bd.bmp").id());
+			defaultMaterial.setTexture("nmap", Resources::getTexture("bn.bmp").id());
+			defaultMaterial.setTexture("specmap", Resources::getTexture("bd.bmp").id());
+			defaultMaterial.setUniform("color", glm::vec4(1.0f));
+			defaultMaterial.setUniform("spec", glm::vec3(1.0f, 10.0f, 1.0f));
+			Resources::addMaterial("Default", defaultMaterial);
+
+			SelectedObjectOutlinePostProcess::loadShader();
+			
+			gameAssetsBrowser = new GameAssetsBrowser();
+			gameAssetsBrowser->setPath(std::filesystem::current_path());
+			gameAssetsBrowser->setRootPath(std::filesystem::current_path());
+			setScene(new GameNode3D());
+
+			idCameraNode = new GameNode3D();
+			idCamera = new Camera();
+			idCamera->renderTexture = Texture(GL_TEXTURE_2D, GL_R32I, GL_RED_INTEGER, GL_INT);
+			idCamera->renderTexture.create(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
+			idCameraNode->attachComponent(idCamera);
+			idRenderer.setCamera(idCamera);
+		}
+		
 		bool isServer() 
 		{
 			return false;
 		}
+
+		GameNode3D* getRoot() 
+		{
+			return sceneRoot;
+		}
+
+		void setProject(Project project) 
+		{
+			currentProject = project;
+			setScene(GameNode3D::loadNodeFromJsonFile(currentProject.getDefaultScene()));
+			gameAssetsBrowser->setPath(project.getPath()+"/GameAssets");
+			gameAssetsBrowser->setRootPath(project.getPath()+"/GameAssets");
+			requestModulesReload();
+		}
+
+		void setScene(GameNode3D* node) 
+		{
+			nextScene = node;
+		}
+
+		void play() 
+		{
+			if(engineState == EngineState::GAME_STOPPED)
+			{
+				originalSceneJson = sceneRoot->toJson();
+				setScene(GameNode3D::nodeFromJson(originalSceneJson));
+			}
+
+			engineState = EngineState::GAME_PLAYING;
+		}
+
+		void pause() 
+		{
+			engineState = EngineState::GAME_PAUSED;
+		}
+
+		void stop() 
+		{
+			if(engineState != EngineState::GAME_STOPPED)
+			setScene(GameNode3D::nodeFromJson(originalSceneJson));
+			engineState = EngineState::GAME_STOPPED;
+		}
+
+		
 	}
 }

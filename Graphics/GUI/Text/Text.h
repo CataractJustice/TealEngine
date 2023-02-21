@@ -11,7 +11,7 @@ namespace TealEngine
 		Texture texture;
 		glm::vec4 color;
 		glm::vec4 rect;
-		wstring text;
+		std::string text;
 		float scale;
 		//renders text into texture
 		void refresh();
@@ -19,8 +19,9 @@ namespace TealEngine
 	public:
 		glm::vec2 screenPosition;
 		Font* font;
-		const wstring& getText();
-		void setText(const wstring& text);
+		Text();
+		const std::string& getText();
+		void setText(const std::string& text);
 		float getScale();
 		void setScale(float scale);
 		const glm::vec4& getColor();

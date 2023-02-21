@@ -8,22 +8,22 @@ namespace TealEngine
 		VerletBody::VerletBody() : acceleration(0.0f), ignoreCollisions(false) {}
 		void VerletBody::onAttach() 
 		{
-			this->previousPos = this->getParrentOfType<GameNode3D>()->getRelativeTransform().getPosition();
+			this->previousPos = this->getParentOfType<GameNode3D>()->getRelativeTransform().getPosition();
 		}
 
 		void VerletBody::update() 
 		{
-			glm::vec3 currPos = this->getParrentOfType<GameNode3D>()->getRelativeTransform().getPosition();
+			glm::vec3 currPos = this->getParentOfType<GameNode3D>()->getRelativeTransform().getPosition();
 			glm::vec3 velocity = currPos - previousPos + acceleration;
 			acceleration = glm::vec3(0.0f);
 			previousPos = currPos;
-			this->getParrentOfType<GameNode3D>()->getRelativeTransform().translate(velocity * (1.0f - this->drag));
+			this->getParentOfType<GameNode3D>()->getRelativeTransform().translate(velocity * (1.0f - this->drag));
 		}
 
 		void VerletBody::onCollision(const Collision& coll) 
 		{
 			if(!ignoreCollisions)
-				this->getParrentOfType<GameNode3D>()->getRelativeTransform().translate(coll.normal * coll.depth / 2.0f);
+				this->getParentOfType<GameNode3D>()->getRelativeTransform().translate(coll.normal * coll.depth / 2.0f);
 		}
 	}
 }

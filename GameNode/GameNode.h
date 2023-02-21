@@ -9,22 +9,27 @@
 #include "System/Debug.h"
 #include "Physics/Collision.h"
 #include <queue>
+#include <filesystem>
+#include "NlohmannJson/json.hpp"
+
+using Json = nlohmann::json;
 
 enum NODE_RELATION 
 {
 	THIS_NODE,
 	NOT_RELATED_NODE,
-	PARRENT_NODE,
+	PARENT_NODE,
 	CHILD_NODE
 };
 
 namespace TealEngine {
 	class ShaderProgram;
-class Component;
+	class Component;
 	class GameNode
 	{
 	private:
 		static unordered_set<GameNode*> allNodes;
+		static std::map<int, GameNode*> idMap;
 		static map<string, set<GameNode*>> tagged;
 		static std::queue<GameNode*> destroyQueue;
 		
@@ -34,6 +39,7 @@ class Component;
 		bool willBeDestroyed;
 		unsigned short hierarchyDepth;
 		static unsigned int lastId;
+		static GameNode* selectedNode;
 	protected:
 		bool active;
 		unsigned int id;
@@ -41,9 +47,10 @@ class Component;
 		string name;
 		list<GameNode*> childNodes;
 		list<Component*> components;
-		GameNode* parrent;
+		GameNode* parent;
+		std::string loadedFromFilePath;
 
-		virtual void setParrent(GameNode* parrent);
+		virtual void setParent(GameNode* parent);
 	public:
 		const string& getName();
 		void rename(const string& name);
@@ -82,11 +89,8 @@ class Component;
 		//returns length of path from root node to this node
 		unsigned short getHierarchyDepth();
 
-		[[deprecated]]
-		NODE_RELATION checkRelation(GameNode* node);
-		
-		//returns parrent node, returns nullptr if node is an orphan
-		GameNode* getParrent();
+		//returns parent node, returns nullptr if node is an orphan
+		GameNode* getParent();
 
 		//adds child nodes and calls handleEvent with CHILD_ADDED event
 		virtual GameNode* addChild(GameNode* node);
@@ -115,14 +119,14 @@ class Component;
 			return res;
 		}
 
-		//gets parrent if parrent is of type T, else throws an error
+		//gets parent if parent is of type T, else throws an error
 		template<typename T>
-		T* getParrentOfType() 
+		T* getParentOfType() 
 		{
-			T* castedParrent = dynamic_cast<T*>(parrent);
-			if (!castedParrent)
-				TE_DEBUG_ERROR("Parrent either does not exist or isnt the right type.");
-			return castedParrent;
+			T* castedParent = dynamic_cast<T*>(parent);
+			if (!castedParent)
+				TE_DEBUG_ERROR("Parent either does not exist or isnt the right type.");
+			return castedParent;
 		}
 		//returns all child nodes
 		std::vector<GameNode*> getChilds();
@@ -130,23 +134,24 @@ class Component;
 		std::vector<GameNode*> getAllChilds();
 		//returns childs with matching name
 		std::vector<GameNode*> findChildsByName(std::string name);
-		//node is active only if active property is true for it and all of its parrents
+		//node is active only if active property is true for it and all of its parents
 		//use .getActiveProperty to get this exact node activity property
 		bool getActive();
 		//returns value of node activity property
-		//node can be innactive while having activity property set to true but any of it's parrent nodes is innactive
+		//node can be innactive while having activity property set to true but any of it's parent nodes is innactive
 		//use .getActive() to check if node is actually active
 		inline bool getActiveProperty() { return this->active; };
 		//events:
 
 		//enables/disables node, calls onSleep or onAwake for components
 		void setActive(bool active);
-		//called when parrent changes
-		virtual void onParrentChange();
+		//called when parent changes
+		virtual void onParentChange();
 		//usualy called every frame
 		virtual void update() final;
 		//recursively updates current and all lower nodes
 		void updateAll();
+		void editorUpdate();
 		//adds function that will be called on call of handleEvent with event of given type
 		void addEventListener(EventType type, eventListenerFunc ex);
 		//handleEvent will be called on param node when handleEvent on this node will be called with event of given type 
@@ -172,14 +177,17 @@ class Component;
 		//
 		void GUIrender();
 		//
-		void imGUIrender();
+		void imGuiRender(const std::string& windowName);
 		//
 		void render(ShaderProgram* shader = nullptr, unsigned int stages = 0);
+		void renderId();
 
 		//
 		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
 
-		virtual void displayNodeTree(bool windowBegin = true);
+		virtual void displayNodeTree();
+
+		virtual void displayProps();
 
 		//deletes node when it's possible
 		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
@@ -189,5 +197,18 @@ class Component;
 		GameNode();
 		virtual ~GameNode();
 		static bool isNodeExist(GameNode* node);
+
+		virtual Json toJson();
+
+		int getId();
+		void setId(int id);
+		static GameNode* getNodeById(int id);
+		static GameNode* getSelectedNode();
+		static void setSelectedNode(GameNode* node);
+
+		void setNodeFilePath(std::filesystem::path path);
+
+		void save();
+		void saveAs(const std::filesystem::path& path);
 	};
 }

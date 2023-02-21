@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(TealEngine VERSION 0.0.0)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-volatile")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -18,22 +19,27 @@ Physics/*.cpp
 System/*.cpp
 NlohmannJson/*.cpp 
 Utils/*.cpp
+Editor/*.cpp
 )
+
 
 set(SOURCES ${SUBDIR_SOURCES} 
 Core.cpp 
 Resources.cpp
+Project.cpp
 libs/imgui/imgui.cpp
 libs/imgui/imgui_tables.cpp
 libs/imgui/imgui_draw.cpp
 libs/imgui/imgui_widgets.cpp
 libs/imgui/backends/imgui_impl_opengl3.cpp 
 libs/imgui/backends/imgui_impl_glfw.cpp
+libs/imgui/misc/cpp/imgui_stdlib.cpp
+libs/tinyfiledialogs.c
 )
 
 add_executable(${PROJECT_NAME}Launcher
 main.cpp
-${SOURCES}
+ComponentExports.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED
@@ -76,4 +82,4 @@ PUBLIC freetype
 )
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
-target_link_libraries(${PROJECT_NAME}Launcher ${LINK_LIBS})
+target_link_libraries(${PROJECT_NAME}Launcher TealEngine)

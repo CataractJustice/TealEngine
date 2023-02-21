@@ -1,0 +1,4 @@
+
+Usual uniforms
+"model" - model transformation
+"pv_mat" - projection + view matrix

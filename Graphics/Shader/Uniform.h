@@ -8,8 +8,6 @@
 
 using namespace glm;
 
-#define DECLARE_UNIFORM(type) class type ## Uniform : public Uniform {virtual int typesize() const; void use();};
-
 class Uniform
 {
 protected:
@@ -24,13 +22,13 @@ public:
 
 	void use();
 	
-	Uniform(unsigned int shader, std::string name);
+	Uniform(unsigned int shader, std::string name, int type);
 
-	const char* valueptr() { return value; }
+	void* valueptr() const { return (void*)value; }
 	
-	int getByteSize() { return bytesize; }
+	int getByteSize() const { return bytesize; }
 	
-	int getSize() { return size; }
+	int getSize() const { return size; }
 
 	virtual void set1fv(float* values, int size);
 	virtual void set2fv(float* values, int size);
@@ -39,7 +37,7 @@ public:
 	virtual void setm4fv(float* values, int size);
 	virtual void set1iv(int* values, int size);
 	
-	Uniform(Uniform& uniform) 
+	Uniform(const Uniform& uniform) 
 	{
 		if(uniform.getByteSize() > 0 && uniform.getByteSize() < 1024)
 			memcpy(value, uniform.valueptr(), uniform.getByteSize());
@@ -50,7 +48,7 @@ public:
 		this->type = uniform.type;
 	}
 
-	Uniform& operator=(Uniform& other) 
+	Uniform& operator=(const Uniform& other) 
 	{
 		if (other.getByteSize() > 0 && other.getByteSize() < 1024)
 			memcpy(value, other.valueptr(), other.getByteSize());
@@ -62,8 +60,12 @@ public:
 		return *this;
 	}
 
+	Uniform() : name(""), location(0), bytesize(0), size(0), type(0) {}
+
 	std::string getName()
 	{
 		return this->name;
 	}
+
+	inline int getType() const { return this->type; }
 };
