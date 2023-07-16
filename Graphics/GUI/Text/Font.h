@@ -1,15 +1,12 @@
 #pragma once
 #include <string>
-#include "FreeTypeUtil.h"
 #include "Graphics/Texture/Texture.h"
 #include "libs/glm/vec2.hpp"
-#include <ft2build.h>
-#include FT_FREETYPE_H
 #include <map>
+struct FT_FaceRec_;
 namespace TealEngine 
 {
 	typedef int font_char_type;
-	
 	struct FontCharacter 
 	{
 	public:
@@ -22,7 +19,7 @@ namespace TealEngine
 	class Font 
 	{
 	private:
-		FT_Face face;
+		FT_FaceRec_* face;
 		int height;
 		std::map<font_char_type, FontCharacter> characters;
 

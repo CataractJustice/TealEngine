@@ -44,7 +44,7 @@ namespace TealEngine
 
 		GLuint shadowCascades();
 		DirectionLight(GLuint shadow_resolution = 1000, GLuint cascades = 3U, GLfloat shadowFar = 250.0f);
-		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
+		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer);
 		void onPropSet(const std::string& name) override;
 	};
 
@@ -52,8 +52,9 @@ namespace TealEngine
 	{
 		public:
 		glm::vec4 color;
+		glm::vec3 attenuation;
 		float radius;
 		PointLight(glm::vec4 color = glm::vec4(1.0f), float radius = 10.0f);
-		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light) override;
+		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) override;
 	};
 }

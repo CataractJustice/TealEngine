@@ -118,6 +118,15 @@ namespace TealEngine
 						ImGui::EndDragDropSource();
 					}
 				}
+
+				if(extension == ".mtljson") 
+				{
+					if(ImGui::BeginDragDropSource()) 
+					{
+						ImGui::SetDragDropPayload("MaterialPath", file.path().c_str(), file.path().string().length() + 1);
+						ImGui::EndDragDropSource();
+					}
+				}
 				if(ImGui::BeginPopupContextItem()) 
 				{
 					if(ImGui::MenuItem("Rename")) 
@@ -125,12 +134,15 @@ namespace TealEngine
 						this->renameInput = this->renameTarget = filename;
 						isFocusedRenameInputOnce = false;
 					}
+					if(ImGui::MenuItem("Delete")) 
+					{
+						std::filesystem::remove(file.path());
+					}
 					if(extension == ".node") 
 					{
 						if(ImGui::MenuItem("Load as scene root")) 
 						{
-							std::ifstream nodeFile(file.path());
-							Core::setScene(GameNode3D::nodeFromJson(Json::parse(nodeFile)));
+							Core::setScene(GameNode3D::loadNodeFromJsonFile(file.path()));
 						}
 					}
 					ImGui::EndPopup();
@@ -157,7 +169,8 @@ namespace TealEngine
 			}
 			if(renameFinished) 
 			{
-				std::filesystem::rename(this->currentPath/this->renameTarget, this->currentPath/this->renameInput);
+				if(renameInput.length())
+					std::filesystem::rename(this->currentPath/this->renameTarget, this->currentPath/this->renameInput);
 				this->renameTarget = "";
 			}
 			ImGui::Columns();

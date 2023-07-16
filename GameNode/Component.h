@@ -1,13 +1,15 @@
 #pragma once
-#include "GameNode.h"
+#include "GameNode/GameNode.h"
 #include "ComponentProp.h"
 #include <map>
 #include <unordered_map>
 
 #define RegisterComponent()
 
+
 namespace TealEngine 
 {
+class FrameBuffer;
 	class Component 
 	{
 	private:
@@ -26,8 +28,11 @@ namespace TealEngine
 	protected:
 		std::unordered_map<std::string, IProp*> props;
 	public:
+		//
 		bool isActive();
+		//
 		inline bool getActive() { return active; };
+		//
 		inline void setActive(bool active) { this->active = active; };
 		//
 		void rename(const std::string& name);
@@ -56,11 +61,13 @@ namespace TealEngine
 		//
 		virtual void renderId();
 		//
-		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
+		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer);
 		//
 		virtual void onMessageReceive();
 		//
-		virtual void onCollision(const Physics::Collision& collision);
+		virtual void onCollision(const Collision& collision);
+		//
+		void refreshProps();
 		GameNode* getParent();
 		//gets parent if parent is of type T, else throws an error
 		template<typename T>
@@ -75,14 +82,17 @@ namespace TealEngine
 		virtual ~Component();
 
 		//deserializes and sets a prop value
-		bool setProp(const Json& json);
+		virtual bool setProp(const Json& json);
+
+		
+		void storeProp(const Json& json);
 		//called after setting a property with setProp or editing property in game editor 
 		virtual void onPropSet(const std::string& propName);
 		//removes serializable property by its name
 		void removeProp(const std::string& name);
 
 		//displays properties using ImGUI
-		void displayProps();
+		void displayProps(bool& componentDeleted);
 		//add serializable property to the component, property object will be deleted in component desctructor
 		void addProp(IProp* prop, const std::string& label);
 		//

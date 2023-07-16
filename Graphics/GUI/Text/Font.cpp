@@ -1,6 +1,8 @@
 #include <ft2build.h>
 #include <iostream>
+#include "FreeTypeUtil.h"
 #include "Font.h"
+#include FT_FREETYPE_H
 
 namespace TealEngine
 {

@@ -14,6 +14,7 @@ uniform vec3 position;
 uniform float radius;
 uniform vec3 viewPos;
 uniform vec4 color;
+uniform vec3 CLQRatios;
 
 void main()
 {
@@ -23,7 +24,10 @@ void main()
 	vec4 spectex = texture(SpecularMap, TexCoord);
 	vec3 direction = fragPos - position;
 	float distance = length(direction);
+	vec3 CLQNormalized = CLQRatios / (CLQRatios.x + CLQRatios.y + CLQRatios.z);
+	//Mixing constant/linear/quadratic light attenuation
+	float attenuation = CLQNormalized.x + (1.0f / distance) * CLQNormalized.y + (1.0f / distance / distance) * CLQNormalized.z;
 	float spec = pow(max(0.0f,dot(viewReflection, direction / distance)) * spectex.z, spectex.y) * spectex.x;
 	float diffuse = max(0.0f,dot(-normal, direction / distance));
-	LightColor = vec4(color.xyz*color.w, 1.0) * (spec + diffuse) / distance / distance * radius;
+	LightColor = vec4(color.xyz*color.w, 1.0) * (spec + diffuse) * attenuation;
 }

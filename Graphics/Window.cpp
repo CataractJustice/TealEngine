@@ -1,7 +1,7 @@
 #include "Window.h"
-#include "EventSystem/WindowEvents/WindowResizeEvent.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <map>
 namespace TealEngine 
 {
 
@@ -10,9 +10,7 @@ namespace TealEngine
 
 	void windowResizeCallback(GLFWwindow* window, int width, int height)
 	{
-		WindowResizeEvent e = WindowResizeEvent(width, height);
 		Window* ourWindow = findByGLFWwindow(window);
-		ourWindow->WindowResize(&e);
 		ourWindow->resize(width, height);
 		glViewport(0, 0, width, height);
 	}

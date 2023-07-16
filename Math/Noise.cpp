@@ -7,9 +7,12 @@
 
 	float Noise::get(int x, int y, int z)
 	{
-		std::srand(seed + (unsigned int)(x * z + z * y - x * y));
-		std::rand();
-		return randrange(0.0f, 1.0f);
+		int a = (x^(z<<16)) + ((y^(z<<16)) << 16);
+		a += 0xe120fc15;
+		long tmp = a * 0x4a39b70d;
+		int m1 = (tmp >> 32) ^ tmp;
+		tmp = ((long)m1) * 0x12fad5c09;
+		return ((float)((int)((tmp >> 32) ^ tmp))) / 2147483647.0f; 
 	}
 
 	void Noise::setSeed(int seed) 

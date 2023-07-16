@@ -10,3 +10,7 @@
 [submodule "libs/nativefiledialog"]
 	path = libs/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking

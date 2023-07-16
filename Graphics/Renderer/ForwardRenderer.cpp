@@ -16,32 +16,32 @@ namespace TealEngine {
 		fb.attachDepthTexture(depthTexture.id());
 	}
 
-	void ForwardRenderer::render(GameNode* scene, ShaderProgram* material, bool depthOnly)
+	void ForwardRenderer::render(GameNode* scene, ShaderProgram* material, MeshRenderer::RenderPass pass)
 	{
-		if (!depthOnly)fb.attachTexture(activeCamera->renderTexture.id(), 0);
+		if(!((unsigned int)pass & (unsigned int)MeshRenderer::RenderPass::ShadowMapPass)) fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		fb.bind();
 		applyConfig();
-		scene->render();
+		scene->render(nullptr, (unsigned int)pass);
 	}
 
-	void ForwardRenderer::render(list<MeshRenderer*> meshList, ShaderProgram* material, bool depthOnly)
+	void ForwardRenderer::render(list<MeshRenderer*> meshList, ShaderProgram* material, MeshRenderer::RenderPass pass)
 	{
-		if(!depthOnly)fb.attachTexture(activeCamera->renderTexture.id(), 0);
+		if(!((unsigned int)pass & (unsigned int)MeshRenderer::RenderPass::ShadowMapPass)) fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		fb.bind();
 		applyConfig();
-		renderModels(meshList, material);
+		renderModels(meshList, material, pass);
 	}
 
-	void ForwardRenderer::renderModels(GameNode* scene, ShaderProgram* shader, MeshRenderer::RenderStage stage)
+	void ForwardRenderer::renderModels(GameNode* scene, ShaderProgram* shader, MeshRenderer::RenderPass pass)
 	{
-		scene->render(shader, (unsigned int)stage);
+		scene->render(shader, (unsigned int)pass);
 	}
 
-	void ForwardRenderer::renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader, MeshRenderer::RenderStage stage)
+	void ForwardRenderer::renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader, MeshRenderer::RenderPass pass)
 	{
 		for (MeshRenderer* mesh : meshList)
 		{
-			if(mesh->isActive() && mesh->getRenderStage(stage))
+			if(mesh->isActive() && mesh->isRenderPassActive(pass))
 				mesh->render();
 		}
 	}

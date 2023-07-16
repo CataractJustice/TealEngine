@@ -1,7 +1,6 @@
 #define GLEW_STATIC
 #include "Graphics.h"
 #include "System/Clock.h"
-#include "EventSystem/WindowEvents/WindowResizeEvent.h"
 #include "libs/glm/vec2.hpp"
 #include "System/Debug.h"
 

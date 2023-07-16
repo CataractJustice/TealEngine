@@ -1,6 +1,5 @@
 #pragma once
 #include "libs/glm/vec2.hpp"
-#include "EventSystem/EventPublisher.h"
 namespace TealEngine 
 {
 	class Window
@@ -23,7 +22,6 @@ namespace TealEngine
 		void setCurrent();
 		glm::vec2 getScreenResolution();
 		glm::vec2 getWindowResolution();
-		EventPublisher WindowResize;
 		bool shouldClose();
 
 		void* gl_window_ptr_();

@@ -7,7 +7,7 @@ namespace TealEngine
 	void IdRenderer::loadIdShader()
 	{
 		std::map<std::string, ShaderProgram> idShaderMap;
-		ShaderProgram::loadShadersFromJson(idShaderMap, "./Assets/Shaders/IdShader.json");
+		ShaderProgram::loadShadersFromJson(idShaderMap, "./Assets/Shaders/IdShader.sp");
 		IdRenderer::idShader = idShaderMap["IdShader"];
 	}
 

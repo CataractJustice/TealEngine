@@ -14,6 +14,7 @@ namespace TealEngine
 		addWindowOption(EditorWindowNames::componentsExplorer);
 		addWindowOption(EditorWindowNames::gameAssetsBrowser);
 		addWindowOption(EditorWindowNames::projectProps);
+		addWindowOption(EditorWindowNames::materialEditor);
 
 		openWindow(EditorWindowNames::gameSceneTree);
 		openWindow(EditorWindowNames::gameViewport);
@@ -86,24 +87,11 @@ namespace TealEngine
 
 			if(ImGui::BeginMenu("Project")) 
 			{
-				if(ImGui::MenuItem("Build&Run")) {}
 				if(ImGui::MenuItem("Build modules")) 
 				{
 					Core::requestModulesReload();
 				}
-				if(ImGui::MenuItem("Run")) { }
-				if(ImGui::MenuItem("Clear build")) {}
-				if(ImGui::MenuItem("Options")) {}
 				ImGui::EndMenu();
-			}
-
-			if(ImGui::BeginMenu("Add Object")) 
-			{
-				if(ImGui::MenuItem("Empty")) {}
-				if(ImGui::MenuItem("Ambient light")) {}
-				if(ImGui::MenuItem("Point light")) {}
-				if(ImGui::MenuItem("Direction light")) {}
-				if(ImGui::MenuItem("Spot light")) {}
 			}
 			ImGui::EndMainMenuBar();
 		}

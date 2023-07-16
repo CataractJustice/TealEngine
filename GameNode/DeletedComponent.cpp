@@ -1,0 +1,2 @@
+#include "DeletedComponent.h"
+

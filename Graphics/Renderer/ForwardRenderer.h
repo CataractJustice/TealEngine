@@ -14,13 +14,13 @@ namespace TealEngine {
 		bool depthTest, stencilTest, colorClear, depthClear, stencilClear;
 		glm::vec4 clearColor;
 		void applyConfig();
-		void renderModels(GameNode* scene, ShaderProgram* shader = nullptr, MeshRenderer::RenderStage stage = (MeshRenderer::RenderStage)0);
-		void renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader = nullptr, MeshRenderer::RenderStage stage = (MeshRenderer::RenderStage)0);
+		void renderModels(GameNode* scene, ShaderProgram* shader = nullptr, MeshRenderer::RenderPass pass = (MeshRenderer::RenderPass)0);
+		void renderModels(list<MeshRenderer*> meshList, ShaderProgram* shader = nullptr, MeshRenderer::RenderPass pass = (MeshRenderer::RenderPass)0);
 	public:
 		FrameBuffer fb;
 		virtual void resize(GLuint width, GLuint height);
-		virtual void render(GameNode* scene, ShaderProgram* material = NULL, bool depthOnly = false);
-		virtual void render(list<MeshRenderer*> meshList, ShaderProgram* material = NULL, bool depthOnly = false);
+		virtual void render(GameNode* scene, ShaderProgram* material = NULL, MeshRenderer::RenderPass pass = (MeshRenderer::RenderPass)1);
+		virtual void render(list<MeshRenderer*> meshList, ShaderProgram* material = NULL, MeshRenderer::RenderPass pass = (MeshRenderer::RenderPass)1);
 		void setDepthTest(bool value);
 		void setStencilTest(bool value);
 		void setColorClear(bool value);

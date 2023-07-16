@@ -32,7 +32,9 @@ public:
 		if (octaves > 0) 
 		{
 			fx = glm::fract(x), fy =glm::fract(y), fz = glm::fract(z);
-
+			if(fx < 0.0f) fx = 1.0f + fx;
+			if(fy < 0.0f) fy = 1.0f + fy;
+			if(fz < 0.0f) fz = 1.0f + fz;
 			for (int i = 0; i < 2; i++)
 				for (int j = 0; j < 2; j++)
 					for (int k = 0; k < 2; k++)

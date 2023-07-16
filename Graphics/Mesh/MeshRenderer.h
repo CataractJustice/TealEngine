@@ -13,26 +13,27 @@ namespace TealEngine{
 		ShaderProgram* shader;
 		unsigned int mode;
 
-		unsigned int activeRenderStages;
+		unsigned int renderPassMask;
+		bool shadowCaster;
 
 	public:
-		RegisterComponent();
+		enum class RenderPass 
+		{
+			DeferredPass = 1,
+			ShadowMapPass = 2,
+			UnlitPass = 4,
+			DebugPass = 8
+		};
 		MeshRenderer();
 
-		enum class RenderStage
+		void setRenderPassActive(MeshRenderer::RenderPass pass, bool value) 
 		{
-			Lit = 1,
-			Unlit = 1 << 1
-		};
-
-		void setRenderStage(RenderStage stage, bool value) 
-		{
-			activeRenderStages = value ? (activeRenderStages | (unsigned int)stage) : (activeRenderStages & (unsigned int)stage);
+			renderPassMask = value ? (renderPassMask | (unsigned int)pass) : (renderPassMask & ~((unsigned int)pass));
 		}
 
-		bool getRenderStage(RenderStage stage) 
+		bool isRenderPassActive(MeshRenderer::RenderPass pass) 
 		{
-			return bool(activeRenderStages & (unsigned int)stage) || !(int)stage;
+			return bool(renderPassMask & (unsigned int)pass) || !(int)pass;
 		}
 
 		virtual void setShader(ShaderProgram* shader) 
@@ -71,10 +72,16 @@ namespace TealEngine{
 				);
 		}
 
-		virtual void render(ShaderProgram* shader, unsigned int stages) override 
+		virtual void render(ShaderProgram* shader, unsigned int passes) override 
 		{
-			this->render(shader, this->mode, 0);
+			if(this->renderPassMask & passes)
+				this->render(shader, this->mode, 0);
 		}
+		
+		bool isShadowCaster();
+		void setShadowCast(bool castShadow);
+
+
 	};
 
 	class Mesh3DRenderer : public MeshRenderer 
@@ -99,6 +106,7 @@ namespace TealEngine{
 		{
 			if(shader)
 				this->setShader(this->shader);
+			this->setRenderPassActive(RenderPass::ShadowMapPass, this->isShadowCaster());
 		}
 		void renderId() override;
 		

@@ -6,7 +6,7 @@ namespace TealEngine
 	{
 		private:
 		std::string windowName;
-		int textureId;
+		int testTextureId;
 		public:
 		CameraViewport(const std::string& windowName);
 		void imGuiRender(const std::string& windowName) override;

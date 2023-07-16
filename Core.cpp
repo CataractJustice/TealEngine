@@ -7,14 +7,11 @@
 #include "Graphics/Mesh/MeshUtil.h"
 #include "Graphics/Renderer/RenderUtil.h"
 #include "Graphics/Renderer/DeferredRenderer.h"
-#include "EventSystem/WindowEvents/WindowEvents.h"
-#include "EventSystem/GameNodeEvents/GameNodeEvents.h"
 #include "Graphics/Mesh/MeshRenderer.h"
 #include "System/Clock.h"
 #include <thread>
 #include "DefaultTags.h"
 #include "System/Debug.h"
-#include "Physics/3D/EasyPhysics/EasyPhysicsWorld.h"
 #include "libs/imgui/imgui.h"
 #include "libs/imgui/backends/imgui_impl_opengl3.h"
 #include "libs/imgui/backends/imgui_impl_glfw.h"
@@ -30,6 +27,7 @@
 #include "Editor/UI/EditorUI/ComponentsExplorer.h"
 #include "Editor/UI/EditorUI/GameAssetsBrowser.h"
 #include "Editor/UI/EditorUI/ProjectPropertiesWindow.h"
+#include "Editor/UI/EditorUI/MaterialEditor.h"
 
 using Json = nlohmann::json;
 
@@ -46,6 +44,12 @@ namespace TealEngine
 		Camera* idCamera;
 		ActionList actionList;
 		Project currentProject;
+		TextureManager textureManager;
+		ModelsManager modelsManager;
+		ShadersManager shadersManager;
+		MaterialsManager materialsManager;
+		PhysicsScene physicsScene;
+		ShapesRenderer shapesRenderer;
 
 		Json originalSceneJson;
 
@@ -54,13 +58,7 @@ namespace TealEngine
 		void requestModulesReload() { modulesNeedReload = true; }
 
 		GameNode3D* nextScene = nullptr;
-
-		enum EngineState 
-		{
-			GAME_STOPPED,
-			GAME_PLAYING,
-			GAME_PAUSED
-		};
+		std::string nextScenePath = "";
 
 		EngineState engineState = EngineState::GAME_STOPPED;
 
@@ -88,11 +86,18 @@ namespace TealEngine
 					sceneRoot = nullptr;
 					
 					currentProject.loadLibs();
-					if(!nextScene) 
+					if(!nextScene && !nextScenePath.length()) 
 					{
 						setScene(GameNode3D::nodeFromJson(currentScene));
 					}
 				}
+
+				if(nextScenePath.length()) 
+				{
+					setScene(GameNode3D::loadNodeFromJsonFile(nextScenePath));
+					nextScenePath = "";
+				} 
+
 				if(nextScene) 
 				{
 					if(sceneRoot && gameAssetsBrowser && gameAssetsBrowser->getParent() == sceneRoot)
@@ -103,6 +108,7 @@ namespace TealEngine
 					sceneRoot->attachComponent(new CameraViewport(EditorWindowNames::gameViewport));
 					sceneRoot->attachComponent(new GameNodePropsWindow());
 					sceneRoot->attachComponent(new ComponentsExplorer());
+					sceneRoot->attachComponent(new MaterialEditor());
 					sceneRoot->attachComponent(gameAssetsBrowser);
 					sceneRoot->attachComponent(new SelectedObjectOutlinePostProcess());
 					sceneRoot->attachComponent(new ProjectPropertiesWindow());
@@ -117,6 +123,8 @@ namespace TealEngine
 				if(engineState == EngineState::GAME_PLAYING) 
 				{
 					sceneRoot->updateAll();
+					physicsScene.CollisionCheck();
+					physicsScene.CollisionFlush();
 				}
 				else 
 				{
@@ -125,8 +133,6 @@ namespace TealEngine
 				
 				//destruct deleted objects
 				GameNode::cleanUp();
-				//update physics
-				Physics::EasyPhysics::EasyPhysicsWorld::instance.solveCollisions();
 
 				//render ids
 				if(renderer.getActiveCamera()) 
@@ -176,9 +182,6 @@ namespace TealEngine
 			TE_DEBUG_INFO("Graphics initialization.");
 			Graphics::init(settingsJson["title"]);
 
-			TE_DEBUG_INFO("Loading resources.");
-			Resources::load(settingsJson["resources"]);
-
 			TE_DEBUG_INFO("Generating models.");
 			BasicMeshes::init();
 
@@ -213,15 +216,7 @@ namespace TealEngine
 			ImGui_ImplOpenGL3_Init("#version 130");
 			// Setup Dear ImGui style
 			ImGui::StyleColorsDark();
-
-			ShaderProgram defaultMaterial = Resources::getShader("deferred");
-			defaultMaterial.setTexture("tex", Resources::getTexture("bd.bmp").id());
-			defaultMaterial.setTexture("nmap", Resources::getTexture("bn.bmp").id());
-			defaultMaterial.setTexture("specmap", Resources::getTexture("bd.bmp").id());
-			defaultMaterial.setUniform("color", glm::vec4(1.0f));
-			defaultMaterial.setUniform("spec", glm::vec3(1.0f, 10.0f, 1.0f));
-			Resources::addMaterial("Default", defaultMaterial);
-
+			
 			SelectedObjectOutlinePostProcess::loadShader();
 			
 			gameAssetsBrowser = new GameAssetsBrowser();
@@ -250,10 +245,23 @@ namespace TealEngine
 		void setProject(Project project) 
 		{
 			currentProject = project;
-			setScene(GameNode3D::loadNodeFromJsonFile(currentProject.getDefaultScene()));
+			requestModulesReload();
+			setScene(currentProject.getDefaultScene());
 			gameAssetsBrowser->setPath(project.getPath()+"/GameAssets");
 			gameAssetsBrowser->setRootPath(project.getPath()+"/GameAssets");
-			requestModulesReload();
+			textureManager.clearAll();
+			textureManager.loadRecursive(project.getPath()+"/Assets");
+			textureManager.loadRecursive(project.getPath()+"/GameAssets");
+			modelsManager.clearAll();
+			modelsManager.loadRecursive(project.getPath()+"/Assets");
+			modelsManager.loadRecursive(project.getPath()+"/GameAssets");
+			shadersManager.clearAll();
+			shadersManager.loadRecursive(project.getPath()+"/Assets");
+			shadersManager.loadRecursive(project.getPath()+"/GameAssets");
+			materialsManager.clearAll();
+			materialsManager.loadRecursive(project.getPath()+"/Assets");
+			materialsManager.loadRecursive(project.getPath()+"/GameAssets");
+			std::filesystem::current_path(project.getPath());
 		}
 
 		void setScene(GameNode3D* node) 
@@ -261,14 +269,19 @@ namespace TealEngine
 			nextScene = node;
 		}
 
-		void play() 
+		void setScene(const std::string& scenePath) 
+		{
+			nextScenePath = scenePath;
+		}
+
+		void play()
 		{
 			if(engineState == EngineState::GAME_STOPPED)
 			{
+				engineState = EngineState::GAME_PLAYING;
 				originalSceneJson = sceneRoot->toJson();
 				setScene(GameNode3D::nodeFromJson(originalSceneJson));
 			}
-
 			engineState = EngineState::GAME_PLAYING;
 		}
 
@@ -284,6 +297,9 @@ namespace TealEngine
 			engineState = EngineState::GAME_STOPPED;
 		}
 
-		
+		EngineState getEngineState() 
+		{
+			return engineState;
+		}
 	}
 }

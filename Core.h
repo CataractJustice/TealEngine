@@ -9,6 +9,12 @@
 #include "Editor/ActionList.h"
 #include "Editor/UI/UISpace.h"
 #include "Project.h"
+#include "ResourceManagment/TextureManager.h"
+#include "ResourceManagment/ModelsManager.h"
+#include "ResourceManagment/ShadersManager.h"
+#include "ResourceManagment/MaterialsManager.h"
+#include "Physics/PhysicsScene.h"
+#include "Graphics/Renderer/ShapesRenderer.h"
 namespace TealEngine 
 {
 	namespace Core 
@@ -18,6 +24,14 @@ namespace TealEngine
 		extern ActionList actionList;
 		extern Project currentProject;
 		extern UISpace uiSpace;
+		extern TextureManager textureManager;
+		extern ModelsManager modelsManager;
+		extern ShadersManager shadersManager;
+		extern MaterialsManager materialsManager;
+		extern PhysicsScene physicsScene;
+		extern ShapesRenderer shapesRenderer;
+
+		
 
 		void update();
 		void setProject(Project project);
@@ -27,9 +41,19 @@ namespace TealEngine
 		bool isServer();
 		void requestModulesReload();
 		void setScene(GameNode3D* node);
+		void setScene(const std::string& scenePath);
+
+		enum EngineState 
+		{
+			GAME_STOPPED,
+			GAME_PLAYING,
+			GAME_PAUSED
+		};
 
 		void play();
 		void pause();
 		void stop();
+
+		EngineState getEngineState();
 	}
 }

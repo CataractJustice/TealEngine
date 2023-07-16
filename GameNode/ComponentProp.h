@@ -19,7 +19,12 @@ namespace TealEngine
 	*/
 	class IProp
 	{
+		private:
+		protected:
+		Component* ownerComp;
+		Json storedJson;
 		public:
+		inline void setParrentComponent(Component* comp) { ownerComp = comp; }
 		void* propptr;
 		//pointer to the property value
 		//deserialize property
@@ -28,6 +33,8 @@ namespace TealEngine
 		virtual Json get() = 0;
 		//display property using ImGUI
 		virtual bool display(const char* label) = 0;
+		void storeJson(const Json& json);
+		void refresh();
 
 		void display(const char* label, Component* component);
 		template<class T>
@@ -110,7 +117,8 @@ namespace TealEngine
 		void set(const Json& json) override 
 		{
 			std::string key = json.get<std::string>();
-			this->valueref<MapValue*>() = &((*mapptr)[key]);
+			if((*mapptr).find(key) != (*mapptr).cend())
+				this->valueref<MapValue*>() = &((*mapptr)[key]);
 		}
 		
 		Json get() 

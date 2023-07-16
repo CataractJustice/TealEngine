@@ -12,13 +12,11 @@ namespace TealEngine
 			glm::vec2 getDeltaMousePos();
 			double getDeltaScrollPos();
 			double getScrollPos();
-			extern EventPublisher WheelScroll, MouseMove, MouseButtonPress, MouseButtonRelease;
 		}
 
 		namespace Keyboard 
 		{
 			bool isKeyPressed(unsigned int key);
-			extern EventPublisher KeyPress, keyRepeat, KeyRelease;
 		}
 
 		void inputUpdate();

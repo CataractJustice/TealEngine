@@ -3,7 +3,7 @@
 #include "Graphics/Mesh/Mesh.h"
 #include "Graphics/Mesh/MeshRenderer.h"
 #include "Graphics/Mesh/MeshUtil.h"
-#include "Resources.h"
+#include "Core.h"
 
 namespace TealEngine {
 	namespace Render
@@ -24,8 +24,8 @@ namespace TealEngine {
 
 		void renderTexture(unsigned int texture, glm::vec2 offset, glm::vec2 scale)
 		{
-			ShaderProgram& shader = Resources::getShader("basic_2d");
-			shader.setTexture("tex", texture);
+			ShaderProgram& shader = Core::shadersManager.get("Image");
+			shader.setTexture("textureImage", texture);
 			renderShader(&shader, offset, scale);
 		}
 	}

@@ -9,17 +9,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 file(GLOB_RECURSE
 SUBDIR_SOURCES
-DevTools/*.cpp 
-EventSystem/*.cpp 
+DevTools/*.cpp
 FileSystem/*.cpp 
 GameNode/*.cpp 
 Graphics/*.cpp 
 Math/*.cpp 
-Physics/*.cpp 
+Physics/*.cpp
 System/*.cpp
 NlohmannJson/*.cpp 
 Utils/*.cpp
 Editor/*.cpp
+ResourceManagment/*.cpp
 )
 
 

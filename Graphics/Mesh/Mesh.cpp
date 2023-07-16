@@ -143,6 +143,7 @@ namespace TealEngine
 					bitangentsFloat.push_back(bitangents[i].y);
 					bitangentsFloat.push_back(bitangents[i].z);
 				}
+				
 			}
 
 			VB.clearVertexAttributes();
@@ -182,6 +183,12 @@ namespace TealEngine
 				VA.data = bitangentsFloat.data();
 				VA.vertices = bitangentsFloat.size() / 3;
 			}
+			if(this->bone0Ids.size()) 
+			{
+				VertexAttribute& VA = VB.addVertexAttribute(6, 3);
+				VA.data = bitangentsFloat.data();
+				VA.vertices = bitangentsFloat.size() / 3;
+			}
 			VB.setBufferUsage(GL_STATIC_DRAW);
 			VB.build();
 			if (!EBO) 
@@ -194,37 +201,6 @@ namespace TealEngine
 			*this->ilength = this->indices.size();
 			this->VAO = VB.getVAO();
 		}
-	}
-
-	//I
-	void Mesh::setVertices(std::vector<vec3> vertices)
-	{
-		this->vertices = vertices;
-	}
-
-	void Mesh::setNormals(std::vector<vec3> normals)
-	{
-		this->normals = normals;
-	}
-
-	void Mesh::setTangents(std::vector<vec3> tangents)
-	{
-		this->tangents = tangents;
-	}
-
-	void Mesh::setUVs(std::vector<vec2> UVs)
-	{
-		this->UVs = UVs;
-	}
-
-	void Mesh::setColors(std::vector<vec4> colors)
-	{
-		this->colors = colors;
-	}
-
-	void Mesh::setIndices(std::vector<GLuint> indices)
-	{
-		this->indices = indices;
 	}
 
 	void Mesh::load(string path)

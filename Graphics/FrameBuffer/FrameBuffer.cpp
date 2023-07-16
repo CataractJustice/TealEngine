@@ -13,6 +13,7 @@ namespace TealEngine
 
 	void FrameBuffer::resize(GLuint width, GLuint height) 
 	{
+		if(FBO)
 		glDeleteFramebuffers(1, &FBO);
 		viewport(width, height);
 		glGenFramebuffers(1, &FBO);

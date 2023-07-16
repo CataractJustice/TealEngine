@@ -17,8 +17,8 @@ namespace TealEngine
 
 	void lightInit()
 	{
-		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/LightShaders.json");
-		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/DepthShader.json");
+		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/LightShaders.sp");
+		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/DepthShader.sp");
 		dLightShader 		=	lightShaders["DirectionLight"];
 		pLightShader 		=	lightShaders["PointLight"];
 		combineLightShader 	= 	lightShaders["LightCombine"];
@@ -165,8 +165,17 @@ namespace TealEngine
 		
 	}
 
-	void DirectionLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light)
+	void DirectionLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer)
 	{
+		frameBuffer->disable(DeferredRenderer::OutputLayout);
+		frameBuffer->disable(DeferredRenderer::AlbedoLayout);
+		frameBuffer->disable(DeferredRenderer::PositionLayout);
+		frameBuffer->disable(DeferredRenderer::NormalLayout);
+		frameBuffer->disable(DeferredRenderer::SpecularLayout);
+		frameBuffer->enable(DeferredRenderer::LightLayout);
+		frameBuffer->apply();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
 		shadowMapRenderer.setDepthClear(true);
 		shadowMapRenderer.setDepthTest(true);
 
@@ -178,7 +187,7 @@ namespace TealEngine
 			shadowMapRenderer.setCamera(getShadowCamera(c));
 			shadowMapRenderer.fb.attachDepthTexture(getShadowCamera(c)->renderTexture.id());
 			shadowMapRenderer.fb.bind();
-			shadowMapRenderer.render(Core::getRoot(), &shadowMapShader, true);
+			shadowMapRenderer.render(Core::getRoot(), &shadowMapShader, MeshRenderer::RenderPass::ShadowMapPass);
 		}
 		//TE_DEBUG_INFO("Render direction light to light map");
 		//render light to camera texture
@@ -234,11 +243,21 @@ namespace TealEngine
 		this->color = color;
 		this->radius = radius;
 		addProp(new ColorProp(glm::value_ptr(this->color)), "Color");
+		addProp(new FloatVecProp(glm::value_ptr(this->attenuation), 3), "Constant/Linear/Quadratic attenuation ratio");
 		addProp(new FloatProp(&this->radius), "Radius");
 	}
 
-	void PointLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light)
+	void PointLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer)
 	{
+		frameBuffer->disable(DeferredRenderer::OutputLayout);
+		frameBuffer->disable(DeferredRenderer::AlbedoLayout);
+		frameBuffer->disable(DeferredRenderer::PositionLayout);
+		frameBuffer->disable(DeferredRenderer::NormalLayout);
+		frameBuffer->disable(DeferredRenderer::SpecularLayout);
+		frameBuffer->enable(DeferredRenderer::LightLayout);
+		frameBuffer->apply();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
 		Core::renderer.fb.bind();
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -255,6 +274,7 @@ namespace TealEngine
 		pLightShader.setUniform("position", lightPos);
 		pLightShader.setUniform("viewPos", viewPos);
 		pLightShader.setUniform("color", color);
+		pLightShader.setUniform("CLQRatios", attenuation);
 		pLightShader.setUniform("radius", radius);
 
 		Render::renderShader(&pLightShader);

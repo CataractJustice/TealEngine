@@ -12,6 +12,7 @@ namespace TealEngine
 			if (parent)
 				this->parent->dettachComponent(this);
 			this->parent = node;
+			if(Core::getEngineState() != Core::EngineState::GAME_STOPPED)
 			onAttach();
 		}
 	}
@@ -29,12 +30,12 @@ namespace TealEngine
 	void Component::onSleep() {};
 	void Component::onAttach() {};
 	void Component::onMessageReceive() {};
-	void Component::onCollision(const Physics::Collision& collision) {};
+	void Component::onCollision(const Collision& collision) {};
 	void Component::GUIrender() {};
 	void Component::imGuiRender(const std::string& windowName) {};
 	void Component::render(ShaderProgram* shader, unsigned int stages) {};
 	void Component::renderId() {};
-	void Component::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light) {};
+	void Component::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) {};
 
 	GameNode* Component::getParent() { return parent; }
 
@@ -62,6 +63,22 @@ namespace TealEngine
 		return true;
 	}
 
+	void Component::storeProp(const Json& json) 
+	{
+		if(json.find("name") == json.cend())
+			return;
+		if(json.find("value") == json.cend())
+			return;
+		std::string name = json["name"];
+		auto prop = this->props.find(name);
+		if(prop == this->props.cend()) 
+		{
+			return;
+		}
+		const Json& value = json["value"];
+		prop->second->storeJson(value);
+	}
+
 	Component::~Component() 
 	{
 		if (parent)
@@ -73,12 +90,20 @@ namespace TealEngine
 		}
 	}
 
-	void Component::displayProps() 
+	void Component::displayProps(bool& componentDeleted) 
 	{
 		if(this->name.length() == 0) return;
 		std::vector<std::string> setProps;
 		if(ImGui::CollapsingHeader((this->name + "###" + std::to_string((int)(long)this)).c_str()))
 		{	
+			if(ImGui::BeginPopupContextItem()) 
+			{
+				if(ImGui::MenuItem("Delete component")) 
+				{
+					componentDeleted = true;
+				}
+				ImGui::EndPopup();
+			}
 			for(auto& prop : props) 
 			{
 				Json oldValue;
@@ -102,6 +127,14 @@ namespace TealEngine
 	}
 
 	void Component::onPropSet(const std::string& propName) {}
+	
+	void Component::refreshProps() 
+	{
+		for(auto prop : props) 
+		{
+			prop.second->refresh();
+		}
+	}
 
 	void Component::removeProp(const std::string& name) 
 	{
@@ -120,6 +153,7 @@ namespace TealEngine
 			return;
 		}
 		this->props[name] = prop;
+		prop->setParrentComponent(this);
 	}
 
 	Json Component::toJson() 
@@ -148,11 +182,7 @@ namespace TealEngine
 		{
 			for(const Json& propJson : *propsIt) 
 			{
-				component->setProp(propJson);
-			}
-			for(const Json& propJson : *propsIt) 
-			{
-				component->setProp(propJson);
+				component->storeProp(propJson);
 			}
 		}
 		return component;

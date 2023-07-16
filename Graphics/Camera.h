@@ -1,7 +1,6 @@
 #pragma once
 #include "GameNode/Component.h"
 #include "Texture/Texture.h"
-#include "EventSystem/WindowEvents/WindowResizeEvent.h"
 #include "Graphics/Graphics.h"
 #include <functional>
 namespace TealEngine{
@@ -21,8 +20,11 @@ namespace TealEngine{
 		bool fixedToWindowSize = false;
 		CameraProjectionType projectionType;
 		std::function<void()> viewFromHere;
-		bool playPrimary;
-		bool editPrimary;
+		static Camera* playPrimary;
+		static Camera* editorPrimary;
+	protected:
+		bool isPlayPrimary;
+		bool isEditPrimary;
 	public:
 		Texture renderTexture;
 		Camera();
@@ -32,7 +34,6 @@ namespace TealEngine{
 		void fixToWindowSize();
 		void unfixFromWindowSize();
 		void resize(int width, int height);
-		void resizeEvent(Event* e);
 		glm::mat4 getPV();
 		glm::mat4 getProjection();
 		float getNear()const;
@@ -40,6 +41,8 @@ namespace TealEngine{
 		float getAspect()const;
 		float getFOV()const;
 		void onPropSet(const std::string& propName) override;
+		inline void setAsEditorPrimary() { this->isEditPrimary = true; if(Camera::editorPrimary && Camera::editorPrimary != this) Camera::editorPrimary->isEditPrimary = false; Camera::editorPrimary = this;};
+		inline void setAsPlayPrimary() { this->isPlayPrimary = true; if(Camera::playPrimary && Camera::playPrimary != this) Camera::editorPrimary->isPlayPrimary = false; Camera::playPrimary = this;};
 		CameraProjectionType getProjectionType();
 	};
 }

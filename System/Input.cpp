@@ -1,6 +1,4 @@
 #include "Input.h"
-#include "EventSystem/KeyboardEvents/KeyboardEvents.h"
-#include "EventSystem/MouseEvents/MouseEvents.h"
 #include <iostream>
 namespace TealEngine
 {
@@ -10,7 +8,6 @@ namespace TealEngine
 		{
 			glm::vec2 deltaMPos = glm::vec2(0.0f, 0.0f);
 			double deltaSPos = 0.0;
-			EventPublisher WheelScroll, MouseMove, MouseButtonPress, MouseButtonRelease;
 			bool mButton[3] = {0};
 			double scrollPos = 0;
 			glm::vec2 mousePos;
@@ -28,7 +25,6 @@ namespace TealEngine
 
 			void moveCallback(GLFWwindow* window, double xpos, double ypos) 
 			{
-				MouseMove(new MouseMoveEvent(xpos, ypos, xpos - mousePos.x, ypos - mousePos.y));
 				mousePos = glm::vec2(xpos, ypos);
 			}
 
@@ -36,20 +32,15 @@ namespace TealEngine
 			{
 				if (action == GLFW_PRESS)
 				{
-					MouseButtonPressEvent e = MouseButtonPressEvent(button, mod);
- 					MouseButtonPress(&e);
 				}
 				if (action == GLFW_RELEASE)
 				{
-					MouseButtonReleaseEvent e = MouseButtonReleaseEvent(button, mod);
-					MouseButtonRelease(&e);
 				}
 				mButton[button] = action != GLFW_RELEASE;
 			}
 
 			void wheelCallback(GLFWwindow* window, double xoffset, double yoffset) 
 			{
-				WheelScroll(new WheelScrollEvent(xoffset, yoffset));
 				scrollPos += yoffset;
 			}
 
@@ -67,7 +58,6 @@ namespace TealEngine
 
 		namespace Keyboard
 		{
-			EventPublisher KeyPress, keyRepeat, KeyRelease;
 			bool keyboardKey[1024] = {0};
 			bool isKeyPressed(unsigned int key) 
 			{
@@ -82,18 +72,12 @@ namespace TealEngine
 
 				if (action == GLFW_PRESS)
 				{
-					KeyPressEvent e = KeyPressEvent(key, scancode, mod);
-					KeyPress(&e);
 				}
 				if (action == GLFW_REPEAT) 
 				{
-					KeyRepeatEvent e = KeyRepeatEvent(key, scancode, mod);
-					KeyPress(&e);
 				}
 				if (action == GLFW_RELEASE)
 				{
-					KeyReleaseEvent e = KeyReleaseEvent(key, scancode, mod);
-					KeyPress(&e);
 				}
 				keyboardKey[key] = action != GLFW_RELEASE;
 			}

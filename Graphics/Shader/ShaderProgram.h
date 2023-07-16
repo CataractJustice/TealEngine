@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "Uniform.h"
 #include <map>
+#include <filesystem>
 
 namespace TealEngine {
 
@@ -68,5 +69,7 @@ namespace TealEngine {
 
 		//loads shaders into
 		static void loadShadersFromJson(std::map<std::string, ShaderProgram>& shadersMap, const std::string& linkingJsonFilePath);
+
+		void saveMaterial(const std::filesystem::path& path, const std::string& name);
 	};
 }

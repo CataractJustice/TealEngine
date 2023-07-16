@@ -1,5 +1,7 @@
 #version 330 core
-layout (location = 0) out vec4 FragColor;
+
+layout (location = 0) out vec4 UnlitColor;
+layout (location = 1) out vec4 LitColor;
 
 in vec2 TexCoord;
 
@@ -21,8 +23,11 @@ void main()
 		texture(IdMap, TexCoord).r != id
 	) 
 	{
-		FragColor = color;
-		return;
+		UnlitColor = color;
+		LitColor = vec4(0.0, 0.0, 0.0, 0.0);
 	}
-	FragColor = texture(Unlit, TexCoord);
+	else 
+	{
+		discard;
+	}
 }

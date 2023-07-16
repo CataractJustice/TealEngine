@@ -1,7 +1,6 @@
 #pragma once
 #include "Transform.h"
 #include "GameNode.h"
-#include "EventSystem/EventListener.h"
 #include "NlohmannJson/json.hpp"
 #include "Properties/TransformProp.h"
 
@@ -37,9 +36,11 @@ namespace TealEngine
 
 		virtual void setRelativeTransform(const Transform& transform);
 
-		static GameNode3D* nodeFromJson(const Json& json);
+		static GameNode3D* nodeFromJson(const Json& json, unsigned int group = 0);
 		static GameNode3D* loadNodeFromJsonFile(const std::filesystem::path& path);
 		Json toJson() override;
 		void displayProps() override;
+		//
+		virtual void render(ShaderProgram* shader = nullptr, unsigned int stages = 0) override;
 	};
 }

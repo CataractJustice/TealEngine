@@ -1,0 +1,41 @@
+{
+	"name": "Default",
+	"shader": "Deferred",
+	"uniforms": 
+	[
+		{
+			"name": "textureColor",
+			"type": "vec4",
+			"value": [1.0, 1.0, 1.0, 1.0]
+		},
+		{
+			"name": "unlitColor",
+			"type": "vec4",
+			"value": [0.0, 0.0, 0.0, 0.0]
+		},
+		{
+			"name": "specularColor",
+			"type": "vec3",
+			"value": [1.0, 1.0, 0.0]
+		}
+	],
+	"textures": 
+	[
+		{
+			"name": "unlit",
+			"texture": "bbd.bmp"
+		},
+		{
+			"name": "textureImage",
+			"texture": "bd.bmp"
+		},
+		{
+			"name": "normals",
+			"texture": "bn.bmp"
+		},
+		{
+			"name": "specular",
+			"texture": "bd.bmp"
+		}
+	]
+}

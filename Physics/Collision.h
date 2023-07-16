@@ -1,19 +1,17 @@
 #pragma once
 #include "libs/glm/glm.hpp"
+
 namespace TealEngine
 {
-	namespace Physics
+	class Collider;
+
+	struct Collision 
 	{
-		class Collider;
-		class Collision
-		{
-		public:
-			Collision(Collider* collider, Collider* collidedWith, float depth, glm::vec3 position, glm::vec3 normal);
-			Collider* collidedWith;
-			Collider* collider;
-			float depth;
-			glm::vec3 position;
-			glm::vec3 normal;
-		};
-	}
-}
+		Collider* collider;
+		Collider* collidedWith;
+		glm::vec3 pos;
+		glm::vec3 relativePos;
+		glm::vec3 normal;
+		float depth;
+	};
+} // namespace TealEngine

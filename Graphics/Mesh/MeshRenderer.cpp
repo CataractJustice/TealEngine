@@ -1,7 +1,7 @@
 #include "MeshRenderer.h"
 #include <GL/glew.h>
 #include "GameNode/ComponentFactory.h"
-#include "Resources.h"
+#include "Core.h"
 #include "GameNode/ComponentProp.h"
 #include "Graphics/Renderer/IdRenderer.h"
 
@@ -10,12 +10,14 @@ namespace TealEngine
 {
 	MeshRenderer::MeshRenderer()
 	{
-		addProp(new StringKeyMapValuePointerProp<Mesh>((Mesh**)(&(this->mesh)), &Resources::getModelsMap()), "Mesh");
-		addProp(new StringKeyMapValuePointerProp<ShaderProgram>((ShaderProgram**)(&(this->shader)), &Resources::getMaterialsMap()), "Material");
+		addProp(new StringKeyMapValuePointerProp<SharedMesh>((SharedMesh**)(&(this->mesh)), &Core::modelsManager.getLoadedMap()), "Mesh");
+		addProp(new StringKeyMapValuePointerProp<ShaderProgram>((ShaderProgram**)(&(this->shader)), &Core::materialsManager.getLoadedMap()), "Material");
+		addProp(new BoolProp(&this->shadowCaster), "Shadow caster");
+		this->shadowCaster = true;
 		mesh = nullptr;
 		shader = nullptr;
 		this->mode = GL_TRIANGLES;
-		this->activeRenderStages = (unsigned int)RenderStage::Lit;
+		this->renderPassMask = (unsigned int)RenderPass::DeferredPass | (unsigned int)RenderPass::ShadowMapPass;
 	}
 	
 	void Mesh3DRenderer::renderId()
@@ -37,6 +39,20 @@ namespace TealEngine
 				MeshRenderer::render(targetShader, mode ? mode : this->mode, 0);
 			}
 		}
+	}
+
+	bool MeshRenderer::isShadowCaster() 
+	{
+		return this->shadowCaster;
+	}
+
+	void MeshRenderer::setShadowCast(bool castShadow) 
+	{
+		this->shadowCaster = castShadow;
+		if(castShadow)
+			this->renderPassMask |=	((unsigned int)(RenderPass::ShadowMapPass));
+		else
+			this->renderPassMask &=	~((unsigned int)(RenderPass::ShadowMapPass));
 	}
 	
 	EXPORT_COMPONENT(MeshRenderer);

@@ -5,6 +5,8 @@
 #include "ComponentFactory.h"
 #include "libs/glm/gtc/type_ptr.hpp"
 #include <fstream>
+#include "Graphics/Renderer/Shapes/Line3D.h"
+#include "Core.h"
 using namespace glm;
 
 namespace TealEngine
@@ -90,12 +92,27 @@ namespace TealEngine
 		this->transform = transform;
 	}
 
-	GameNode3D* GameNode3D::nodeFromJson(const Json& json) 
+	GameNode3D* GameNode3D::nodeFromJson(const Json& json, unsigned int group) 
 	{
+		static unsigned int groupCounter = 0;
 		GameNode3D* node = new GameNode3D();
 		
-		auto componentsIt = json.find("components");
+		if(json.find("filepath") != json.cend()) 
+		{
+			if(json["filepath"].get<std::string>().length()) 
+			{
+				groupCounter++;
+				group = groupCounter;
+				node->setNodeFilePath(json["filepath"]);
+			}
+		}
+
+		if(json.find("localId") != json.end()) 
+		{
+			node->setGroupAndLocalId(group, json["localId"]);
+		}
 		
+		auto componentsIt = json.find("components");
 		if(componentsIt != json.cend()) 
 		{
 			for(const Json& componentJson : *componentsIt)
@@ -113,7 +130,7 @@ namespace TealEngine
 			const Json& subNodes = json["nodes"];
 			for(const Json& subNodeJson : subNodes) 
 			{
-				GameNode3D* subNode = nodeFromJson(subNodeJson);
+				GameNode3D* subNode = nodeFromJson(subNodeJson, group);
 				node->addChild(subNode);
 			}
 		}
@@ -131,6 +148,7 @@ namespace TealEngine
 		{
 			node->transformProp->set(json["transform"]);
 		}
+		node->refreshProps();
 		return node;
 	}
 
@@ -138,9 +156,11 @@ namespace TealEngine
 	{
 		Json json;
 		json["name"] = this->name;
+		json["localId"] = this->groupLocalId ? this->groupLocalId : this->id;
 		json["id"] = this->id;
 		json["transform"] = this->transformProp->get();
-		json["filepath"] = this->loadedFromFilePath;
+		if(this->loadedFromFilePath.length())
+			json["filepath"] = this->loadedFromFilePath;
 		std::vector<Json> componentsJson;
 		for(Component* comp : components) 
 		{
@@ -169,5 +189,18 @@ namespace TealEngine
 	{
 		this->transformProp->display("Transform");
 		GameNode::displayProps();
+	}
+
+	void GameNode3D::render(ShaderProgram* shader, unsigned int stages) 
+	{
+		if(this == GameNode::getSelectedNode()) 
+		{
+			Transform& wTransform = this->getWorldTransform();
+			glm::vec3 position = wTransform.getPosition();
+			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.right()*1.5f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0.02f));
+			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.up()*1.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.02f));
+			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.forward()*1.5f, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0.02f));
+		}
+		GameNode::render(shader, stages);
 	}
 }

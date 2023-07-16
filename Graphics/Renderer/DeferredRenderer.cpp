@@ -5,6 +5,7 @@
 #include "Graphics/Light/Light.h"
 #include "Resources.h"
 #include "System/Debug.h"
+#include "Core.h"
 namespace TealEngine {
 	void DeferredRenderer::resize(GLuint width, GLuint height)
 	{
@@ -30,6 +31,7 @@ namespace TealEngine {
 	}
 	void DeferredRenderer::render(GameNode* scene)
 	{
+		glDepthMask(true);
 		if(!activeCamera) return;
 		if(this->fb.getWidth() != activeCamera->renderTexture.getWidth() || this->fb.getHeight() != activeCamera->renderTexture.getHeight()) 
 		{
@@ -51,29 +53,33 @@ namespace TealEngine {
 		glDisable(GL_BLEND);
 		glCullFace(GL_BACK);
 		//TE_DEBUG_INFO("Rendering models.");
-		renderModels(scene, nullptr, MeshRenderer::RenderStage::Lit);
+		renderModels(scene, nullptr, MeshRenderer::RenderPass::DeferredPass);
 		
 		//light pass
-		fb.disable(1);
-		fb.disable(2);
-		fb.disable(3);
-		fb.disable(4);
-		fb.apply();
 		//TE_DEBUG_INFO("Rendering light.");
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE);
-		scene->postProcess(getActiveCamera()->renderTexture.id(), albedo.id(), position.id(), normal.id(), specular.id(), light.id());
-		fb.disable(5);
-		fb.apply();
+		scene->postProcess(getActiveCamera()->renderTexture.id(), albedo.id(), position.id(), normal.id(), specular.id(), light.id(), &(this->fb));
 		//TE_DEBUG_INFO("Combining lightmap with albedomap.");
-		combineLightShader.setTexture("Unlit", activeCamera->renderTexture.id());
+		fb.enable(0);
+		fb.apply();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 		combineLightShader.setTexture("AlbedoMap", albedo.id());
 		combineLightShader.setTexture("LightMap", light.id());
+		combineLightShader.setTexture("Dither", Core::textureManager.get("WhiteNoise.png").id());
+		Render::renderShader(&combineLightShader);
+
+		
 		glDisable(GL_BLEND);
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
-		Render::renderShader(&combineLightShader);
+		Render::VP_matrix = activeCamera->getPV();
+		//Render::V_matrix = this->activeCamera->getParentOfType<GameNode3D>()->getWorldTransform().getMatrix();
+		renderModels(scene, nullptr, MeshRenderer::RenderPass::DebugPass);
+		Core::shapesRenderer.renderAll();
 	}
 }

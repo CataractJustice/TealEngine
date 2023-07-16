@@ -4,12 +4,11 @@
 #include <map>
 #include <list>
 #include <set>
-#include "EventSystem/Event.h"
-#include "EventSystem/EventListener.h"
 #include "System/Debug.h"
 #include "Physics/Collision.h"
 #include <queue>
 #include <filesystem>
+#include <unordered_set>
 #include "NlohmannJson/json.hpp"
 
 using Json = nlohmann::json;
@@ -23,26 +22,28 @@ enum NODE_RELATION
 };
 
 namespace TealEngine {
+	class FrameBuffer;
 	class ShaderProgram;
 	class Component;
 	class GameNode
 	{
 	private:
-		static unordered_set<GameNode*> allNodes;
-		static std::map<int, GameNode*> idMap;
+		static std::unordered_set<GameNode*> allNodes;
+		static std::map<unsigned int, GameNode*> idMap;
+		static unsigned int lastId;
+		static std::map<unsigned int, std::map<unsigned int, GameNode*>> groupsIdMap;
 		static map<string, set<GameNode*>> tagged;
 		static std::queue<GameNode*> destroyQueue;
 		
-		map<EventType, EventListener> eventListeners;
-		map<EventType, std::list<GameNode*>> eventSubscribedNodes;
 		set<string> tags;
 		bool willBeDestroyed;
 		unsigned short hierarchyDepth;
-		static unsigned int lastId;
 		static GameNode* selectedNode;
 	protected:
 		bool active;
 		unsigned int id;
+		unsigned int groupId;
+		unsigned int groupLocalId;
 		bool onDestroyHasBeenCalled;
 		string name;
 		list<GameNode*> childNodes;
@@ -54,8 +55,6 @@ namespace TealEngine {
 	public:
 		const string& getName();
 		void rename(const string& name);
-
-		//tag system
 
 		//checks if node has given tag added
 		bool hasTag(const string& tag);
@@ -92,7 +91,7 @@ namespace TealEngine {
 		//returns parent node, returns nullptr if node is an orphan
 		GameNode* getParent();
 
-		//adds child nodes and calls handleEvent with CHILD_ADDED event
+		//adds child node
 		virtual GameNode* addChild(GameNode* node);
 		//calls addChild in a loop for every vector element
 		virtual void addChilds(const std::initializer_list<GameNode*>& nodes);
@@ -152,17 +151,9 @@ namespace TealEngine {
 		//recursively updates current and all lower nodes
 		void updateAll();
 		void editorUpdate();
-		//adds function that will be called on call of handleEvent with event of given type
-		void addEventListener(EventType type, eventListenerFunc ex);
-		//handleEvent will be called on param node when handleEvent on this node will be called with event of given type 
-		void subNodeToEvent(EventType type, GameNode* node);
-		//a?
-		EventListener* getEventListener(EventType type);
-		//sends event to added event listeners
-		void handleEvent(Event* e, bool toLower = false, bool toUpper = true);
-
-		//Network:
 		
+		void refreshProps();
+
 		//Called whenever node recives a messgae, calls onMessageReceive(packet) for all components of this node
 		virtual void onMessageReceive();
 		//Server side method
@@ -173,17 +164,17 @@ namespace TealEngine {
 		virtual bool isVisibleForPeer();
 
 		//
-		virtual void onCollision(const Physics::Collision& collision, bool eventDown = true, bool eventUp = true);
+		virtual void onCollision(const Collision& collision, bool eventDown = true, bool eventUp = true);
 		//
 		void GUIrender();
 		//
 		void imGuiRender(const std::string& windowName);
 		//
-		void render(ShaderProgram* shader = nullptr, unsigned int stages = 0);
+		virtual void render(ShaderProgram* shader = nullptr, unsigned int stages = 0);
 		void renderId();
 
 		//
-		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light);
+		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer);
 
 		virtual void displayNodeTree();
 
@@ -191,24 +182,44 @@ namespace TealEngine {
 
 		//deletes node when it's possible
 		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
-
+		//
 		static void cleanUp();
 
 		GameNode();
 		virtual ~GameNode();
+		
+		//
 		static bool isNodeExist(GameNode* node);
 
 		virtual Json toJson();
-
+		//returns node global id
 		int getId();
+		//returns id of the group
+		//returns 0 for no group
+		unsigned int getGroupId();
+		//returns node id inside the group
+		unsigned int getGroupLocalId();
+		//set node global id
 		void setId(int id);
+		//set group id and node id local to the group
+		void setGroupAndLocalId(int groupId, int groupLocalId);
+		//returns node by its global id
+		//returns nullptr if no node with such id was found
 		static GameNode* getNodeById(int id);
+		//returns node by it's group and id local to that group
+		//returns nullptr if no node was found
+		static GameNode* getNodeByGroupAndLocalId(int groupId, int groupLocalId);
+		//returns currently selected node in editor
 		static GameNode* getSelectedNode();
+		//set current selected node in editor
 		static void setSelectedNode(GameNode* node);
-
+		//set filepath from which this node was loaded from
 		void setNodeFilePath(std::filesystem::path path);
-
+		//returns filepath from which this node was loaded from
+		std::filesystem::path getNodeFilePath();
+		//saves node to filepath it was loaded from
 		void save();
+		//saves node to file
 		void saveAs(const std::filesystem::path& path);
 	};
 }

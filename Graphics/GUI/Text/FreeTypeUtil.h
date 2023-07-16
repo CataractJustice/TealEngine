@@ -1,13 +1,12 @@
 #pragma once
 #include <string>
-#include <ft2build.h>
-#include FT_FREETYPE_H
+struct FT_FaceRec_;
 namespace TealEngine
 {
 	namespace FreeTypeUtil
 	{
 		int FreeTypeInitialize();
 
-		int loadFont(std::string path, FT_Face& face);
+		int loadFont(std::string path, FT_FaceRec_*& face);
 	}
 }

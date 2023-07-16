@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include "GameNode/GameNode3D.h"
+#include "Graphics/Camera.h"
+#include "Editor/Components/EditorCameraController.h"
 namespace TealEngine
 {
 	Project Project::open(const std::string& directory) 
@@ -44,7 +46,22 @@ namespace TealEngine
 		project.projectProperties["path"] = path.string();
 
 		GameNode3D* defaultScene = new GameNode3D();
+		GameNode3D* editorNodes = new GameNode3D();
+		GameNode3D* editorCameraNode = new GameNode3D();
+
 		defaultScene->rename("Root");
+		editorCameraNode->rename("Editor Nodes");
+		editorCameraNode->rename("Free Camera");
+
+		defaultScene->addChild(editorNodes);
+		editorNodes->addChild(editorCameraNode);
+
+		Camera* editorCamera = new Camera();
+		editorCamera->setAsEditorPrimary();
+		EditorCameraController* editorCameraController = new EditorCameraController();
+		editorCameraNode->attachComponent(editorCamera);
+		editorCameraNode->attachComponent(editorCameraController);
+
 		std::ofstream defaultSceneFile(path/"GameAssets"/"Root.node");
 		defaultSceneFile << defaultScene->toJson();
 		defaultSceneFile.close();

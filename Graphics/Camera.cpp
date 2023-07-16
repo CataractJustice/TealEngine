@@ -8,8 +8,8 @@ namespace TealEngine
 {
 	Camera::Camera() 
 	{
-		this->playPrimary = false;
-		this->editPrimary = false;
+		this->isPlayPrimary = false;
+		this->isEditPrimary = false;
 		this->fov = 90.0f;
 		this->zNear = 0.01f;
 		this->zFar = 1000.0f;
@@ -22,13 +22,13 @@ namespace TealEngine
 		addProp(new FloatProp(&zFar), "Far plane");
 		addProp(new FloatProp(&width), "Ortho width");
 		addProp(new FloatProp(&height), "Ortho height");
+		addProp(new BoolProp(&isEditPrimary), "Editor primary");
+		addProp(new BoolProp(&isPlayPrimary), "Game primary");
 		static const char* projectionNames[] = 
 		{
 			"Orthogonal", "Perspective"
 		};
 		addProp(new EnumProp((int*)&projectionType, projectionNames, 2), "Projection type");
-		addProp(new BoolProp(&playPrimary), "Editor primary camera");
-		addProp(new BoolProp(&editPrimary), "Play primary camera");
 		this->viewFromHere = std::function<void()>([this] () 
 		{
 			Core::renderer.setCamera(this);
@@ -72,9 +72,6 @@ namespace TealEngine
 	{
 		if (!this->fixedToWindowSize) 
 		{
-			this->getParent()->addEventListener(WINDOW_RESIZE, eventListenerBind(&Camera::resizeEvent, this));
-			Graphics::window->WindowResize.subscribe(this->getParent()->getEventListener(WINDOW_RESIZE));
-			this->fixedToWindowSize = true;
 		}
 	}
 	
@@ -82,8 +79,6 @@ namespace TealEngine
 	{
 		if (this->fixedToWindowSize) 
 		{
-			Graphics::window->WindowResize.unsubscribe(this->getParent()->getEventListener(WINDOW_RESIZE));
-			this->fixedToWindowSize = false;
 		}
 	}
 
@@ -100,19 +95,6 @@ namespace TealEngine
 			break;
 		default:
 			break;
-		}
-	}
-
-	void Camera::resizeEvent(Event* e) 
-	{
-		if (e->getType() == EventType::WINDOW_RESIZE) 
-		{
-			WindowResizeEvent* wre = (WindowResizeEvent*)e;
-			resize(wre->width, wre->height);
-		}
-		else 
-		{
-			throw;
 		}
 	}
 	
@@ -155,7 +137,18 @@ namespace TealEngine
 	void Camera::onPropSet(const std::string& propName) 
 	{
 		resize(width, height);
+		if(
+			isEditPrimary && Core::getEngineState() == Core::EngineState::GAME_STOPPED ||
+			isPlayPrimary && (Core::getEngineState() == Core::EngineState::GAME_PLAYING || Core::getEngineState() == Core::EngineState::GAME_PAUSED)
+		) 
+		{
+			Core::renderer.setCamera(this);
+		}
+
+		if(isEditPrimary) this->setAsEditorPrimary();
+		if(isPlayPrimary) this->setAsPlayPrimary();
 	}
-	
+	Camera* Camera::editorPrimary = nullptr;
+	Camera* Camera::playPrimary = nullptr;
 	EXPORT_COMPONENT(Camera);
 }

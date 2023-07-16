@@ -13,7 +13,7 @@ in mat3 TBN;
 in vec4 Color;
 
 uniform sampler2D unlit;
-uniform sampler2D texture;
+uniform sampler2D textureImage;
 uniform sampler2D specular;
 uniform sampler2D normals;
 
@@ -24,8 +24,11 @@ uniform vec3 specularColor = vec3(1.0f);
 void main()
 {
     UnlitColor = texture(unlit, TexCoord) * Color * unlitColor;
-    FragColor = texture(texture, TexCoord) * Color * textureColor;
+    FragColor = texture(textureImage, TexCoord) * Color * textureColor;
 	FragPosition = FragPos;
+	if((UnlitColor.a + FragColor.a) == 0.0) discard;
+	UnlitColor.a = 1.0f;
+	FragColor.a = 1.0f;
 	vec3 ln = texture(normals, TexCoord).rgb * 2.0 - 1.0;
 	FragNormal = normalize(TBN * ln);
 	vec4 specvec = texture(specular, TexCoord);

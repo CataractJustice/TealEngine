@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include "NlohmannJson/json.hpp"
+#include "Core.h"
 using Json = nlohmann::json;
 namespace TealEngine {
 
@@ -211,5 +212,83 @@ namespace TealEngine {
 			shadersMap[shaderJson.key()] = ShaderProgram();
 			shadersMap[shaderJson.key()].link(vert.id(), frag.id());
 		}
+	}
+
+	void ShaderProgram::saveMaterial(const std::filesystem::path& path, const std::string& name) 
+	{
+		std::string shaderName = "";
+		for(const auto& shader : Core::shadersManager.getLoadedMap()) 
+		{
+			if(shader.second.id() == this->id()) 
+			{
+				shaderName = shader.first;
+			}
+		}
+
+		if(shaderName.length() == 0) return;
+		
+		Json materialJson = Json();
+		materialJson["name"] = name;
+		materialJson["shader"] = shaderName;
+
+		std::vector<Json> uniforms;
+		std::vector<Json> textures;
+
+		for(const auto& uniform : this->getUniformsMap()) 
+		{
+			Json uniformJson;
+			uniformJson["name"] = uniform.first;
+			switch (uniform.second.getType())
+			{
+			case GL_FLOAT:
+				uniformJson["value"] = *((float*)uniform.second.valueptr());
+				uniformJson["type"] = "float";
+				uniforms.push_back(uniformJson);
+				break;
+			case GL_INT: 
+				uniformJson["value"] = *((int*)uniform.second.valueptr());
+				uniformJson["type"] = "int";
+				uniforms.push_back(uniformJson);
+				break;
+			case GL_FLOAT_VEC2:
+				uniformJson["value"] = std::vector<float>({(((float*)uniform.second.valueptr())[0]), (((float*)uniform.second.valueptr())[1])});
+				uniformJson["type"] = "vec2";
+				uniforms.push_back(uniformJson);
+				break;
+			case GL_FLOAT_VEC3:
+				uniformJson["value"] = std::vector<float>({(((float*)uniform.second.valueptr())[0]), (((float*)uniform.second.valueptr())[1]), (((float*)uniform.second.valueptr())[2])});
+				uniformJson["type"] = "vec3";
+				uniforms.push_back(uniformJson);
+				break;
+			case GL_FLOAT_VEC4:
+				uniformJson["value"] = std::vector<float>({(((float*)uniform.second.valueptr())[0]), (((float*)uniform.second.valueptr())[1]), (((float*)uniform.second.valueptr())[2]), (((float*)uniform.second.valueptr())[3])});
+				uniformJson["type"] = "vec4";
+				uniforms.push_back(uniformJson);
+				break;
+			default:
+				break;
+			}
+		}
+
+		materialJson["uniforms"] = uniforms;
+		for(const auto& texture : this->getTextureMap()) 
+		{
+			Json textureJson;
+			textureJson["name"] = texture.first;
+
+			for(const auto& textureResource : Core::textureManager.getLoadedMap()) 
+			{
+				if(texture.second.second == textureResource.second.id()) 
+				{
+					textureJson["texture"] = textureResource.first;
+				}
+			}	
+			textures.push_back(textureJson);
+		}
+
+		materialJson["textures"] = textures;
+
+		std::ofstream outputFile(path);
+		outputFile << materialJson;
 	}
 }

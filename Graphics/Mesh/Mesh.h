@@ -6,6 +6,7 @@
 #include "GameNode/Component.h"
 #include "VertexBuffer.h"
 using namespace glm;
+#define TE_MAX_BONES_PER_VERTEX 4
 namespace TealEngine
 {
 	enum MESH_ATTRIBS
@@ -15,7 +16,14 @@ namespace TealEngine
 		TANGET,
 		UV,
 		COLOR,
-
+		BONE_ID0,
+		BONE_ID1,
+		BONE_ID2,
+		BONE_ID3,
+		BONE_WEIGHT0,
+		BONE_WEIGHT1,
+		BONE_WEIGHT2,
+		BONE_WEIGHT3,
 		MESH_ATTRIBS_SIZE
 	};
 
@@ -58,6 +66,16 @@ namespace TealEngine
 		vector<vec3> bitangents;
 		vector<vec2> UVs;
 		vector<vec4> colors;
+
+		vector<int> bone0Ids;
+		vector<int> bone1Ids;
+		vector<int> bone2Ids;
+		vector<int> bone3Ids;
+		vector<float> bone0Weights;
+		vector<float> bone1Weights;
+		vector<float> bone2Weights;
+		vector<float> bone3Weights;
+
 		vector<unsigned int> indices;
 		std::string name;
 		
@@ -66,12 +84,20 @@ namespace TealEngine
 		void apply();
 
 		//Input
-		void setVertices(std::vector<vec3> vertices);
-		void setNormals(std::vector<vec3> normals);
-		void setTangents(std::vector<vec3> tangents);
-		void setUVs(std::vector<vec2> UVs);
-		void setColors(std::vector<vec4> colors);
-		void setIndices(std::vector<unsigned int> indices);
+		inline void setVertices	(const std::vector<vec3>& vertices)			{ this->vertices = vertices; };
+		inline void setNormals	(const std::vector<vec3>& normals)			{ this->normals = normals; };
+		inline void setTangents	(const std::vector<vec3>& tangents)			{ this->tangents = tangents; };
+		inline void setUVs		(const std::vector<vec2>& UVs)				{ this->UVs = UVs; };
+		inline void setColors	(const std::vector<vec4>& colors)			{ this->colors = colors; };
+		inline void setIndices	(const std::vector<unsigned int>& indices)	{ this->indices = indices; };
+		inline void setBone0Ids(const std::vector<float>& bones);
+		inline void setBone1Ids(const std::vector<float>& bones);
+		inline void setBone2Ids(const std::vector<float>& bones);
+		inline void setBone4Ids(const std::vector<float>& bones);
+		inline void setBone3Weights(const std::vector<float>& weights) { this->bone0Weights = weights; };
+		inline void setBone0Weights(const std::vector<float>& weights) { this->bone1Weights = weights; };
+		inline void setBone1Weights(const std::vector<float>& weights) { this->bone2Weights = weights; };
+		inline void setBone2Weights(const std::vector<float>& weights) { this->bone3Weights = weights; };
 
 		//Output
 		SharedMesh* sharedMesh();

@@ -5,6 +5,7 @@
 #include <map>
 #include <fstream>
 #include "NlohmannJson/json.hpp"
+#include "Graphics/GUI/Text/FreeTypeUtil.h"
 
 using Json = nlohmann::json;
 

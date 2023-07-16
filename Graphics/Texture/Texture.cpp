@@ -4,6 +4,8 @@
 #include "Texture.h"
 #include "libs/stb_image.h"
 #include "System/Debug.h"
+#include "Graphics/FrameBuffer/FrameBuffer.h"
+#include "Graphics/Renderer/RenderUtil.h"
 
 namespace TealEngine
 {
@@ -57,8 +59,8 @@ namespace TealEngine
 		glBindTexture(this->type, texture);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glTexImage2D(this->type, 0, this->internalformat, width, height, 0, this->format, dataType, pixels);
 		glBindTexture(this->type, 0);
@@ -93,22 +95,84 @@ namespace TealEngine
 		this->height = height;
 	}
 
-	GLuint Texture::id()
+	GLuint Texture::id() const
 	{
 		return this->texture;
 	}
 
+
 	Texture& Texture::operator=(const Texture& texture) {
-		glDeleteTextures(1, &this->texture);
+		//copy fileds
 		this->parameteries = texture.parameteries;
 		this->dataType = texture.dataType;
 		this->format = texture.format;
 		this->internalformat = texture.internalformat;
-		this->texture = texture.texture;
 		this->type = texture.type;
 		this->width = texture.width;
 		this->height = texture.height;
+
+		if(texture.id() == 0) 
+		{
+			return *this;
+		}
+
+
+		 // Create a buffer to hold the copied texture data
+    	GLubyte* data = new GLubyte[width * height * 16];
+    
+    	glBindTexture(texture.type, texture.id()); // Bind the source texture
+    
+    	// Get the texture data
+    	glGetTexImage(texture.type, 0, texture.format, texture.dataType, data);
+
+		if (this->texture == 0)
+			glGenTextures(1, &this->texture);
+		glBindTexture(this->type, this->texture);
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(this->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(this->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(this->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    	// Set the texture data
+    	glTexImage2D(texture.type, 0, texture.internalformat, width, height, 0, texture.format, texture.dataType, data);
+    
+    	// Clean up the buffer
+    	delete[] data;
+    
+    	// Restore default texture binding
+    	glBindTexture(GL_TEXTURE_2D, 0);
+
 		return *this;
+	}
+
+	Texture::Texture(Texture& texture) {
+
+		//copy fileds
+		this->parameteries = texture.parameteries;
+		this->dataType = texture.dataType;
+		this->format = texture.format;
+		this->internalformat = texture.internalformat;
+		this->type = texture.type;
+		this->width = texture.width;
+		this->height = texture.height;
+
+		if(texture.id() == 0) 
+		{
+			return;
+		}
+
+		int dataTypeSize = 0;
+		int formatSize = 0;
+
+		this->create(width, height);
+		FrameBuffer fb;
+		fb.attachTexture(this->texture, 0);
+		fb.enable(0);
+		fb.apply();
+		fb.bind();
+
+		//fix me: renderTexture's shader wont work for non RGB textures
+		Render::renderTexture(texture.id());
 	}
 
 	Texture::~Texture() 
