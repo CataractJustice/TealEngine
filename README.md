@@ -1,5 +1,3 @@
-
-https://github.com/CataractJustice/TealEngine/assets/61472497/e70aa653-711a-4082-aae6-6d0be56300c5
 # TealEngine
 An Entity-Component based game engine with editor and c++ as main scripting language
 
