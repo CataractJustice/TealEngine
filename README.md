@@ -20,7 +20,6 @@ An Entity-Component based game engine with editor and c++ as main scripting lang
 # Games
 - An open world sandbox per-pixel physics simulation game https://github.com/CataractJustice/AkihaPixelSimGame/
 ![image](https://user-images.githubusercontent.com/61472497/253823175-d6e7b55d-22ab-4c60-825a-728b462553b4.png)
-  https://youtu.be/gIeftwi93ZA
 - A sokoban clone
   
 https://github.com/CataractJustice/TealEngine/assets/61472497/04c6e6fe-aab2-4626-9371-b24da3e28076
