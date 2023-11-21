@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include <string>
-#include "Resources.h"
 #include "System/Input.h"
 #include "Graphics/Renderer/DeferredRenderer.h"
 #include "Graphics/Renderer/IdRenderer.h"
@@ -31,14 +30,11 @@ namespace TealEngine
 		extern PhysicsScene physicsScene;
 		extern ShapesRenderer shapesRenderer;
 
-		
-
 		void update();
 		void setProject(Project project);
 		GameNode3D* getRoot();
 		extern std::map<std::string, std::string> settings;
 		void init();
-		bool isServer();
 		void requestModulesReload();
 		void setScene(GameNode3D* node);
 		void setScene(const std::string& scenePath);
@@ -53,6 +49,8 @@ namespace TealEngine
 		void play();
 		void pause();
 		void stop();
+
+		void reloadModules();
 
 		EngineState getEngineState();
 	}

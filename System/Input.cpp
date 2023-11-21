@@ -4,6 +4,7 @@ namespace TealEngine
 {
 	namespace Input
 	{
+		bool inputIsActive = true;
 		namespace Mouse
 		{
 			glm::vec2 deltaMPos = glm::vec2(0.0f, 0.0f);
@@ -25,11 +26,13 @@ namespace TealEngine
 
 			void moveCallback(GLFWwindow* window, double xpos, double ypos) 
 			{
+				if(!inputIsActive) return;
 				mousePos = glm::vec2(xpos, ypos);
 			}
 
 			void buttonCallback(GLFWwindow* window, int button, int action, int mod) 
 			{
+				if(!inputIsActive) return;
 				if (action == GLFW_PRESS)
 				{
 				}
@@ -41,6 +44,7 @@ namespace TealEngine
 
 			void wheelCallback(GLFWwindow* window, double xoffset, double yoffset) 
 			{
+				if(!inputIsActive) return;
 				scrollPos += yoffset;
 			}
 
@@ -69,7 +73,7 @@ namespace TealEngine
 		
 			void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mod) 
 			{
-
+				if(!inputIsActive) return;
 				if (action == GLFW_PRESS)
 				{
 				}
@@ -94,6 +98,7 @@ namespace TealEngine
 
 		void inputUpdate() 
 		{
+			if(!inputIsActive) return;
 			static glm::vec2 lastMousePos = Mouse::getMousePos();
 			static double lastScrollPos = Mouse::getScrollPos();
 
@@ -102,6 +107,15 @@ namespace TealEngine
 
 			lastMousePos = Mouse::getMousePos();
 			lastScrollPos = Mouse::getScrollPos();
+		}
+		void setInputActive(bool active) 
+		{
+			inputIsActive = active;
+		}
+
+		bool getInputActive() 
+		{
+			return inputIsActive;
 		}
 	}
 }

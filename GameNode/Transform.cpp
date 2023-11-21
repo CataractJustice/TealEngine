@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "Math/VecAngleAroundAxis.h"
 
 using namespace glm;
 
@@ -135,6 +136,24 @@ namespace TealEngine {
 	glm::quat Transform::getRotation()
 	{
 		return quat_cast(rotation);
+	}
+
+	glm::vec3 Transform::getXYZRotation() 
+	{
+		glm::vec3 angles;
+		glm::quat q = getRotation();
+		float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+		float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+		angles.z = std::atan2(sinr_cosp, cosr_cosp);
+
+		float sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
+		float cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
+		angles.x = 2 * std::atan2(sinp, cosp) - M_PI / 2;
+
+		float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+		float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+		angles.y = std::atan2(siny_cosp, cosy_cosp);
+		return angles;
 	}
 
 	glm::mat4 Transform::getRotationMatrix() 

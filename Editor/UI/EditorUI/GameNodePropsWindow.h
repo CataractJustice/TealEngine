@@ -1,10 +1,8 @@
-#include "GameNode/Component.h"
-
 namespace TealEngine 
 {
-	class GameNodePropsWindow : public Component
+	class GameNodePropsWindow
 	{
 		public:
-		void imGuiRender(const std::string& windowName) override;
+		static void render();
 	};
 }

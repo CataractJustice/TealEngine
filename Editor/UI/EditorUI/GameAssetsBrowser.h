@@ -4,7 +4,7 @@
 #include "Graphics/Texture/Texture.h"
 namespace TealEngine 
 {
-	class GameAssetsBrowser : public Component 
+	class GameAssetsBrowser
 	{
 		private:
 		std::filesystem::path currentPath;
@@ -17,7 +17,7 @@ namespace TealEngine
 		public:
 		void setPath(std::filesystem::path path);
 		void setRootPath(std::filesystem::path path);
-		void imGuiRender(const std::string& windowName) override;
+		void render();
 		GameAssetsBrowser();
 	};
 }

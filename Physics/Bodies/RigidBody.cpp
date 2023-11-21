@@ -25,7 +25,7 @@ namespace TealEngine
 			this->getParentOfType<GameNode3D>()->getRelativeTransform().globalRotate(-length(torque) * 2.0 * glm::pi<float>(), torque);
 		else
 			torque = glm::vec3(0.0f);
-		addVelocity(-glm::vec3(0.0f, 0.00025f, 0.0f));
+		//addVelocity(-glm::vec3(0.0f, 0.00025f, 0.0f));
 	}
 
 	glm::vec3 RigidBody::getVelocity()

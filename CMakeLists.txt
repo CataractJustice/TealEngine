@@ -25,7 +25,6 @@ ResourceManagment/*.cpp
 
 set(SOURCES ${SUBDIR_SOURCES} 
 Core.cpp 
-Resources.cpp
 Project.cpp
 libs/imgui/imgui.cpp
 libs/imgui/imgui_tables.cpp

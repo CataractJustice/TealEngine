@@ -26,6 +26,7 @@ namespace TealEngine {
 		{
 			ShaderProgram& shader = Core::shadersManager.get("Image");
 			shader.setTexture("textureImage", texture);
+			shader.setUniform("color", glm::vec4(1.0f));
 			renderShader(&shader, offset, scale);
 		}
 	}

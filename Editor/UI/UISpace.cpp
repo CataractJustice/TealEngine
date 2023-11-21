@@ -1,20 +1,71 @@
 #include "UISpace.h"
 #include "Core.h"
 #include "libs/tinyfiledialogs.h"
+#include "EditorUI/ComponentsExplorer.h"
+#include "EditorUI/GameNodePropsWindow.h"
+#include "EditorUI/MaterialEditor.h"
+#include "EditorUI/ProjectPropertiesWindow.h"
+
 namespace TealEngine 
 {
+	GameAssetsBrowser* gameAssetsBrowser;
+	MaterialEditor* materialEditor;
+	Texture playButtonTexture;
+	Texture pauseButtonTexture;
+	Texture stopButtonTexture;
 	UISpace::UISpace() 
 	{
-		addWindowOption(EditorWindowNames::editorSceneTree);
-		addWindowOption(EditorWindowNames::gameSceneTree);
-		addWindowOption(EditorWindowNames::editorViewport);
-		addWindowOption(EditorWindowNames::gameViewport);
-		addWindowOption(EditorWindowNames::textureDebugger);
-		addWindowOption(EditorWindowNames::gameNodeProps);
-		addWindowOption(EditorWindowNames::componentsExplorer);
-		addWindowOption(EditorWindowNames::gameAssetsBrowser);
-		addWindowOption(EditorWindowNames::projectProps);
-		addWindowOption(EditorWindowNames::materialEditor);
+	}
+
+	void UISpace::init() 
+	{
+		playButtonTexture.loadFromFile("./Assets/Images/GameStateIcons/Play.png");
+		pauseButtonTexture.loadFromFile("./Assets/Images/GameStateIcons/Pause.png");
+		stopButtonTexture.loadFromFile("./Assets/Images/GameStateIcons/Stop.png");
+		gameAssetsBrowser = new GameAssetsBrowser();
+		materialEditor = new MaterialEditor();
+		addWindowOption(EditorWindowNames::gameSceneTree, [](){
+			const ImVec2 controllButtonSize = ImVec2(32.0f, 32.0f);
+			float availX = ImGui::GetContentRegionAvail().x;
+			if(Core::getEngineState() == Core::EngineState::GAME_STOPPED) 
+			{
+				ImGui::SetCursorPos(ImVec2(availX / 2.0f - controllButtonSize.x / 2.0f, ImGui::GetCursorPosY()));
+				if(ImGui::ImageButton(ImTextureID((long)playButtonTexture.id()), controllButtonSize)) 
+				{
+					Core::play();
+				}
+			}
+			else 
+			{
+				ImGui::SetCursorPos(ImVec2(availX / 2.0f - controllButtonSize.x, ImGui::GetCursorPosY()));
+				if(Core::getEngineState() == Core::EngineState::GAME_PLAYING) 
+				{
+					if(ImGui::ImageButton(ImTextureID((long)pauseButtonTexture.id()), controllButtonSize)) 
+					{
+						Core::pause();
+					}
+				}
+				else 
+				{
+					if(ImGui::ImageButton(ImTextureID((long)playButtonTexture.id()), controllButtonSize)) 
+					{
+						Core::play();
+					}
+				}
+				ImGui::SameLine();
+				ImGui::SetCursorPos(ImVec2(availX / 2.0f, ImGui::GetCursorPosY()));
+				if(ImGui::ImageButton(ImTextureID((long)stopButtonTexture.id()), controllButtonSize)) 
+				{
+					Core::stop();
+				}
+			}
+			Core::getRoot()->displayNodeTree(); 
+		});
+		addWindowOption(EditorWindowNames::gameNodeProps, GameNodePropsWindow::render);
+		addWindowOption(EditorWindowNames::componentsExplorer, ComponentsExplorer::render);
+		addWindowOption(EditorWindowNames::gameAssetsBrowser, [](){ gameAssetsBrowser->render(); });
+		addWindowOption(EditorWindowNames::projectProps, ProjectPropertiesWindow::render);
+		addWindowOption(EditorWindowNames::materialEditor, [](){ materialEditor->render(); });
 
 		openWindow(EditorWindowNames::gameSceneTree);
 		openWindow(EditorWindowNames::gameViewport);
@@ -96,25 +147,23 @@ namespace TealEngine
 			ImGui::EndMainMenuBar();
 		}
 
-		
-		GameNode* root = Core::getRoot();
-
 		for(auto& windowKeyVal : this->windowOptions) 
 		{
-			if(windowKeyVal.second) 
+			if(windowKeyVal.second.first) 
 			{
-				ImGui::Begin(windowKeyVal.first.c_str(), &windowKeyVal.second);
-				root->imGuiRender(windowKeyVal.first.c_str());
+				ImGui::Begin(windowKeyVal.first.c_str(), &windowKeyVal.second.first);
+				windowKeyVal.second.second();
 				ImGui::End();
 			}
 		}
 	}
-	void UISpace::addWindowOption(const std::string& name) 
+	void UISpace::addWindowOption(const std::string& name, std::function<void()> renderFn) 
 	{
 		auto it = this->windowOptions.find(name);
 		if(it == windowOptions.cend()) 
 		{
-			windowOptions[name] = false;
+			windowOptions[name].first = false;
+			windowOptions[name].second = renderFn;
 		}
 	}
 	void UISpace::openWindow(const std::string& name) 
@@ -122,7 +171,7 @@ namespace TealEngine
 		auto it = this->windowOptions.find(name);
 		if(it != windowOptions.cend()) 
 		{
-			it->second = true;
+			it->second.first = true;
 		}
 	}
 	void UISpace::closeWindow(const std::string& name) 
@@ -130,7 +179,7 @@ namespace TealEngine
 		auto it = this->windowOptions.find(name);
 		if(it != windowOptions.cend()) 
 		{
-			it->second = false;
+			it->second.first = false;
 		}
 	}
 }

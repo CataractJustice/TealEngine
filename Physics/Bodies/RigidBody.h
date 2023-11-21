@@ -42,6 +42,8 @@ namespace TealEngine
 
 		void setTorque(glm::vec3 torque);
 
+		inline glm::vec3 getTorque() { return torque; };
+
 		PhysicMaterial& Material();
 
 		RigidBody();

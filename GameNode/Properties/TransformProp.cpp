@@ -49,23 +49,25 @@ namespace TealEngine
 		int edited = 0;
 		glm::vec3 pos = transform.getPosition();
 		glm::vec3 scale = transform.getScale();
-		glm::quat rotation = transform.getRotation();
-		if(ImGui::DragFloat3((std::string("Position of ") + label).c_str(), glm::value_ptr(pos), 0.01f)) 
+		glm::vec3 rotation = transform.getXYZRotation();
+		if(ImGui::DragFloat3((std::string("Position#") + label).c_str(), glm::value_ptr(pos), 0.01f)) 
 		{
 			edited++;
 			transform.setPosition(pos);
 		}
 
-		if(ImGui::DragFloat3((std::string("Scale of ") + label).c_str(), glm::value_ptr(scale), 0.01f)) 
+		if(ImGui::DragFloat3((std::string("Scale#") + label).c_str(), glm::value_ptr(scale), 0.01f)) 
 		{
 			edited++;
 			transform.setScale(scale);
 		}
 
-		if(ImGui::DragFloat4((std::string("Rotation of ") + label).c_str(), glm::value_ptr(rotation), 0.005f)) 
+		if(ImGui::DragFloat3((std::string("Rotation#") + label).c_str(), glm::value_ptr(rotation), 0.005f)) 
 		{
 			edited++;
-			transform.setRotation(glm::normalize(rotation));
+			transform.setRotation(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+			transform.rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+			transform.rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 
 		return edited;

@@ -27,26 +27,7 @@ private:
 	static float n[2][2][2];
 public:
 
-	static float get(float x, float y = 0.0f, float z = 0.0f, unsigned int octaves = 1, float octaveDivisor = 1.0f)
-	{
-		if (octaves > 0) 
-		{
-			fx = glm::fract(x), fy =glm::fract(y), fz = glm::fract(z);
-			if(fx < 0.0f) fx = 1.0f + fx;
-			if(fy < 0.0f) fy = 1.0f + fy;
-			if(fz < 0.0f) fz = 1.0f + fz;
-			for (int i = 0; i < 2; i++)
-				for (int j = 0; j < 2; j++)
-					for (int k = 0; k < 2; k++)
-						n[i][j][k] = Noise::get((int)x + i, (int)y + j, (int)z + k);
-
-			return (smooth3DGridInterpolation(glm::vec3(fx, fy, fz), n[0][0][0], n[1][0][0], n[0][1][0], n[1][1][0], n[0][0][1], n[1][0][1], n[0][1][1], n[1][1][1]) + PerlinNoise::get(-z, x, y, octaves - 1, octaveDivisor)/octaveDivisor)/(1.0f+1.0f/octaveDivisor);
-		}
-		else 
-		{
-			return 0.0f;
-		}
-	}
+	static float get(float x, float y = 0.0f, float z = 0.0f, unsigned int octaves = 1, float persistance = 0.5f, float lacunarity = 2.0f);
 
 	static float* createVolume(glm::vec3 offset, glm::ivec3 size, glm::ivec3 scale, float min = 0.0f, float max = 1.0f) 
 	{

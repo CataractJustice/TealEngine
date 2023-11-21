@@ -2,9 +2,9 @@
 
 namespace TealEngine 
 {
-	class ComponentsExplorer : public Component
+	class ComponentsExplorer
 	{
 		public:
-		void imGuiRender(const std::string& windowName) override;
+		static void render();
 	};
 }

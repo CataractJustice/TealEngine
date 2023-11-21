@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 
 #define MAX_CASCADES 8
 #define cascade_inner_bias 0.01f

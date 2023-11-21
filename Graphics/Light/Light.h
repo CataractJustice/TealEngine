@@ -2,7 +2,6 @@
 #include "GameNode/GameNode.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Mesh/MeshUtil.h"
-#include "Resources.h"
 #include "Graphics/Renderer/RenderUtil.h"
 #include "Graphics/FrameBuffer/FrameBuffer.h"
 #include "Graphics/Texture/Texture.h"

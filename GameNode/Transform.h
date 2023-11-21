@@ -57,6 +57,7 @@ namespace TealEngine {
 		void lookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
 
 		glm::quat getRotation();
+		glm::vec3 getXYZRotation();
 		glm::mat4 getRotationMatrix();
 
 		glm::vec3 forward();

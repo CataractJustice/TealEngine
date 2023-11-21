@@ -4,7 +4,7 @@
 
 namespace TealEngine 
 {
-	class MaterialEditor : public Component
+	class MaterialEditor
 	{
 		private:
 		std::filesystem::path currentMaterialFile;
@@ -13,6 +13,6 @@ namespace TealEngine
 		int shaderItem;
 		public:
 		MaterialEditor();
-		void imGuiRender(const std::string& windowName) override;
+		void render();
 	};
 }

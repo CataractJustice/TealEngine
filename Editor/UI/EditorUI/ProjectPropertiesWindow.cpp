@@ -4,25 +4,21 @@
 
 namespace TealEngine 
 {
-	void ProjectPropertiesWindow::imGuiRender(const std::string& windowName) 
+	void ProjectPropertiesWindow::render() 
 	{
-		if(windowName == EditorWindowNames::projectProps) 
+		std::string defaultScene = Core::currentProject.getDefaultScene();
+		if(ImGui::InputText("Default scene", &defaultScene)) 
 		{
-			std::string defaultScene = Core::currentProject.getDefaultScene();
-			if(ImGui::InputText("Default scene", &defaultScene)) 
-			{
-				Core::currentProject.setDefaultScene(defaultScene);
-			}
-
-			if(ImGui::Button("Save##projectProps")) 
-			{
-				Core::currentProject.save();
-				Core::uiSpace.closeWindow(EditorWindowNames::projectProps);
-			}
-			if(ImGui::Button("Cancel##projectProps")) 
-			{
-				Core::uiSpace.closeWindow(EditorWindowNames::projectProps);
-			}
+			Core::currentProject.setDefaultScene(defaultScene);
+		}
+		if(ImGui::Button("Save##projectProps")) 
+		{
+			Core::currentProject.save();
+			Core::uiSpace.closeWindow(EditorWindowNames::projectProps);
+		}
+		if(ImGui::Button("Cancel##projectProps")) 
+		{
+			Core::uiSpace.closeWindow(EditorWindowNames::projectProps);
 		}
 	}
 }

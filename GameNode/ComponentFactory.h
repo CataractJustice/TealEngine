@@ -28,7 +28,6 @@ namespace TealEngine
 		static void registerComponent(const std::string& demangledName) 
 		{
 			std::string mangledName = typeid(T).name();
-			TE_DEBUG_INFO("Registering component class " + demangledName + " (" + mangledName + ")");
 			auto instancerIt = instancers.find(mangledName);
 			mangledNames[demangledName] = mangledName;
 			if(instancerIt == instancers.cend())

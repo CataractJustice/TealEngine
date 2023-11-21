@@ -5,6 +5,8 @@ namespace TealEngine
 {
 	namespace Input
 	{
+		void setInputActive(bool active);
+		bool getInputActive();
 		namespace Mouse 
 		{
 			bool isButtonPressed(unsigned int button);

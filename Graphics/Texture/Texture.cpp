@@ -146,7 +146,6 @@ namespace TealEngine
 	}
 
 	Texture::Texture(Texture& texture) {
-
 		//copy fileds
 		this->parameteries = texture.parameteries;
 		this->dataType = texture.dataType;

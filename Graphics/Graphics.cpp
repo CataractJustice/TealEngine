@@ -23,15 +23,12 @@ namespace TealEngine
 
 		unsigned int init(std::string windowName)
 		{
-			TE_DEBUG_INFO("GLFW init.");
 			if (!glfwInit())
 				return 1;
-			TE_DEBUG_INFO("Creating window.");
 			window = new Window(windowName.c_str());
 			window->setCurrent();
 			glewExperimental = GL_TRUE;
 
-			TE_DEBUG_INFO("GLEW init.");
 			if (GLEW_OK != glewInit())
 			{
 				return 3;
@@ -47,10 +44,7 @@ namespace TealEngine
 
 		void display()
 		{
-			//TE_DEBUG_INFO("Swaping buffers.")
 			glfwSwapBuffers((GLFWwindow*)window->gl_window_ptr_());
-
-			//TE_DEBUG_INFO("Poll events.")
 			glfwPollEvents();
 		}
 

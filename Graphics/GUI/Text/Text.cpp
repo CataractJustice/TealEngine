@@ -1,5 +1,4 @@
 #include "Text.h"
-#include "Resources.h"
 #include "Graphics/FrameBuffer/FrameBuffer.h"
 #include "Math/map.h"
 #include "GameNode/ComponentFactory.h"
@@ -10,7 +9,7 @@ namespace TealEngine
 
 	Text::Text() 
 	{
-		addProp(new StringKeyMapValuePointerProp(&font, &Resources::getFontsMap()), "Font");
+		//addProp(new StringKeyMapValuePointerProp(&font, &Resources::getFontsMap()), "Font");
 		addProp(new StringProp(&text), "Text");
 		addProp(new ColorProp(glm::value_ptr(color)), "Color");
 		addProp(new FloatProp(&scale), "Font scale");
@@ -116,9 +115,7 @@ namespace TealEngine
 				i++;
 			}
 			charRect = Math::map(glm::vec4(rect.x, rect.y, 0.0f, 0.0f), glm::vec4(rect.z, rect.w, rect.z - rect.x, rect.w - rect.y), glm::vec4(-1.0f, 1.0f, 0.0f, 0.0f), glm::vec4(1.0f, -1.0f, 1.0f, 1.0f), charRect);
-			//Resources::getShader("basic_text").setTexture("tex", font->getCharacter(text[i]).texture.id());
 			i++;
-			//Render::renderShader(&Resources::getShader("basic_text"),  glm::vec2(charRect.x + charRect.z * 2.0f, charRect.y - charRect.w * 2.0f), glm::vec2(charRect.z, charRect.w) * 2.0f);
 		}
 		glDisable(GL_BLEND);
 		TextRenderBuffer.unbind();

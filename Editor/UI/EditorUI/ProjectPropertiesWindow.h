@@ -2,9 +2,9 @@
 
 namespace TealEngine 
 {
-	class ProjectPropertiesWindow : public Component
+	class ProjectPropertiesWindow
 	{
 		public:
-		void imGuiRender(const std::string& windowName) override;
+		static void render();
 	};
 }

@@ -5,23 +5,20 @@
 
 namespace TealEngine 
 {
-	void ComponentsExplorer::imGuiRender(const std::string& windowName) 
+	void ComponentsExplorer::render() 
 	{
-		if(windowName == EditorWindowNames::componentsExplorer) 
+		int componentsCount = ComponentFactory::componentClassesCount();
+		const char** componentClasses = ComponentFactory::cStrComponentClassesArray();
+		
+		for(int i = 0; i < componentsCount; i++) 
 		{
-			int componentsCount = ComponentFactory::componentClassesCount();
-			const char** componentClasses = ComponentFactory::cStrComponentClassesArray();
-
-			for(int i = 0; i < componentsCount; i++) 
+			const char* componentClass = componentClasses[i];
+			ImGui::Button(componentClass);
+			if(ImGui::BeginDragDropSource())
 			{
-				const char* componentClass = componentClasses[i];
-				ImGui::Button(componentClass);
-				if(ImGui::BeginDragDropSource())
-				{
-					ImGui::TextUnformatted(componentClass);
-					ImGui::SetDragDropPayload("ComponentClass", componentClass, std::strlen(componentClass));
-					ImGui::EndDragDropSource();
-				}
+				ImGui::TextUnformatted(componentClass);
+				ImGui::SetDragDropPayload("ComponentClass", componentClass, std::strlen(componentClass));
+				ImGui::EndDragDropSource();
 			}
 		}
 	}

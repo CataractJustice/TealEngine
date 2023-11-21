@@ -12,7 +12,7 @@ namespace TealEngine
 			}
 		}
 		return false;
-		}
+	}
 
 	VertexAttribute& VertexBuffer::addVertexAttribute(GLuint layoutIndex, GLuint size, GLenum type) 
 	{

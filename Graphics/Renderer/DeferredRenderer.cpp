@@ -3,7 +3,6 @@
 #include "RenderUtil.h"
 #include "../Graphics.h"
 #include "Graphics/Light/Light.h"
-#include "Resources.h"
 #include "System/Debug.h"
 #include "Core.h"
 namespace TealEngine {
@@ -37,7 +36,7 @@ namespace TealEngine {
 		{
 			this->resize(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
 		}
-		//TE_DEBUG_INFO("Configuring framebuffer.");
+
 		fb.bind();
 		fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		fb.enable(0);
@@ -47,21 +46,19 @@ namespace TealEngine {
 		fb.enable(4);
 		fb.enable(5);
 		fb.apply();
-		//TE_DEBUG_INFO("Applying render configs.");
+
 		applyConfig();
 		glEnable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
 		glCullFace(GL_BACK);
-		//TE_DEBUG_INFO("Rendering models.");
+		
 		renderModels(scene, nullptr, MeshRenderer::RenderPass::DeferredPass);
 		
 		//light pass
-		//TE_DEBUG_INFO("Rendering light.");
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		scene->postProcess(getActiveCamera()->renderTexture.id(), albedo.id(), position.id(), normal.id(), specular.id(), light.id(), &(this->fb));
-		//TE_DEBUG_INFO("Combining lightmap with albedomap.");
 		fb.enable(0);
 		fb.apply();
 		glEnable(GL_BLEND);
@@ -78,7 +75,7 @@ namespace TealEngine {
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		Render::VP_matrix = activeCamera->getPV();
-		//Render::V_matrix = this->activeCamera->getParentOfType<GameNode3D>()->getWorldTransform().getMatrix();
+		
 		renderModels(scene, nullptr, MeshRenderer::RenderPass::DebugPass);
 		Core::shapesRenderer.renderAll();
 	}
