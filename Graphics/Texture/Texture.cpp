@@ -116,7 +116,6 @@ namespace TealEngine
 			return *this;
 		}
 
-
 		 // Create a buffer to hold the copied texture data
     	GLubyte* data = new GLubyte[width * height * 16];
     
@@ -145,7 +144,7 @@ namespace TealEngine
 		return *this;
 	}
 
-	Texture::Texture(Texture& texture) {
+	Texture::Texture(const Texture& texture) {
 		//copy fileds
 		this->parameteries = texture.parameteries;
 		this->dataType = texture.dataType;

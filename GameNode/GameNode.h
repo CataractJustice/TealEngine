@@ -87,6 +87,8 @@ namespace TealEngine {
 
 		//returns length of path from root node to this node
 		unsigned short getHierarchyDepth();
+		//updates hierarcy depth of all child nodes
+		void updateChildrenHierarcyDepths();
 
 		//returns parent node, returns nullptr if node is an orphan
 		GameNode* getParent();

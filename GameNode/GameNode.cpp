@@ -51,15 +51,18 @@ namespace TealEngine {
 			}
 			parentIter = parentIter->getParent();
 		}
-		if (this->parent)
+		if (this->parent && parent)
 			this->parent->removeChild(this);
 		this->parent = parent;
-		this->hierarchyDepth = parent->getHierarchyDepth() + 1;
-		if(this->loadedFromFilePath.length() == 0)
-			this->groupId = this->parent->getGroupId();
-		onParentChange();
-
 		
+		if(this->parent)
+			this->hierarchyDepth = parent->getHierarchyDepth() + 1;
+		else
+			hierarchyDepth = 0;
+
+		updateChildrenHierarcyDepths();
+
+		onParentChange();
 	}
 
 	const std::string& GameNode::getName() { return name; }
@@ -127,6 +130,15 @@ namespace TealEngine {
 		return hierarchyDepth;
 	}
 
+	void GameNode::updateChildrenHierarcyDepths() 
+	{
+		for(GameNode* child : this->childNodes) 
+		{
+			child->hierarchyDepth = this->hierarchyDepth + 1;
+			child->updateChildrenHierarcyDepths();
+		}
+	}
+
 	GameNode* GameNode::addChild(GameNode* node)
 	{
 		node->setParent(this);
@@ -144,7 +156,7 @@ namespace TealEngine {
 		if (node->getParent() == this) 
 		{
 			this->childNodes.remove(node);
-			node->parent = nullptr;
+			node->setParent(nullptr);
 		}
 		else
 		{

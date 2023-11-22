@@ -22,6 +22,7 @@ Editor/*.cpp
 ResourceManagment/*.cpp
 )
 
+file(GLOB_RECURSE TEST_SOURCES Tests/*.cpp)
 
 set(SOURCES ${SUBDIR_SOURCES} 
 Core.cpp 
@@ -40,6 +41,8 @@ add_executable(${PROJECT_NAME}Launcher
 main.cpp
 ComponentExports.cpp
 )
+
+add_executable(${PROJECT_NAME}Tests ${TEST_SOURCES})
 
 add_library(${PROJECT_NAME} SHARED
 ${SOURCES}
@@ -69,6 +72,7 @@ PUBLIC libs/freetype2
 
 target_link_directories(${PROJECT_NAME} ${LINK_DIRS})
 target_link_directories(${PROJECT_NAME}Launcher ${LINK_DIRS})
+target_link_directories(${PROJECT_NAME}Tests ${LINK_DIRS})
 
 set(LINK_LIBS 
 ${OPENGL_LIBRARY}
@@ -82,3 +86,4 @@ PUBLIC freetype
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 target_link_libraries(${PROJECT_NAME}Launcher TealEngine)
+target_link_libraries(${PROJECT_NAME}Tests TealEngine)
