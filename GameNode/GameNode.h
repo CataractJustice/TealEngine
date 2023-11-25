@@ -185,7 +185,7 @@ namespace TealEngine {
 		//deletes node when it's possible
 		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
 		//
-		static void cleanUp();
+		static void cleanupDestroyed();
 
 		GameNode();
 		virtual ~GameNode();

@@ -61,7 +61,7 @@ namespace TealEngine
 			static float updateTimer = 0.0f;
 			sceneclock.update();
 			updateTimer += sceneclock.deltaTime();
-			if(updateTimer >= 1.0f / 60.0f) 
+			if(true) 
 			{
 				if(modulesNeedReload) 
 				{
@@ -97,7 +97,7 @@ namespace TealEngine
 				}
 				
 				//destruct deleted objects
-				GameNode::cleanUp();
+				GameNode::cleanupDestroyed();
 
 				//render ids
 				if(renderer.getActiveCamera()) 
@@ -240,7 +240,7 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 			SelectedObjectOutlinePostProcess::loadShader();
 			gameAssetsBrowser->setPath(std::filesystem::current_path());
 			gameAssetsBrowser->setRootPath(std::filesystem::current_path());
-			setScene(new GameNode3D());
+			sceneRoot = new GameNode3D();
 
 			idCameraNode = new GameNode3D();
 			idCamera = new Camera();
@@ -292,7 +292,7 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 			if(engineState == EngineState::GAME_STOPPED)
 			{
 				engineState = EngineState::GAME_PLAYING;
-				originalSceneJson = sceneRoot->toJson();
+				originalSceneJson = sceneRoot ? sceneRoot->toJson() : (new GameNode3D())->toJson();
 				setScene(GameNode3D::nodeFromJson(originalSceneJson));
 			}
 			engineState = EngineState::GAME_PLAYING;

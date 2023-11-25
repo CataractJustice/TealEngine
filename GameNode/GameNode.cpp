@@ -432,7 +432,7 @@ namespace TealEngine {
 		}
 	}
 
-	void GameNode::cleanUp() 
+	void GameNode::cleanupDestroyed() 
 	{
 		while(destroyQueue.size()) 
 		{
