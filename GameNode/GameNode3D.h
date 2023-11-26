@@ -23,7 +23,7 @@ namespace TealEngine
 	public:
 
 		GameNode3D();
-		~GameNode3D();
+		virtual ~GameNode3D();
 
 		//do not try to modify game node world transform through this reference
 		virtual Transform& getWorldTransform();

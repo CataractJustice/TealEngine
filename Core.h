@@ -31,8 +31,11 @@ namespace TealEngine
 		extern ShapesRenderer shapesRenderer;
 
 		void update();
+
 		void setProject(Project project);
+
 		GameNode3D* getRoot();
+		
 		extern std::map<std::string, std::string> settings;
 		void init();
 		void requestModulesReload();

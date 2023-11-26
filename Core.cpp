@@ -47,6 +47,7 @@ namespace TealEngine
 		ShapesRenderer shapesRenderer;
 
 		Json originalSceneJson;
+		GameNode3D* originalScene;
 
 		bool modulesNeedReload = false;
 		void requestModulesReload() { modulesNeedReload = true; }
@@ -55,6 +56,19 @@ namespace TealEngine
 		std::string nextScenePath = "";
 
 		EngineState engineState = EngineState::GAME_STOPPED;
+		EngineState targetEngineState = EngineState::GAME_STOPPED;
+
+		void playImpl() 
+		{
+			originalScene = sceneRoot;
+			sceneRoot = GameNode3D::nodeFromJson(sceneRoot->toJson());
+		}
+
+		void stopImpl() 
+		{
+			delete sceneRoot;
+			sceneRoot = originalScene;
+		}
 
 		void update()
 		{
@@ -63,26 +77,38 @@ namespace TealEngine
 			updateTimer += sceneclock.deltaTime();
 			if(true) 
 			{
+				//update modules
 				if(modulesNeedReload) 
 				{
 					reloadModules();
+					modulesNeedReload = false;
 				}
-				if(nextScenePath.length()) 
-				{
-					setScene(GameNode3D::loadNodeFromJsonFile(nextScenePath));
-					nextScenePath = "";
-				}
-
+				//Switch scene
 				if(nextScene) 
 				{
-					if(sceneRoot) delete sceneRoot;
+					delete sceneRoot;
 					sceneRoot = nextScene;
 					nextScene = nullptr;
 				}
-				modulesNeedReload = false;
+				else if(nextScenePath.length()) 
+				{
+					delete sceneRoot;
+					sceneRoot = GameNode3D::loadNodeFromJsonFile(nextScenePath);
+					nextScenePath = "";
+				}
 				//reset timer used for frame capping
 				updateTimer = 0.0f;
-				//
+				//Update engine state
+				if(engineState == EngineState::GAME_STOPPED && targetEngineState != EngineState::GAME_STOPPED) 
+				{
+					playImpl();
+				}
+				else if(engineState != EngineState::GAME_STOPPED && targetEngineState == EngineState::GAME_STOPPED) 
+				{
+					stopImpl();
+				}
+				engineState = targetEngineState;
+
 				Input::inputUpdate();
 				//run game logics
 				if(engineState == EngineState::GAME_PLAYING) 
@@ -96,7 +122,7 @@ namespace TealEngine
 					sceneRoot->editorUpdate();
 				}
 				
-				//destruct deleted objects
+				//destruct objects marked as destroyed
 				GameNode::cleanupDestroyed();
 
 				//render ids
@@ -123,24 +149,29 @@ namespace TealEngine
 				
 				//render game
 				renderer.render(sceneRoot);
-				//render ui
-				FrameBuffer::unbind();
-				glViewport(0,0, Graphics::window->getScreenWidth(), Graphics::window->getScreenHeight());
+
+				//
 				glDisable(GL_CULL_FACE);
 				glDisable(GL_DEPTH_TEST);
 				glDisable(GL_BLEND);
+				//Display render texture on screen
+				FrameBuffer::unbind();
+				glViewport(0,0, Graphics::window->getScreenWidth(), Graphics::window->getScreenHeight());
 				if(renderer.getActiveCamera())
 					Render::renderTexture(renderer.getActiveCamera()->renderTexture.id());
+				//Render GUI
 				sceneRoot->GUIrender();
 
+				//ImGUI
 				//start ImGUi frame
 				ImGui_ImplOpenGL3_NewFrame();
 				ImGui_ImplGlfw_NewFrame();
 				ImGui::NewFrame();
+				//Editor ui
 				uiSpace.display();
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-				//
+				//Swap buffers and other
 				Graphics::display();
 			}
 		}
@@ -289,25 +320,17 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 
 		void play()
 		{
-			if(engineState == EngineState::GAME_STOPPED)
-			{
-				engineState = EngineState::GAME_PLAYING;
-				originalSceneJson = sceneRoot ? sceneRoot->toJson() : (new GameNode3D())->toJson();
-				setScene(GameNode3D::nodeFromJson(originalSceneJson));
-			}
-			engineState = EngineState::GAME_PLAYING;
+			targetEngineState = EngineState::GAME_PLAYING;
 		}
 
 		void pause() 
 		{
-			engineState = EngineState::GAME_PAUSED;
+			targetEngineState = EngineState::GAME_PAUSED;
 		}
 
 		void stop() 
 		{
-			if(engineState != EngineState::GAME_STOPPED)
-			setScene(GameNode3D::nodeFromJson(originalSceneJson));
-			engineState = EngineState::GAME_STOPPED;
+			targetEngineState = EngineState::GAME_STOPPED;
 		}
 
 		EngineState getEngineState() 
@@ -318,16 +341,20 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 		void reloadModules() 
 		{
 			currentProject.buildLibs();
-						
-			Json currentScene = sceneRoot->toJson();
-			if(sceneRoot) delete sceneRoot;
-			sceneRoot = nullptr;
-					
-			currentProject.loadLibs();
-			if(!nextScene && !nextScenePath.length()) 
+
+			Json currentScene;
+			if(sceneRoot) 
 			{
-				setScene(GameNode3D::nodeFromJson(currentScene));
+				//save current scene to restore after new libs are loaded
+				currentScene = sceneRoot->toJson();
+				//delete scene while old libs are still loaded so proper destructors are called
+				delete sceneRoot;
 			}
+
+			currentProject.loadLibs();
+			//restore scene with new libs loaded
+			if(sceneRoot)
+				sceneRoot = GameNode3D::nodeFromJson(currentScene);
 		}
 	}
 }

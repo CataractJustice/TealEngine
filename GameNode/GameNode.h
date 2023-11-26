@@ -182,15 +182,18 @@ namespace TealEngine {
 
 		virtual void displayProps();
 
-		//deletes node when it's possible
+		//Marks node for deletion
+		//The node will be removed from the tree after all updates in current frame are finished
+		//If called more than once all calls after the first will be ignored
 		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
-		//
+		//Deletes nodes marked for deletion
 		static void cleanupDestroyed();
 
 		GameNode();
 		virtual ~GameNode();
 		
-		//
+		//Returns true if pointer is valid node and has not been deleted
+		//Also returns true if node is marked for deletion by a 'destroy()' method call but has not been deleted yet
 		static bool isNodeExist(GameNode* node);
 
 		virtual Json toJson();
