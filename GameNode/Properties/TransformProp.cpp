@@ -1,5 +1,7 @@
 #include "TransformProp.h"
 #include "libs/glm/gtc/type_ptr.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/euler_angles.hpp"
 
 namespace TealEngine 
 {
@@ -49,7 +51,9 @@ namespace TealEngine
 		int edited = 0;
 		glm::vec3 pos = transform.getPosition();
 		glm::vec3 scale = transform.getScale();
-		glm::vec3 rotation = transform.getXYZRotation();
+		glm::vec3 rotation;
+		glm::extractEulerAngleYXZ(transform.getRotationMatrix(), rotation.y, rotation.x, rotation.z);
+		rotation *= 180.0f / glm::pi<float>();
 		if(ImGui::DragFloat3((std::string("Position#") + label).c_str(), glm::value_ptr(pos), 0.01f)) 
 		{
 			edited++;
@@ -65,9 +69,8 @@ namespace TealEngine
 		if(ImGui::DragFloat3((std::string("Rotation#") + label).c_str(), glm::value_ptr(rotation), 0.005f)) 
 		{
 			edited++;
-			transform.setRotation(rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-			transform.rotate(rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-			transform.rotate(rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+			rotation *= glm::pi<float>() / 180.0f;
+			transform.setRotation(glm::eulerAngleYXZ(rotation.y, rotation.x, rotation.z));
 		}
 
 		return edited;

@@ -75,14 +75,14 @@ namespace TealEngine {
 		onChange();
 	}
 
-	vec3 Transform::getPosition()
+	vec3 Transform::getPosition() const
 	{
 		return position[3];
 	}
 
-	float& Transform::getX() { return position[3][0]; }
-	float& Transform::getY() { return position[3][1]; }
-	float& Transform::getZ() { return position[3][2]; }
+	float Transform::getX() const { return position[3][0]; }
+	float Transform::getY() const { return position[3][1]; }
+	float Transform::getZ() const { return position[3][2]; }
 
 	void Transform::setScale(const vec3& vector)
 	{
@@ -96,7 +96,7 @@ namespace TealEngine {
 		onChange();
 	}
 
-	vec3 Transform::getScale()
+	vec3 Transform::getScale() const
 	{
 		return scale * vec4(1.0f);
 	}
@@ -133,30 +133,12 @@ namespace TealEngine {
 		this->rotation = rotation;
 	}
 
-	glm::quat Transform::getRotation()
+	glm::quat Transform::getRotation() const
 	{
 		return quat_cast(rotation);
 	}
 
-	glm::vec3 Transform::getXYZRotation() 
-	{
-		glm::vec3 angles;
-		glm::quat q = getRotation();
-		float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-		float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
-		angles.z = std::atan2(sinr_cosp, cosr_cosp);
-
-		float sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
-		float cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
-		angles.x = 2 * std::atan2(sinp, cosp) - M_PI / 2;
-
-		float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-		float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-		angles.y = std::atan2(siny_cosp, cosy_cosp);
-		return angles;
-	}
-
-	glm::mat4 Transform::getRotationMatrix() 
+	glm::mat4 Transform::getRotationMatrix() const
 	{
 		return this->rotation;
 	}
@@ -172,22 +154,22 @@ namespace TealEngine {
 		lookAt(target - from, up);
 	}
 
-	vec3 Transform::forward()
+	vec3 Transform::forward() const
 	{
 		return rotation * vec4(0.0f, 0.0f, 1.0f, 1.0f);
 	}
 
-	vec3 Transform::up()
+	vec3 Transform::up() const
 	{
 		return rotation * vec4(0.0f, 1.0f, 0.0f, 1.0f);
 	}
 
-	vec3 Transform::right()
+	vec3 Transform::right() const
 	{
 		return rotation * vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	const mat4& Transform::getMatrix()
+	const mat4& Transform::getMatrix() const
 	{
 		if (modelUpdateRequired)
 		{
@@ -204,7 +186,7 @@ namespace TealEngine {
 		return model;
 	}
 
-	const mat4& Transform::getNormalsModel()
+	const mat4& Transform::getNormalsModel() const
 	{
 		if (normalsModelUpdateRequired)
 		{
@@ -215,7 +197,7 @@ namespace TealEngine {
 		return normalsModel;
 	}
 
-	vec3 Transform::pointFromGlobalToLocal(vec3 pos, bool ignoreScale)
+	vec3 Transform::pointFromGlobalToLocal(vec3 pos, bool ignoreScale) const
 	{
 		pos -= this->getPosition();
 		pos = vec3(dot(pos, this->right()), dot(pos, this->up()), dot(pos, this->forward()));
@@ -223,7 +205,7 @@ namespace TealEngine {
 		return pos;
 	}
 
-	vec3 Transform::pointFromLocalToGlobal(vec3 pos, bool ignoreScale)
+	vec3 Transform::pointFromLocalToGlobal(vec3 pos, bool ignoreScale) const
 	{
 		if (!ignoreScale) pos *= this->getScale();
 		pos = this->right() * pos.x + this->up() * pos.y + this->forward() * pos.z;
@@ -231,7 +213,7 @@ namespace TealEngine {
 		return pos;
 	}
 
-	vec3 Transform::pointFromLocalToTransform(vec3 pos, Transform& transform, bool ignoreScale)
+	vec3 Transform::pointFromLocalToTransform(vec3 pos, Transform& transform, bool ignoreScale) const
 	{
 		return transform.pointFromGlobalToLocal(pointFromLocalToGlobal(pos, ignoreScale), ignoreScale);
 	}
@@ -247,7 +229,7 @@ namespace TealEngine {
 		lastModifyStamp++;
 	}
 
-	unsigned int Transform::getLastModifyStamp() 
+	unsigned int Transform::getLastModifyStamp() const
 	{
 		return lastModifyStamp;
 	}

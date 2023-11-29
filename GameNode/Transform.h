@@ -8,9 +8,10 @@ namespace TealEngine {
 	class Transform
 	{
 	protected:
-		glm::mat4 position, scale, rotation, model, normalsModel;
+		glm::mat4 position, scale, rotation;
+		mutable glm::mat4 model, normalsModel;
+		mutable bool modelUpdateRequired, normalsModelUpdateRequired;
 		unsigned int lastModifyStamp;
-		bool modelUpdateRequired, normalsModelUpdateRequired;
 
 		void onChange();
 
@@ -32,17 +33,17 @@ namespace TealEngine {
 
 		void translate(const glm::vec3& vector);
 
-		glm::vec3 getPosition();
+		glm::vec3 getPosition() const;
 
-		float& getX();
-		float& getY();
-		float& getZ();
+		float getX() const;
+		float getY() const;
+		float getZ() const;
 
 		void setScale(const glm::vec3& vector);
 
 		void scaling(const glm::vec3& vector);
 
-		glm::vec3 getScale();
+		glm::vec3 getScale() const;
 
 		void rotate(float angle, const glm::vec3& axis);
 
@@ -56,28 +57,27 @@ namespace TealEngine {
 		void lookAt(const glm::vec3& target, const glm::vec3& up);
 		void lookAt(const glm::vec3& position, const glm::vec3& target, const glm::vec3& up);
 
-		glm::quat getRotation();
-		glm::vec3 getXYZRotation();
-		glm::mat4 getRotationMatrix();
+		glm::quat getRotation() const;
+		glm::mat4 getRotationMatrix() const;
 
-		glm::vec3 forward();
+		glm::vec3 forward() const;
 
-		glm::vec3 up();
+		glm::vec3 up() const;
 
-		glm::vec3 right();
+		glm::vec3 right() const;
 
-		const glm::mat4& getMatrix();
-		const glm::mat4& getNormalsModel();
+		const glm::mat4& getMatrix() const;
+		const glm::mat4& getNormalsModel() const;
 
-		glm::vec3 pointFromGlobalToLocal(glm::vec3 pos, bool ignoreScale = false);
+		glm::vec3 pointFromGlobalToLocal(glm::vec3 pos, bool ignoreScale = false) const;
 
-		glm::vec3 pointFromLocalToGlobal(glm::vec3 pos, bool ignoreScale = false);
+		glm::vec3 pointFromLocalToGlobal(glm::vec3 pos, bool ignoreScale = false) const;
 
-		glm::vec3 pointFromLocalToTransform(glm::vec3 pos, Transform& transform, bool ignoreScale = false);
+		glm::vec3 pointFromLocalToTransform(glm::vec3 pos, Transform& transform, bool ignoreScale = false) const;
 
 		void setMatrix(glm::mat4 matrix);
 
-		unsigned int getLastModifyStamp();
+		unsigned int getLastModifyStamp() const;
 
 		Transform();
 	};
