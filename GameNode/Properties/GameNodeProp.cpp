@@ -14,37 +14,39 @@ namespace TealEngine
 		{
 			return json;
 		}
-		unsigned int groupId = valueref<GameNode*>()->getGroupId();
-		if(groupId == this->ownerComp->getParent()->getGroupId()) 
-		{
-			json["local"] = 1;
-			json["id"] = valueref<GameNode*>()->getGroupLocalId();
-		}
-		else 
-		{
-			json["local"] = 0;
-			json["id"] = valueref<GameNode*>()->getId();
-		}
+		json["path"] = this->ownerComp->getParent()->getRelativeIndexPathTo(this->valueref<GameNode*>());
 		return json;
 	}
 	void GameNodeProp::set(const Json& json) 
 	{
-		int isLocal = json["local"];
-		if(isLocal) 
+		const auto& it = json.find("path");
+		if(it == json.cend()) 
 		{
-			this->valueref<GameNode*>() = GameNode::getNodeByGroupAndLocalId(this->ownerComp->getParent()->getGroupId(), json["id"]);
+			this->valueref<GameNode*>() = nullptr;
+			return;
 		}
-		else 
+		std::vector<int>path = it->get<std::vector<int>>();
+		GameNode* nodeIt = this->ownerComp->getParent();
+		for(auto i : path) 
 		{
-			this->valueref<GameNode*>() = GameNode::getNodeById(json["id"]);
+			if(i == -1) 
+			{
+				nodeIt = nodeIt->getParent();
+			}
+			else 
+			{
+				nodeIt = nodeIt->getChildByIndex(i);
+			}
+			if(nodeIt == nullptr) break;
 		}
-	}
+		this->valueref<GameNode*>() = nodeIt;
+ 	}
 	bool GameNodeProp::display(const char* label) 
 	{
 		GameNode* node = nullptr;
 		if(propptr) 
 		{
-			if(GameNode::isNodeExist(valueref<GameNode*>())) 
+			if(GameNode::isValidNode(valueref<GameNode*>())) 
 			{
 				node = valueref<GameNode*>();
 			}
@@ -71,7 +73,6 @@ namespace TealEngine
 			}
 			ImGui::EndDragDropTarget();
 		}
-
 		return false;
 	}
 }

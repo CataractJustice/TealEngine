@@ -171,6 +171,7 @@ namespace TealEngine
 
 		//fix me: renderTexture's shader wont work for non RGB textures
 		Render::renderTexture(texture.id());
+		fb.unbind();
 	}
 
 	Texture::~Texture() 

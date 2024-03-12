@@ -10,8 +10,11 @@ namespace TealEngine
 		namespace Mouse 
 		{
 			bool isButtonPressed(unsigned int button);
+			//returns window mouse cursor position in pixels
 			glm::vec2 getMousePos();
+			//returns change of mouse cursor position between two frames in pixels 
 			glm::vec2 getDeltaMousePos();
+			//returns cnage of scroll position between two frames
 			double getDeltaScrollPos();
 			double getScrollPos();
 		}

@@ -19,20 +19,21 @@ namespace TealEngine {
 		normal.create(width, height);
 		specular.create(width, height);
 		light.create(width, height);
+		fb.bind();
 		fb.attachTexture(albedo.id(), 1);
 		fb.attachTexture(position.id(), 2);
 		fb.attachTexture(normal.id(), 3);
 		fb.attachTexture(specular.id(), 4);
 		fb.attachTexture(light.id(), 5);
-		fb.apply();
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
+		fb.unbind();
 	}
 	void DeferredRenderer::render(GameNode* scene)
 	{
 		glDepthMask(true);
 		if(!activeCamera) return;
-		if(this->fb.getWidth() != activeCamera->renderTexture.getWidth() || this->fb.getHeight() != activeCamera->renderTexture.getHeight()) 
+		if(this->albedo.getWidth() != activeCamera->renderTexture.getWidth() || this->albedo.getHeight() != activeCamera->renderTexture.getHeight()) 
 		{
 			this->resize(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
 		}
@@ -46,7 +47,7 @@ namespace TealEngine {
 		fb.enable(4);
 		fb.enable(5);
 		fb.apply();
-
+		fb.viewport(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
 		applyConfig();
 		glEnable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
@@ -67,7 +68,7 @@ namespace TealEngine {
 		glDisable(GL_DEPTH_TEST);
 		combineLightShader.setTexture("AlbedoMap", albedo.id());
 		combineLightShader.setTexture("LightMap", light.id());
-		combineLightShader.setTexture("Dither", Core::textureManager.get("WhiteNoise.png").id());
+		combineLightShader.setTexture("Dither", Core::textureManager.get("RGBNoise.png").id());
 		Render::renderShader(&combineLightShader);
 
 		
@@ -78,5 +79,6 @@ namespace TealEngine {
 		
 		renderModels(scene, nullptr, MeshRenderer::RenderPass::DebugPass);
 		Core::shapesRenderer.renderAll();
+		fb.unbind();
 	}
 }

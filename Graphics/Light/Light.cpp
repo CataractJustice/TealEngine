@@ -108,7 +108,7 @@ namespace TealEngine
 
 	void DirectionLight::setupUniforms(GLuint render, GLuint albedo, GLuint position, GLuint normal, GLuint specular, vec3 viewPos)
 	{
-		dLightShader.setTexture("RenderTexture", render);
+		//dLightShader.setTexture("RenderTexture", render);
 		//dLightShader.setTexture("AlbedoMap", albedo);
 		dLightShader.setTexture("PositionMap", position);
 		dLightShader.setTexture("NormalMap", normal);
@@ -182,16 +182,11 @@ namespace TealEngine
 		for (int c = 0; c < shadowCascades(); c++)
 		{
 			updateCameraPos(c, Core::renderer.getActiveCamera());
-			shadowMapRenderer.fb.resize(shadowResolution(), shadowResolution());
-			shadowMapRenderer.fb.bind();
+			shadowMapRenderer.resize(shadowResolution(), shadowResolution());
 			shadowMapRenderer.setCamera(getShadowCamera(c));
 			shadowMapRenderer.fb.attachDepthTexture(getShadowCamera(c)->renderTexture.id());
-			shadowMapRenderer.fb.bind();
 			shadowMapRenderer.render(Core::getRoot(), &shadowMapShader, MeshRenderer::RenderPass::ShadowMapPass);
 		}
-		//TE_DEBUG_INFO("Render direction light to light map");
-		//render light to camera texture
-		Core::renderer.fb.bind();
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		setupUniforms(light, unlitColor, position, normal, specular, Core::renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform().getPosition());
@@ -258,7 +253,6 @@ namespace TealEngine
 		frameBuffer->apply();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
-		Core::renderer.fb.bind();
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		

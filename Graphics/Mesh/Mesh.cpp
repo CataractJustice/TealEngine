@@ -101,6 +101,10 @@ namespace TealEngine
 	{
 		if (validation())
 		{
+			if(indices.size() == 0) 
+			{
+				return;
+			}
 			vector<float> verticesFloat;
 			vector<float> normalsFloat;
 			vector<float> tangentsFloat;
@@ -289,7 +293,6 @@ namespace TealEngine
 		this->colors.clear();
 		this->indices.clear();
 		this->LODs.clear();
-		apply();
 	}
 
 	void Mesh::addMesh(Mesh* mesh)
@@ -351,6 +354,10 @@ namespace TealEngine
 				vec2 deltaUV[2];
 				deltaUV[0] = UVs[indices[i + 1]] - UVs[index];
 				deltaUV[1] = UVs[indices[i + 2]] - UVs[index];
+				if((deltaUV[0].x * deltaUV[1].y - deltaUV[1].x * deltaUV[0].y) == 0.0f) 
+				{
+					continue;
+				}
 
 				GLfloat r = 1.0f / (deltaUV[0].x * deltaUV[1].y - deltaUV[1].x * deltaUV[0].y);
 				vec3 tangent = (deltaPos[0] * deltaUV[1].y - deltaPos[1] * deltaUV[0].y) * r;

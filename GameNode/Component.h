@@ -2,10 +2,8 @@
 #include "GameNode/GameNode.h"
 #include "ComponentProp.h"
 #include <map>
+#include <set>
 #include <unordered_map>
-
-#define RegisterComponent()
-
 
 namespace TealEngine 
 {
@@ -17,19 +15,22 @@ class FrameBuffer;
 		friend void GameNode::dettachComponent(Component* component);
 		GameNode* parent;
 		static std::map<int, Component*> idMap;
-		static std::vector<Component*> components;
+		static std::set<Component*> allComponents;
 		void attachTo(GameNode* node);
 		std::string factoryName;
 		bool active;
+		bool onAttachCallbackHasBeenCalled;
 		std::string name;
 		int id;
 		static int lastId;
-
+		int index;
 	protected:
 		std::unordered_map<std::string, IProp*> props;
 	public:
 		//
 		bool isActive();
+		//
+		inline int getIndex() { return index; }
 		//
 		inline bool getActive() { return active; };
 		//
@@ -44,7 +45,7 @@ class FrameBuffer;
 		virtual void update();
 		//called every time when parent node changes its parent
 		virtual void onParentChange();
-		//called every time when component attached to any node
+		//called just before a component update after component has been attached to any node
 		virtual void onAttach();
 		//called in parent node destructor before eny of its child nodes or components destroyed
 		virtual void onDestroy();
@@ -53,7 +54,7 @@ class FrameBuffer;
 		//called every time node is set to active after it was inactive
 		virtual void onAwake();
 		//called after 3D renderer to draw things over it
-		virtual void GUIrender();
+		virtual void GUIRender();
 		//
 		virtual void imGuiRender(const std::string& windowName);
 		//
@@ -66,7 +67,16 @@ class FrameBuffer;
 		virtual void onMessageReceive();
 		//
 		virtual void onCollision(const Collision& collision);
+		//called after some mouse button was pressed and released while mouse cusor is hovered above the node
+		virtual void onClick(unsigned short button);
 		//
+		virtual void onWindowMousePress(unsigned short button);
+		//
+		virtual void onWindowMouseRelease(unsigned short button);
+		//
+		virtual void onMousePress(unsigned short button);
+		//
+		virtual void onMouseRelease(unsigned short button);
 		void refreshProps();
 		GameNode* getParent();
 		//gets parent if parent is of type T, else throws an error
@@ -84,7 +94,6 @@ class FrameBuffer;
 		//deserializes and sets a prop value
 		virtual bool setProp(const Json& json);
 
-		
 		void storeProp(const Json& json);
 		//called after setting a property with setProp or editing property in game editor 
 		virtual void onPropSet(const std::string& propName);
@@ -103,5 +112,12 @@ class FrameBuffer;
 		void setId(int id);
 		static Component* getComponentById(int id);
 
+		static bool isValidComponent(Component* component);
+
+		//returns true if component has been attached to a new parent and onAttach callback has not been called yet
+		bool isOnAttachCallbackHasBeenCalled();
+
+		//cancels next onAttach callback call
+		void cancelOnAttachCallback();
 	};
 }

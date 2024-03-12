@@ -1,3 +1,4 @@
+#include "GameNodeGUI.h"
 #include "GameNode3D.h"
 #include <unordered_set>
 #include "Component.h"
@@ -19,21 +20,21 @@ namespace TealEngine {
 	//sets parent of a node, calls GameNode::onParentChange after setting new parent
 	void GameNode::setParent(GameNode* parent)
 	{
-		//solving the case where we have the following node hierarchy:
+		//solving the case where we for example have the following node hierarchy:
 		//A
 		//|--B
 		//|  |--C
 		//|
 		//|--X
-		//and we try to move A into a C node (Moving node to one of the child nodes)
+		//and we try to move A into the C node (Moving node to one of the child or child of child nodes)
 		//
-		//There is two possible behaviours that could be expected by a user
-		//outcome of the first one:
+		//There is two possible behaviors that could be expected by a user
+		//outcome of the first one is when we move branch leading to C out of the A node and make C A's parent:
 		//B
 		//|
 		//C--A
 		//   |--X
-		//the second:
+		//the second behavior is when we simply make node C A's parent:
 		//C
 		//|--A
 		//   |--B
@@ -106,6 +107,7 @@ namespace TealEngine {
 	{
 		this->components.push_back(component);
 		component->attachTo(this);
+		component->index = this->components.size() - 1;
 	}
 	void GameNode::attachComponents(const std::initializer_list<Component*>& components)
 	{
@@ -116,7 +118,13 @@ namespace TealEngine {
 	{
 		if (component->getParent() == this) 
 		{
-			components.remove(component);
+			int i = 0;
+			for(auto c : components) 
+			{
+				if(c == component) break;
+				i++;
+			}
+			components.erase(components.begin() + i);
 			component->parent = nullptr;
 		}
 		else
@@ -141,8 +149,10 @@ namespace TealEngine {
 
 	GameNode* GameNode::addChild(GameNode* node)
 	{
+		node->hierarchyIndex = this->childNodes.size();
 		node->setParent(this);
 		this->childNodes.push_back(node);
+		node->refreshProps();
 		return childNodes.back();
 	}
 
@@ -155,7 +165,13 @@ namespace TealEngine {
 	{
 		if (node->getParent() == this) 
 		{
-			this->childNodes.remove(node);
+			int i = 0;
+			for(auto child : childNodes) 
+			{
+				if(child == node) break;
+				i++;
+			}
+			this->childNodes.erase(childNodes.begin() + i);
 			node->setParent(nullptr);
 		}
 		else
@@ -180,7 +196,7 @@ namespace TealEngine {
 		for (GameNode* node : childNodes)
 		{
 			n.push_back(node);
-			std::vector<GameNode*> childChildNodes = node->getChilds();
+			std::vector<GameNode*> childChildNodes = node->getAllChilds();
 			n.insert(n.end(), childChildNodes.begin(), childChildNodes.end());
 		}
 		return n;
@@ -229,6 +245,11 @@ namespace TealEngine {
 		for (Component* comp : components)
 			if(comp->getActive()) 
 			{
+				if(!comp->isOnAttachCallbackHasBeenCalled()) 
+				{
+					comp->onAttach();
+					comp->cancelOnAttachCallback();
+				}
 				comp->update();
 				comp->editorUpdate();
 			}
@@ -273,16 +294,16 @@ namespace TealEngine {
 	GameNode::GameNode()
 	{
 		willBeDestroyed = false;
-		childNodes = list<GameNode*>(0);
-		components = list<Component*>(0);
+		childNodes = vector<GameNode*>();
+		components = vector<Component*>();
 		parent = NULL;
 		hierarchyDepth = 0;
+		hierarchyIndex = -1;
 		allNodes.insert(this);
 		active = true;
 		id = 0;
-		groupId = 0;
-		groupLocalId = 0;
-		this->loadedFromFilePath = "";
+		showProperties = false;
+		activeMButtonsMask = 0;
 	}
 
 	GameNode::~GameNode()
@@ -298,13 +319,13 @@ namespace TealEngine {
 		onDestroyHasBeenCalled = true;
 		//recursive delete all the child nodes
 		//using temporal list of nodes cuz node destructor will modify childNodes list
-		list<GameNode*> nodes = childNodes;
+		vector<GameNode*> nodes = childNodes;
 		if(childNodes.size())
 			for (GameNode* node : nodes)
 			{
 				delete node;
 			}
-		std::list<Component*> comps = components;
+		vector<Component*> comps = components;
 
 		if (components.size())
 			for (Component* comp : comps)
@@ -312,14 +333,9 @@ namespace TealEngine {
 				
 		allNodes.erase(this);
 		idMap.erase(this->getId());
-		groupsIdMap[this->groupId].erase(this->groupLocalId);
-		if(groupsIdMap[this->groupId].size() == 0) 
-		{
-			groupsIdMap.erase(this->groupId);
-		}
 	}
 
-	bool GameNode::isNodeExist(GameNode* node)
+	bool GameNode::isValidNode(GameNode* node)
 	{
 		return allNodes.find(node) != allNodes.end();
 	}
@@ -356,18 +372,84 @@ namespace TealEngine {
 		}
 	}
 
-	void GameNode::GUIrender()
+	void GameNode::GUIRender()
 	{
 		if (!active) return;
 		for (Component* comp : components)
 		{
 			if (comp->getActive())
-				comp->GUIrender();
+				comp->GUIRender();
 		}
 
 		for (GameNode* node : childNodes)
 		{
-			node->GUIrender();
+			node->GUIRender();
+		}
+	}
+
+	void GameNode::onClick(unsigned short button)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->onClick(button);
+		}
+	}
+
+	void GameNode::onMouseRelease(unsigned short button)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->onMouseRelease(button);
+		}
+		if(this->activeMButtonsMask & (1 << button)) 
+		{
+			onClick(button);
+		}
+	}
+
+	void GameNode::onMousePress(unsigned short button)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->onMousePress(button);
+		}
+		this->activeMButtonsMask |= 1 << button;
+	}
+
+	void GameNode::onWindowMouseRelease(unsigned short button)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->onWindowMouseRelease(button);
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->onWindowMouseRelease(button);
+		}
+		this->activeMButtonsMask &= ~(1 << button);
+	}
+
+	void GameNode::onWindowMousePress(unsigned short button)
+	{
+		if (!active) return;
+		for (Component* comp : components)
+		{
+			if (comp->getActive())
+				comp->onWindowMousePress(button);
+		}
+
+		for (GameNode* node : childNodes)
+		{
+			node->onWindowMousePress(button);
 		}
 	}
 
@@ -483,16 +565,28 @@ namespace TealEngine {
 			ImGui::EndDragDropTarget();
 		}
 
-		if(ImGui::IsItemClicked(0)) 
+		if(ImGui::IsItemHovered() && ImGui::IsMouseReleased(0)) 
 		{
 			GameNode::setSelectedNode(this);
 		}
 		
 		if(ImGui::BeginPopupContextItem()) 
 		{
-			if(ImGui::MenuItem("Add empty child")) 
+			if(ImGui::MenuItem("Add empty 3D node")) 
 			{
 				GameNode* newNode = new GameNode3D();
+				this->addChild(newNode);
+				Core::actionList.pushAction(new NodeCreateAction(newNode));
+			}
+			if(ImGui::MenuItem("Add empty GUI node")) 
+			{
+				GameNode* newNode = new GameNodeGUI();
+				this->addChild(newNode);
+				Core::actionList.pushAction(new NodeCreateAction(newNode));
+			}
+			if(ImGui::MenuItem("Add empty node")) 
+			{
+				GameNode* newNode = new GameNode();
 				this->addChild(newNode);
 				Core::actionList.pushAction(new NodeCreateAction(newNode));
 			}
@@ -504,10 +598,20 @@ namespace TealEngine {
 					this->destroy();
 				};
 			}
+			if(ImGui::MenuItem("Show properties", nullptr, &showProperties)) 
+			{
+			}
 			ImGui::EndPopup();
 		}
+
+		if(this->showProperties) 
+		{
+			ImGui::Begin((this->name + " properties").c_str(), &this->showProperties);
+			this->displayProps();
+			ImGui::End();
+		}
 		
-		if (ImGui::IsItemHovered()) ImGui::SetTooltip("Delete node");
+		//if (ImGui::IsItemHovered()) ImGui::SetTooltip("Hi");
 		
 		if(treeOpen)
 		{
@@ -527,9 +631,7 @@ namespace TealEngine {
 	{
 		Json json;
 		json["name"] = this->name;
-		json["localId"] = this->groupLocalId;
-		json["group"] = this->groupId;
-		json["filepath"] = this->loadedFromFilePath;
+		json["type"] = "base";
 		std::vector<Json> componentsJson;
 		for(Component* comp : components) 
 		{
@@ -607,50 +709,6 @@ namespace TealEngine {
 		return ((it == GameNode::idMap.cend()) ? nullptr : it->second);
 	}
 
-	void GameNode::setGroupAndLocalId(int groupId, int groupLocalId) 
-	{
-		this->groupId = groupId;
-		this->groupLocalId = groupLocalId;
-		GameNode::groupsIdMap[groupId][groupLocalId] = this;
-	}
-
-	unsigned int GameNode::getGroupLocalId() 
-	{
-		return this->groupLocalId;
-	}
-
-	unsigned int GameNode::getGroupId() 
-	{
-		return this->groupId;
-	}
-
-	GameNode* GameNode::getNodeByGroupAndLocalId(int groupId, int groupLocalId) 
-	{
-		if(GameNode::groupsIdMap.find(groupId) != GameNode::groupsIdMap.cend()) 
-		{
-			if(groupsIdMap[groupId].find(groupLocalId) != GameNode::groupsIdMap[groupId].cend()) 
-			{
-				return GameNode::groupsIdMap[groupId][groupLocalId];
-			}
-		}
-		return nullptr;
-	}
-
-	void GameNode::setNodeFilePath(std::filesystem::path path) 
-	{
-		this->loadedFromFilePath = path.string();
-	}
-	
-	std::filesystem::path GameNode::getNodeFilePath() 
-	{
-		return this->loadedFromFilePath;
-	}
-
-	void GameNode::save() 
-	{
-		if(loadedFromFilePath.length() != 0)
-		this->saveAs(this->loadedFromFilePath);
-	}
 	void GameNode::saveAs(const std::filesystem::path& path) 
 	{
 		std::ofstream savefile(path);
@@ -658,8 +716,140 @@ namespace TealEngine {
 		savefile.close();
 	}
 
+	GameNode* GameNode::nodeFromJson(const Json& json) 
+	{
+		auto typeIt = json.find("type");
+		GameNode* node = nullptr;
+
+		// Check if "type" is found in json, if not assume value of "3d"
+		if (typeIt == json.cend() || typeIt->get<std::string>() == "3d") 
+		{
+			node = new GameNode3D();
+		} else if (typeIt->get<std::string>() == "base") 
+		{
+			node = new GameNode();
+		} else if (typeIt->get<std::string>() == "gui") 
+		{
+			node = new GameNodeGUI();
+		} else 
+		{
+			//if unrecognized assume 3d
+			node = new GameNode3D();
+		}
+
+		auto componentsIt = json.find("components");
+		if (componentsIt != json.cend()) 
+		{
+			for (const Json& componentJson : *componentsIt) 
+			{
+				Component* comp = Component::fromJson(componentJson);
+				if (comp) {
+					node->attachComponent(comp);
+				}
+			}
+		}
+
+		if (json.find("nodes") != json.cend()) 
+		{
+			const Json& subNodes = json["nodes"];
+			for (const Json& subNodeJson : subNodes) {
+				GameNode* subNode = nodeFromJson(subNodeJson);
+				node->addChild(subNode);
+			}
+		}
+
+		if (json.find("name") != json.cend()) 
+		{
+			node->rename(json["name"]);
+		}
+
+		if (typeIt == json.cend() || typeIt->get<std::string>() == "3d") 
+		{
+			GameNode3D* node3D = (GameNode3D*)node;
+			node3D->transformProp->set(json["transform"]);
+		} 
+		else if (typeIt->get<std::string>() == "base") 
+		{
+		} 
+		else if (typeIt->get<std::string>() == "gui") 
+		{
+			GameNodeGUI* nodeGui = (GameNodeGUI*)node;
+			nodeGui->transformProp->set(json["transform"]);
+		}
+		return node;
+	}
+	
+	GameNode* GameNode::loadNodeFromJsonFile(const std::filesystem::path& path) 
+	{
+		std::ifstream file(path);
+		GameNode* node = GameNode::nodeFromJson(Json::parse(file));
+		return node;
+	}
+
+	GameNode* GameNode::getChildByIndex(int index) 
+	{
+		if(index >= this->childNodes.size()) return nullptr;
+		return this->childNodes[index];
+	}
+	Component* GameNode::getComponentByIndex(int index) 
+	{
+		if(index >= this->components.size()) return nullptr;
+		return this->components[index];
+	}
+	
+	std::vector<int> GameNode::getRelativeIndexPathTo(GameNode* node) 
+	{
+		if(node == nullptr) return std::vector<int>();
+		int depthA = this->getHierarchyDepth();
+		int depthB = node->getHierarchyDepth();
+		GameNode* itA = this;
+		GameNode* itB = node;
+
+		std::vector<int> pathA;
+		std::vector<int> pathB;
+
+		if(depthA < depthB) 
+		{
+			for(int i = depthB - depthA; i; i--) 
+			{
+				pathB.push_back(itB->getHierarchyIndex());
+				itB = itB->getParent();
+			}
+		}
+		else 
+		{
+			for(int i = depthA - depthB; i; i--) 
+			{
+				pathA.push_back(-1);
+				itA = itA->getParent();
+			}
+		}
+
+		while(itA && itB && itA != itB) 
+		{
+			pathA.push_back(-1);
+			pathB.push_back(itB->getHierarchyIndex());
+			itA = itA->getParent();
+			itB = itB->getParent();
+		}
+
+		if(itA && itB && itA == itB) 
+		{
+			for(int i = pathB.size() - 1; i >= 0; i--) 
+			{
+				pathA.push_back(pathB[i]);
+			}
+			return pathA;
+		}
+		return std::vector<int>();
+	}
+	
+	int GameNode::getHierarchyIndex() 
+	{
+		return this->hierarchyIndex;
+	}
+
 	std::map<unsigned int, GameNode*> GameNode::idMap;
-	std::map<unsigned int, std::map<unsigned int, GameNode*>> GameNode::groupsIdMap;
 	std::queue<GameNode*> GameNode::destroyQueue;
 	unsigned int GameNode::lastId = 1;
 	GameNode* GameNode::selectedNode = nullptr;

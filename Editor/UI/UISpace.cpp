@@ -5,6 +5,8 @@
 #include "EditorUI/GameNodePropsWindow.h"
 #include "EditorUI/MaterialEditor.h"
 #include "EditorUI/ProjectPropertiesWindow.h"
+#include "System/Input.h"
+
 
 namespace TealEngine 
 {
@@ -66,6 +68,21 @@ namespace TealEngine
 		addWindowOption(EditorWindowNames::gameAssetsBrowser, [](){ gameAssetsBrowser->render(); });
 		addWindowOption(EditorWindowNames::projectProps, ProjectPropertiesWindow::render);
 		addWindowOption(EditorWindowNames::materialEditor, [](){ materialEditor->render(); });
+		addWindowOption(EditorWindowNames::textureViewer, [](){ 
+			static int textureId = 0;
+			ImGui::InputInt("Texture id", &textureId);
+			ImGui::Image(ImTextureID((long)textureId), ImVec2(512.0f, 512.0f));
+		});
+		addWindowOption(EditorWindowNames::debugInfo, [](){
+			if(ImGui::CollapsingHeader("Input")) 
+			{
+				glm::vec2 mp = Input::Mouse::getMousePos();
+				glm::vec2 mpd = Input::Mouse::getDeltaMousePos();
+				ImGui::Text("Mouse position: %f | %f", mp.x, mp.y);
+				ImGui::Text("Delta mouse position: %f | %f", mpd.x, mpd.y);
+				ImGui::Text("Scroll position: %d", (int)Input::Mouse::getScrollPos());
+			}
+		});
 
 		openWindow(EditorWindowNames::gameSceneTree);
 		openWindow(EditorWindowNames::gameViewport);
@@ -131,7 +148,7 @@ namespace TealEngine
 			{
 				for(auto& windowOption : windowOptions) 
 				{
-					ImGui::MenuItem(windowOption.first.c_str(), "", &windowOption.second);
+					ImGui::MenuItem(windowOption.first.c_str(), "", &windowOption.second.first);
 				}
 				ImGui::EndMenu();
 			}

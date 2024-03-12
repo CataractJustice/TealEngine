@@ -2,17 +2,19 @@
 #include "Graphics/FrameBuffer/FrameBuffer.h"
 #include "Math/map.h"
 #include "GameNode/ComponentFactory.h"
-
+#include "GameNode/GameNodeGUI.h"
+#include "Core.h"
+#include "GameNode/Properties/GUIUnitProp.h"
 namespace TealEngine
 {
 	Font* font;
 
 	Text::Text() 
 	{
-		//addProp(new StringKeyMapValuePointerProp(&font, &Resources::getFontsMap()), "Font");
+		addProp(new StringKeyMapValuePointerProp(&font, &Core::fontManager.getLoadedMap()), "Font");
 		addProp(new StringProp(&text), "Text");
 		addProp(new ColorProp(glm::value_ptr(color)), "Color");
-		addProp(new FloatProp(&scale), "Font scale");
+		addProp(new GUIUnitProp(&scale), "Font scale");
 		addProp(new FloatVecProp(glm::value_ptr(this->screenPosition), 2), "Screen position");
 	}
 
@@ -26,14 +28,6 @@ namespace TealEngine
 		this->refresh();
 	}
 
-	float Text::getScale() {
-		return this->scale;
-	}
-
-	void Text::setScale(float scale) {
-		this->scale = scale;
-	}
-
 	const glm::vec4& Text::getColor() {
 		return this->color;
 	}
@@ -42,19 +36,22 @@ namespace TealEngine
 		this->color = color;
 	}
 	//displays text
-	void Text::GUIrender() {
-
-		static float oldScale = this->scale;
-		static std::string oldText = this->text;
-		static Font* oldFont = this->font;
-		if(oldScale != scale || oldText != text || oldFont != font) refresh();
-
+	void Text::GUIRender() {
+		GameNodeGUI* guiNode = this->getParentOfType<GameNodeGUI>();
+		if(guiNode == nullptr) return;
+		if(font == nullptr || text.length() == 0) return;
+		if(oldText != text || oldFont != font) 
+		{
+			oldText = text;
+			oldFont = font;
+			refresh();
+		}
 		if (rect.w == rect.y)
 			return;
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glm::vec4 renderRect = rect / (rect.w - rect.y) * scale;
+		glm::vec4 renderRect = rect / (rect.w - rect.y) * scale.inWindowHeights(guiNode->getTransform());
 		Render::renderTexture(texture.id(), 
 			this->screenPosition,
 			glm::vec2(renderRect.z - renderRect.x, renderRect.w - renderRect.y)
@@ -63,7 +60,7 @@ namespace TealEngine
 	}
 
 	void Text::refresh() {
-		rect = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+		rect = glm::vec4(INFINITY, INFINITY, -INFINITY, -INFINITY);
 		std::vector<glm::vec4>  charRects;
 		charRects.reserve(this->text.length());
 		glm::vec2 cursor(0.0f);
@@ -99,11 +96,10 @@ namespace TealEngine
 		texture.setParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		texture.setParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		texture.create(rect.z - rect.x, rect.w - rect.y);
-		TextRenderBuffer.resize(rect.z - rect.x, rect.w - rect.y);
+		TextRenderBuffer.bind();
+		TextRenderBuffer.viewport(rect.z - rect.x, rect.w - rect.y);
 		TextRenderBuffer.attachTexture(texture.id(), 0);
 		TextRenderBuffer.enable(0);
-		TextRenderBuffer.attachTexture(texture.id(), 1);
-		TextRenderBuffer.enable(1);
 		TextRenderBuffer.apply();
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -115,6 +111,7 @@ namespace TealEngine
 				i++;
 			}
 			charRect = Math::map(glm::vec4(rect.x, rect.y, 0.0f, 0.0f), glm::vec4(rect.z, rect.w, rect.z - rect.x, rect.w - rect.y), glm::vec4(-1.0f, 1.0f, 0.0f, 0.0f), glm::vec4(1.0f, -1.0f, 1.0f, 1.0f), charRect);
+			Render::renderShader(&Core::shadersManager.get("Text"), glm::vec2(charRect.x, charRect.y), glm::vec2(charRect.z, charRect.w));
 			i++;
 		}
 		glDisable(GL_BLEND);

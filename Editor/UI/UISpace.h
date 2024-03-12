@@ -19,6 +19,8 @@ namespace TealEngine
 		const std::string gameAssetsBrowser = "Game assets browser";
 		const std::string projectProps = "Project properties";
 		const std::string materialEditor = "Material editor";
+		const std::string textureViewer = "Texture viewer";
+		const std::string debugInfo = "Debug Info";
 	};
 	class UISpace 
 	{

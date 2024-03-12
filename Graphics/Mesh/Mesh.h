@@ -90,10 +90,10 @@ namespace TealEngine
 		inline void setUVs		(const std::vector<vec2>& UVs)				{ this->UVs = UVs; };
 		inline void setColors	(const std::vector<vec4>& colors)			{ this->colors = colors; };
 		inline void setIndices	(const std::vector<unsigned int>& indices)	{ this->indices = indices; };
-		inline void setBone0Ids(const std::vector<float>& bones);
-		inline void setBone1Ids(const std::vector<float>& bones);
-		inline void setBone2Ids(const std::vector<float>& bones);
-		inline void setBone4Ids(const std::vector<float>& bones);
+		inline void setBone0Ids	(const std::vector<float>& bones);
+		inline void setBone1Ids	(const std::vector<float>& bones);
+		inline void setBone2Ids	(const std::vector<float>& bones);
+		inline void setBone4Ids	(const std::vector<float>& bones);
 		inline void setBone3Weights(const std::vector<float>& weights) { this->bone0Weights = weights; };
 		inline void setBone0Weights(const std::vector<float>& weights) { this->bone1Weights = weights; };
 		inline void setBone1Weights(const std::vector<float>& weights) { this->bone2Weights = weights; };

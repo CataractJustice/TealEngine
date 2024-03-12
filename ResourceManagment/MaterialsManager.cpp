@@ -102,10 +102,12 @@ namespace TealEngine
 
 		for(const auto& texture : materialJson["textures"]) 
 		{
-			std::string n = texture["name"];
-			std::string t = texture["texture"];
+			auto nIt = texture.find("name");
+			auto tIt = texture.find("texture");
+			if(nIt == texture.cend() || tIt == texture.cend()) continue;
+			std::string n = *nIt;
+			std::string t = *tIt;
 			auto& tm = material.getTextureMap();
-			std::cout << n << " " << t << "\n"; 
 			if(material.getTextureMap().find(texture["name"]) == tm.cend()) 
 			{
 				continue;

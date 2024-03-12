@@ -1,5 +1,6 @@
 #include "Input.h"
 #include <iostream>
+#include "Core.h"
 namespace TealEngine
 {
 	namespace Input
@@ -34,10 +35,18 @@ namespace TealEngine
 			{
 				if(!inputIsActive) return;
 				if (action == GLFW_PRESS)
-				{
+				{	
+					if(Core::getRoot()) 
+					{
+						Core::getRoot()->onWindowMousePress(button);
+					}
 				}
 				if (action == GLFW_RELEASE)
-				{
+				{	
+					if(Core::getRoot()) 
+					{
+						Core::getRoot()->onWindowMouseRelease(button);
+					}
 				}
 				mButton[button] = action != GLFW_RELEASE;
 			}

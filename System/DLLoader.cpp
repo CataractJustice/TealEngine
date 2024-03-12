@@ -9,7 +9,8 @@ namespace TealEngine
 		std::vector<std::string> dlList = getDirectoryList(path);
 		for(std::string& name : dlList) 
 		{
-			TE_DEBUG_INFO("Loading shared library: \"" + path + "/" + name + "\"");
+			if(name.length() <= 3) continue;
+			if(name.substr(name.length() - 3, 3) != ".so") continue;
 			void* dlhandle = dlopen((path + "/" + name).c_str(), RTLD_NOW);
 			if(!dlhandle) 
 			{

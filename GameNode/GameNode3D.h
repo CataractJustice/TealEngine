@@ -16,11 +16,11 @@ namespace TealEngine
 		bool hasGameNode3DParent;
 
 		void setParent(GameNode* parent) override;
-		TransformProp* transformProp;
 
 	protected:
 		Transform transform;
 	public:
+		TransformProp* transformProp;
 
 		GameNode3D();
 		virtual ~GameNode3D();
@@ -36,8 +36,6 @@ namespace TealEngine
 
 		virtual void setRelativeTransform(const Transform& transform);
 
-		static GameNode3D* nodeFromJson(const Json& json, unsigned int group = 0);
-		static GameNode3D* loadNodeFromJsonFile(const std::filesystem::path& path);
 		Json toJson() override;
 		void displayProps() override;
 		//

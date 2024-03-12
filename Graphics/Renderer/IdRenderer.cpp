@@ -21,6 +21,7 @@ namespace TealEngine
 		Render::VP_matrix = Core::renderer.getActiveCamera()->getPV();
 		Render::V_matrix = Core::renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform().getMatrix();
 		scene->renderId();
+		fb.unbind();
 	}
 
 	ShaderProgram IdRenderer::idShader;

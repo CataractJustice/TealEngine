@@ -26,7 +26,10 @@ namespace TealEngine {
 	{
 		glUseProgram(this->program);
 		GLuint loc = glGetUniformLocation(this->program, name.c_str());
-		if (loc == -1) TE_DEBUG_WARNING("Could not find uniform with name \"" + name + "\" in shader.");
+		if (loc == -1) 
+		{
+			TE_DEBUG_WARNING("Could not find uniform with name \"" + name + "\" in shader.");
+		}
 		glUniform1i(loc, this->texture.size());
 		this->texture[name] = std::pair<GLuint, GLuint>(texture.size(), 0);
 		textureArray[texture.size() - 1] = &texture[name];

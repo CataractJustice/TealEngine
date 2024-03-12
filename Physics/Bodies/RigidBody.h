@@ -38,6 +38,8 @@ namespace TealEngine
 
 		void addVelocityAtPos(glm::vec3 pos, glm::vec3 vel);
 
+		inline void setVelocity(glm::vec3 vel) { this->velocity = vel; };
+
 		glm::vec3 getVelocityAtPos(glm::vec3 pos);
 
 		void setTorque(glm::vec3 torque);

@@ -15,7 +15,7 @@ namespace TealEngine
 			{
 				CollisionEvent* ce = (CollisionEvent*)e;
 
-				((GameNode3D*)parrent)->getRelativeTransform().translate(ce->coll.depth * ce->coll.normal * 0.5f);
+				((GameNode3D*)parent)->getRelativeTransform().translate(ce->coll.depth * ce->coll.normal * 0.5f);
 			}
 		}
 	};

@@ -4,3 +4,4 @@
 #include "HeightCollider.h"
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "ScalarFieldCollider.h"

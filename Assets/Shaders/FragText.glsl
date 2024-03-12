@@ -9,5 +9,6 @@ uniform vec4 color = vec4(1.0f);
 
 void main()
 {
-    FragColor = vec4(color.r, color.g, color.b, 0.01f + texture(textureImage, vec2(TexCoord.x, 1.0f - TexCoord.y)).r);
+	if(texture(textureImage, vec2(TexCoord.x, 1.0f - TexCoord.y)).r < 0.1f) discard;
+    FragColor = vec4(color.r, color.g, color.b, 1.0f);
 }

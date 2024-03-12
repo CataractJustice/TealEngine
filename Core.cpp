@@ -23,6 +23,7 @@
 #include "Editor/UI/EditorUI/GameAssetsBrowser.h"
 #include "Graphics/Renderer/IdRenderer.h"
 #include "Editor/UI/SelectedObjectOutlinePostProcess.h"
+#include "Graphics/GUI/Text/FreeTypeUtil.h"
 
 using Json = nlohmann::json;
 
@@ -32,7 +33,7 @@ namespace TealEngine
 	{
 		DeferredRenderer renderer;
 		IdRenderer idRenderer;
-		GameNode3D* sceneRoot;
+		GameNode* sceneRoot;
 		Clock sceneclock;
 		UISpace uiSpace;
 		GameNode3D* idCameraNode;
@@ -43,16 +44,17 @@ namespace TealEngine
 		ModelsManager modelsManager;
 		ShadersManager shadersManager;
 		MaterialsManager materialsManager;
+		FontManager fontManager;
 		PhysicsScene physicsScene;
 		ShapesRenderer shapesRenderer;
 
 		Json originalSceneJson;
-		GameNode3D* originalScene;
+		GameNode* originalScene;
 
 		bool modulesNeedReload = false;
 		void requestModulesReload() { modulesNeedReload = true; }
 
-		GameNode3D* nextScene = nullptr;
+		GameNode* nextScene = nullptr;
 		std::string nextScenePath = "";
 
 		EngineState engineState = EngineState::GAME_STOPPED;
@@ -61,7 +63,7 @@ namespace TealEngine
 		void playImpl() 
 		{
 			originalScene = sceneRoot;
-			sceneRoot = GameNode3D::nodeFromJson(sceneRoot->toJson());
+			sceneRoot = GameNode::nodeFromJson(sceneRoot->toJson());
 		}
 
 		void stopImpl() 
@@ -93,7 +95,7 @@ namespace TealEngine
 				else if(nextScenePath.length()) 
 				{
 					delete sceneRoot;
-					sceneRoot = GameNode3D::loadNodeFromJsonFile(nextScenePath);
+					sceneRoot = GameNode::loadNodeFromJsonFile(nextScenePath);
 					nextScenePath = "";
 				}
 				//reset timer used for frame capping
@@ -101,6 +103,8 @@ namespace TealEngine
 				//Update engine state
 				if(engineState == EngineState::GAME_STOPPED && targetEngineState != EngineState::GAME_STOPPED) 
 				{
+					//we need engine state to be "GAME_PLAYING" so that onAttach and other play only callbacks get called
+					engineState = EngineState::GAME_PLAYING;
 					playImpl();
 				}
 				else if(engineState != EngineState::GAME_STOPPED && targetEngineState == EngineState::GAME_STOPPED) 
@@ -150,17 +154,17 @@ namespace TealEngine
 				//render game
 				renderer.render(sceneRoot);
 
-				//
+				
 				glDisable(GL_CULL_FACE);
 				glDisable(GL_DEPTH_TEST);
 				glDisable(GL_BLEND);
 				//Display render texture on screen
-				FrameBuffer::unbind();
-				glViewport(0,0, Graphics::window->getScreenWidth(), Graphics::window->getScreenHeight());
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				glViewport(0,0, Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
 				if(renderer.getActiveCamera())
 					Render::renderTexture(renderer.getActiveCamera()->renderTexture.id());
 				//Render GUI
-				sceneRoot->GUIrender();
+				sceneRoot->GUIRender();
 
 				//ImGUI
 				//start ImGUi frame
@@ -187,6 +191,7 @@ namespace TealEngine
 			Input::init();
 			lightInit();
 			uiSpace.init();
+			FreeTypeUtil::FreeTypeInitialize();
 			
 			//setup deferred renderer
 			renderer.resize(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
@@ -206,7 +211,7 @@ namespace TealEngine
 			
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO();
-			io.Fonts->AddFontFromFileTTF("./res/fonts/DroidSansMono.ttf", 18.0f);
+			io.Fonts->AddFontFromFileTTF("./Assets/Fonts/DroidSansMono.ttf", 18.0f);
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 			ImVec4* colors = ImGui::GetStyle().Colors;
   ImGuiStyle& style = ImGui::GetStyle();
@@ -281,7 +286,7 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 			idRenderer.setCamera(idCamera);
 		}
 
-		GameNode3D* getRoot() 
+		GameNode* getRoot() 
 		{
 			return sceneRoot;
 		}
@@ -305,10 +310,13 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 			materialsManager.clearAll();
 			materialsManager.loadRecursive(project.getPath()+"/Assets");
 			materialsManager.loadRecursive(project.getPath()+"/GameAssets");
+			fontManager.clearAll();
+			fontManager.loadRecursive(project.getPath()+"/Assets");
+			fontManager.loadRecursive(project.getPath()+"/GameAssets");
 			std::filesystem::current_path(project.getPath());
 		}
 
-		void setScene(GameNode3D* node) 
+		void setScene(GameNode* node) 
 		{
 			nextScene = node;
 		}
@@ -354,7 +362,7 @@ style.GrabRounding                           = style.FrameRounding = 2.3f;
 			currentProject.loadLibs();
 			//restore scene with new libs loaded
 			if(sceneRoot)
-				sceneRoot = GameNode3D::nodeFromJson(currentScene);
+				sceneRoot = GameNode::nodeFromJson(currentScene);
 		}
 	}
 }

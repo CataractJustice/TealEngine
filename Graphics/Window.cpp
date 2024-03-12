@@ -1,7 +1,9 @@
 #include "Window.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <stdio.h>
 #include <map>
+#include <iostream>
 namespace TealEngine 
 {
 
@@ -15,12 +17,18 @@ namespace TealEngine
 		glViewport(0, 0, width, height);
 	}
 
+	void printGlfwError(int code, const char* error) 
+	{
+		std::cout << "GG Glfw Issue: " << code << " " << error << "\n";
+	}
+
 	Window::Window(const char* title, int width, int height) 
 	{
+		glfwSetErrorCallback(&printGlfwError);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		Window::window = glfwCreateWindow(640, 480, title, NULL, NULL);
+		Window::window = glfwCreateWindow(width, height, title, NULL, NULL);
 		Window::windowWidth = width;
 		Window::windowHeight = height;
 		glfwSetWindowSizeCallback((GLFWwindow*)window, windowResizeCallback);

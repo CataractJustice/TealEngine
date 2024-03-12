@@ -16,21 +16,10 @@ namespace TealEngine
 				ImGui::NextColumn();
 				ImGui::Text("%d", GameNode::getSelectedNode()->getId());
 				ImGui::NextColumn();
-				ImGui::Text("%s", "local id");
-				ImGui::NextColumn();
-				ImGui::Text("%d", GameNode::getSelectedNode()->getGroupLocalId());
-				ImGui::NextColumn();
-				ImGui::Text("%s", "group id");
-				ImGui::NextColumn();
-				ImGui::Text("%d", GameNode::getSelectedNode()->getGroupId());
-				ImGui::NextColumn();
 				ImGui::Text("%s", "depth");
 				ImGui::NextColumn();
 				ImGui::Text("%d", GameNode::getSelectedNode()->getHierarchyDepth());
 				ImGui::NextColumn();
-				ImGui::Text("%s", "filepath");
-				ImGui::NextColumn();
-				ImGui::Text("%s", GameNode::getSelectedNode()->getNodeFilePath().c_str());
 				ImGui::Columns();
 				ImGui::TreePop();
 			}
@@ -43,7 +32,7 @@ namespace TealEngine
 			{
 				if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ComponentClass")) 
 				{
-					GameNode::getSelectedNode()->attachComponent(ComponentFactory::instanceComponent((char*)payload->Data));
+					GameNode::getSelectedNode()->attachComponent(ComponentFactory::instanceComponent(std::string((char*)payload->Data, payload->DataSize)));
 				}
 			}
 		}

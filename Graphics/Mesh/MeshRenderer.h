@@ -57,12 +57,14 @@ namespace TealEngine{
 
 		void static render(SharedMesh* mesh, ShaderProgram* shader, unsigned int mode, unsigned int LOD = 0)
 		{
+			if(mesh->getLength() == 0) return;
 			shader->use();
 			mesh->render(LOD, mode);
 		}
 
 		virtual void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0)
 		{
+			
 			if((this->shader || shader) && this->mesh)
 				render(
 					mesh,
@@ -77,7 +79,14 @@ namespace TealEngine{
 			if(this->renderPassMask & passes)
 				this->render(shader, this->mode, 0);
 		}
-		
+
+		void onPropSet(const std::string& propName) override
+		{
+			if(shader)
+				this->setShader(this->shader);
+			this->setRenderPassActive(RenderPass::ShadowMapPass, this->isShadowCaster());
+		}
+
 		bool isShadowCaster();
 		void setShadowCast(bool castShadow);
 
@@ -94,6 +103,7 @@ namespace TealEngine{
 		void setShader(ShaderProgram* shader) override
 		{
 			this->shader = shader;
+			if(this->shader == nullptr) return;
 			this->shader->setUniform("model", mat4(1.0f));
 			this->shader->setUniform("n_model", mat4(1.0f));
 			this->shader->setUniform("pv_mat", mat4(1.0f));
@@ -102,12 +112,6 @@ namespace TealEngine{
 			PV = shader->getUniformIterator("pv_mat");
 		}
 
-		void onPropSet(const std::string& propName) override
-		{
-			if(shader)
-				this->setShader(this->shader);
-			this->setRenderPassActive(RenderPass::ShadowMapPass, this->isShadowCaster());
-		}
 		void renderId() override;
 		
 		void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0) override
@@ -118,26 +122,13 @@ namespace TealEngine{
 				Transform meshTransform = ((GameNode3D*)getParent())->getWorldTransform();
 				
 				vec4 screenPos = Render::VP_matrix * vec4(meshTransform.getPosition(), 1.0f);
-				//to-do: culling
-				if (true) 
-				{
-					ShaderProgram* targetShader = shader ? shader : this->shader;
-					
-					//to-do safely cache uniform iterators
-					if (shader || true)
-					{
-						targetShader->setUniform("model", meshTransform.getMatrix());
-						targetShader->setUniform("n_model", meshTransform.getNormalsModel());
-						targetShader->setUniform("pv_mat", Render::VP_matrix);
-					}
-					else
-					{
-						targetShader->setUniform(model, meshTransform.getMatrix());
-						targetShader->setUniform(nModel, meshTransform.getNormalsModel());
-						targetShader->setUniform(PV, Render::VP_matrix);
-					}
-					MeshRenderer::render(targetShader, mode ? mode : this->mode, 0);
-				}
+				
+				ShaderProgram* targetShader = shader ? shader : this->shader;
+				
+				targetShader->setUniform("model", meshTransform.getMatrix());
+				targetShader->setUniform("n_model", meshTransform.getNormalsModel());
+				targetShader->setUniform("pv_mat", Render::VP_matrix);
+				MeshRenderer::render(targetShader, mode ? mode : this->mode, 0);
 			}
 		}
 	};

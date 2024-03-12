@@ -8,7 +8,6 @@ namespace TealEngine
 {
 	FontCharacter Font::loadChar(font_char_type character)
 	{
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		FT_Error e = FT_Load_Char(face, character, FT_LOAD_RENDER);
 		if (e)
 		{
@@ -28,6 +27,7 @@ namespace TealEngine
 	Font::Font(std::string path)
 	{
 		FreeTypeUtil::loadFont(path, face);
+		setPixelSizes(64);
 	}
 
 	Font::Font()

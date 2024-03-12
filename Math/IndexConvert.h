@@ -4,8 +4,6 @@
 template <class T>
 inline T a3to1ind(T x, T y, T z, T h, T l) 
 {
-
-	if (x < 0 || y < 0 || z < 0) { TE_DEBUG_ERROR("Invalid argument."); }
 	return z + y * l + x * h * l;
 }
 
@@ -18,6 +16,5 @@ inline T a3to1ind(glm::ivec3 ind, T h, T l)
 template <class T>
 inline T a2to1ind(T x, T y, T h)
 {
-	if (x < 0 || y < 0) TE_DEBUG_ERROR("Invalid argument.");
 	return y + x * h;
 }

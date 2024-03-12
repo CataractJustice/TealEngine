@@ -10,7 +10,7 @@ int GameNodeTreeTests::independentBasicTest()
 	GameNode* root = new GameNode();
 	GameNode* subNode = new GameNode();
 	root->addChild(subNode);
-	//Check parrent pointers
+	//Check parent pointers
 	assert(subNode->getParent() == root);
 	assert(root->getParent() == nullptr);
 	//check hierarchy depth values
@@ -18,18 +18,18 @@ int GameNodeTreeTests::independentBasicTest()
 	assert(subNode->getHierarchyDepth() == 1);
 	//detatch sub node from root
 	root->removeChild(subNode);
-	//sub node now must be a root node with no parrents
+	//sub node now must be a root node with no parents
 	assert(subNode->getHierarchyDepth() == 0);
 	assert(subNode->getParent() == nullptr);
 	//
-	assert(GameNode::isNodeExist(root) == true);
-	assert(GameNode::isNodeExist(subNode) == true);
+	assert(GameNode::isValidNode(root) == true);
+	assert(GameNode::isValidNode(subNode) == true);
 	//re attach sub node
 	root->addChild(subNode);
 	//this should delete both nodes
 	delete root;
-	assert(GameNode::isNodeExist(root) == false);
-	assert(GameNode::isNodeExist(subNode) == false);
+	assert(GameNode::isValidNode(root) == false);
+	assert(GameNode::isValidNode(subNode) == false);
 	return 0;
 }
 int GameNodeTreeTests::independentSubTreeTest() 
@@ -55,9 +55,9 @@ int GameNodeTreeTests::independentSubTreeTest()
 	subNode->destroy();
 	GameNode::cleanupDestroyed();
 	assert(root->getChilds().size() == 0);
-	assert(GameNode::isNodeExist(subNode) == false);
-	assert(GameNode::isNodeExist(subSubNode1) == false);
-	assert(GameNode::isNodeExist(subSubNode2) == false);
+	assert(GameNode::isValidNode(subNode) == false);
+	assert(GameNode::isValidNode(subSubNode1) == false);
+	assert(GameNode::isValidNode(subSubNode2) == false);
 	delete root;
 	return 0;
 }
@@ -83,13 +83,13 @@ int GameNodeTreeTests::coreTreeTest()
 	Core::update();
 
 	assert(testRoot->getChilds().size() == 0);
-	assert(GameNode::isNodeExist(subNode) == false);
-	assert(GameNode::isNodeExist(subSubNode1) == false);
-	assert(GameNode::isNodeExist(subSubNode2) == false);
+	assert(GameNode::isValidNode(subNode) == false);
+	assert(GameNode::isValidNode(subSubNode1) == false);
+	assert(GameNode::isValidNode(subSubNode2) == false);
 
 	testRoot->destroy();
 	Core::update();
-	assert(GameNode::isNodeExist(testRoot) == false);
+	assert(GameNode::isValidNode(testRoot) == false);
 
 	return 0;
 }

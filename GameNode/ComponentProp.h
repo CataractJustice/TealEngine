@@ -24,7 +24,7 @@ namespace TealEngine
 		Component* ownerComp;
 		Json storedJson;
 		public:
-		inline void setParrentComponent(Component* comp) { ownerComp = comp; }
+		inline void setparentComponent(Component* comp) { ownerComp = comp; }
 		void* propptr;
 		//pointer to the property value
 		//deserialize property

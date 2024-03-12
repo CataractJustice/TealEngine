@@ -92,97 +92,12 @@ namespace TealEngine
 		this->transform = transform;
 	}
 
-	GameNode3D* GameNode3D::nodeFromJson(const Json& json, unsigned int group) 
-	{
-		static unsigned int groupCounter = 0;
-		GameNode3D* node = new GameNode3D();
-		
-		if(json.find("filepath") != json.cend()) 
-		{
-			if(json["filepath"].get<std::string>().length()) 
-			{
-				groupCounter++;
-				group = groupCounter;
-				node->setNodeFilePath(json["filepath"]);
-			}
-		}
-
-		if(json.find("localId") != json.end()) 
-		{
-			node->setGroupAndLocalId(group, json["localId"]);
-		}
-		
-		auto componentsIt = json.find("components");
-		if(componentsIt != json.cend()) 
-		{
-			for(const Json& componentJson : *componentsIt)
-			{
-				Component* comp = Component::fromJson(componentJson);
-				if(comp) 
-				{
-					node->attachComponent(comp);
-				}
-			}
-		}
-		
-		if(json.find("nodes") != json.cend()) 
-		{
-			const Json& subNodes = json["nodes"];
-			for(const Json& subNodeJson : subNodes) 
-			{
-				GameNode3D* subNode = nodeFromJson(subNodeJson, group);
-				node->addChild(subNode);
-			}
-		}
-		if(json.find("name") != json.cend()) 
-		{
-			node->rename(json["name"]);
-		}
-
-		if(json.find("id") != json.cend()) 
-		{
-			node->setId(json["id"]);
-		}
-		
-		if(json.find("transform") != json.cend()) 
-		{
-			node->transformProp->set(json["transform"]);
-		}
-		node->refreshProps();
-		return node;
-	}
-
 	Json GameNode3D::toJson()
 	{
-		Json json;
-		json["name"] = this->name;
-		json["localId"] = this->groupLocalId ? this->groupLocalId : this->id;
-		json["id"] = this->id;
+		Json json = GameNode::toJson();
+		json["type"] = "3d";
 		json["transform"] = this->transformProp->get();
-		if(this->loadedFromFilePath.length())
-			json["filepath"] = this->loadedFromFilePath;
-		std::vector<Json> componentsJson;
-		for(Component* comp : components) 
-		{
-			componentsJson.push_back(comp->toJson());
-		}
-		json["components"] = componentsJson;
-
-		std::vector<Json> nodesJson;
-		for(GameNode* node : childNodes) 
-		{
-			nodesJson.push_back(((GameNode3D*)node)->toJson());
-		}
-		json["nodes"] = nodesJson;
 		return json;
-	}
-
-	GameNode3D* GameNode3D::loadNodeFromJsonFile(const std::filesystem::path& path) 
-	{
-		std::ifstream file(path);
-		GameNode3D* node = GameNode3D::nodeFromJson(Json::parse(file));
-		node->setNodeFilePath(path);
-		return node;
 	}
 
 	void GameNode3D::displayProps() 

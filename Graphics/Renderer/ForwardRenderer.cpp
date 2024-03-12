@@ -9,7 +9,7 @@ namespace TealEngine {
 
 	void ForwardRenderer::resize(GLuint width, GLuint height) 
 	{
-		this->fb.resize(width, height);
+		fb.viewport(width, height);
 		if(this->depthTexture.id() == 0)this->depthTexture = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 		this->depthTexture.create(width, height);
 		fb.attachTexture(0, 0);
@@ -22,6 +22,7 @@ namespace TealEngine {
 		fb.bind();
 		applyConfig();
 		scene->render(nullptr, (unsigned int)pass);
+		fb.unbind();
 	}
 
 	void ForwardRenderer::render(list<MeshRenderer*> meshList, ShaderProgram* material, MeshRenderer::RenderPass pass)
@@ -30,6 +31,7 @@ namespace TealEngine {
 		fb.bind();
 		applyConfig();
 		renderModels(meshList, material, pass);
+		fb.unbind();
 	}
 
 	void ForwardRenderer::renderModels(GameNode* scene, ShaderProgram* shader, MeshRenderer::RenderPass pass)

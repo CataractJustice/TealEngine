@@ -64,7 +64,7 @@ namespace TealEngine
 		{
 			edited++;
 			transform.setScale(scale);
-		}
+		} 
 
 		if(ImGui::DragFloat3((std::string("Rotation#") + label).c_str(), glm::value_ptr(rotation), 0.005f)) 
 		{

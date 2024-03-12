@@ -1,4 +1,4 @@
-/*#pragma once
+#pragma once
 #include "GameNode/Component.h"
 #include "Renderer/RenderUtil.h"
 namespace TealEngine 
@@ -7,14 +7,9 @@ namespace TealEngine
 	{
 	private:
 		ShaderProgram* material;
+		bool outputUnlit, outputLit, outputPosition, outputNormal, outputSpecular, outputLight;
 	public:
-		PostProcessComponent(ShaderProgram* material) : material(material) {};
-		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light) override 
-		{
-			if(material) 
-			{
-				Render::renderShader(material);
-			}
-		}
+		PostProcessComponent();
+		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) override;
 	};
-}*/
+}

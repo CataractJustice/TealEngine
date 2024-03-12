@@ -20,10 +20,14 @@ namespace TealEngine
 		static std::pair<Collision, Collision>SphereToHeightMap(SphereCollider* sc, HeightCollider* hc);
 
 		static std::pair<Collision, Collision>SphereToSphere(SphereCollider* sca, SphereCollider* scb);
+		
+		static std::pair<Collision, Collision>SphereToScalarField(SphereCollider* sc, ScalarFieldCollider* sfc);
 
 		static std::pair<Collision, Collision>BoxToSphere(BoxCollider* bc, SphereCollider* sc);
 
 		static std::pair<Collision, Collision>BoxToBox(BoxCollider* bca, BoxCollider* bcb);
+
+		static std::pair<Collision, Collision>BoxToScalarField(BoxCollider* bc, ScalarFieldCollider* sfc);
 
 		static std::pair<Collision, Collision> SolveCollision(Collider* a, Collider* b, bool& isAnyCollisionOccured);
 	};

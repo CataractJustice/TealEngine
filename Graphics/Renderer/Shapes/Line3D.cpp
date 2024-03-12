@@ -19,7 +19,7 @@ namespace TealEngine
 		shader.setUniform("color", this->color);
 		shader.setUniform("thickness", this->thickness);
 		shader.setUniform("pv_mat", Core::renderer.getActiveCamera()->getPV());
-		shader.setUniform("model", Core::getRoot()->getWorldTransform().getMatrix());
+		shader.setUniform("model", glm::mat4(1.0f));
 		shader.setTexture("textureImage", Core::textureManager.get("bd.bmp").id());
 		
 		glDisable(GL_DEPTH_TEST);

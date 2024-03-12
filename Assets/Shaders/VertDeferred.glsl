@@ -13,8 +13,6 @@ out vec3 Normal;
 out vec3 Tangent;
 out vec3 Bitangent;
 out mat3 TBN;
-out vec3 CamPos;
-uniform mat4 v_mat;
 uniform mat4 pv_mat;
 uniform mat4 model;
 uniform mat4 n_model;
@@ -24,10 +22,9 @@ void main()
 	TexCoord = uv;
 	Color = use_color ? color : vec4(1.0f);
 	FragPos = vec3(model * vec4(position, 1.0));
-	Normal = mat3(n_model) * normalize(normal);
-	Tangent =  mat3(n_model) * normalize(tangent);
-	Bitangent = mat3(n_model) * normalize(bitangent);
+	Normal = mat3(n_model) * (normal);
+	Tangent =  mat3(n_model) * (tangent);
+	Bitangent = mat3(n_model) * (bitangent);
 	TBN = mat3(Tangent, Bitangent, Normal);
-	CamPos = vec3(v_mat * vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	gl_Position = pv_mat * model * vec4(position, 1.0f);
 }

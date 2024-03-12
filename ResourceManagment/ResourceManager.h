@@ -21,6 +21,11 @@ namespace TealEngine
 		{
 			return loadedResources;
 		}
+
+		inline bool exists(std::filesystem::path resourcePath) 
+		{
+			return loadedResources.find(resourcePath) != loadedResources.cend();
+		}
 		
 		T& get(std::filesystem::path resourcePath) 
 		{

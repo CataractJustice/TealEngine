@@ -42,6 +42,11 @@ namespace TealEngine
 			return SphereToSphere((SphereCollider*)a, (SphereCollider*)b);
 		}
 		else
+		if (matchAndSwapColliders(a, b, Collider::ColliderType::SPHERE, Collider::ColliderType::SCALAR_FIELD))
+		{
+			return SphereToScalarField((SphereCollider*)a, (ScalarFieldCollider*)b);
+		}
+		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::BOX))
 		{
 			return BoxToBox((BoxCollider*)a, (BoxCollider*)b);
@@ -50,6 +55,11 @@ namespace TealEngine
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::SPHERE))
 		{
 			return BoxToSphere((BoxCollider*)a, (SphereCollider*)b);
+		}
+		else
+		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::SCALAR_FIELD))
+		{
+			return BoxToScalarField((BoxCollider*)a, (ScalarFieldCollider*)b);
 		}
 		isAnyCollisionOccured = false;
 	}

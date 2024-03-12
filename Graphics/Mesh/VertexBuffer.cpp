@@ -121,5 +121,7 @@ namespace TealEngine
 	VertexBuffer::~VertexBuffer() 
 	{
 		if(buffer) delete[] buffer;
+		glDeleteBuffers(1, &VBO);
+		glDeleteVertexArrays(1, &VAO);
 	}
 }

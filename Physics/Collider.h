@@ -13,7 +13,8 @@ namespace TealEngine
 			BOX,
 			HEIGHTMAP,
 			PLANE,
-			SPHERE
+			SPHERE,
+			SCALAR_FIELD
 		};
 		Collider();
 		~Collider();

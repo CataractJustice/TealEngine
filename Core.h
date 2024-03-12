@@ -14,6 +14,7 @@
 #include "ResourceManagment/MaterialsManager.h"
 #include "Physics/PhysicsScene.h"
 #include "Graphics/Renderer/ShapesRenderer.h"
+#include "ResourceManagment/FontManager.h"
 namespace TealEngine 
 {
 	namespace Core 
@@ -29,18 +30,22 @@ namespace TealEngine
 		extern MaterialsManager materialsManager;
 		extern PhysicsScene physicsScene;
 		extern ShapesRenderer shapesRenderer;
+		extern FontManager fontManager;
 
-		void update();
+		void update(); 
 
 		void setProject(Project project);
 
-		GameNode3D* getRoot();
+		GameNode* getRoot();
 		
 		extern std::map<std::string, std::string> settings;
 		void init();
 		void requestModulesReload();
-		void setScene(GameNode3D* node);
+		void setScene(GameNode* node);
 		void setScene(const std::string& scenePath);
+
+		//void hostServer();
+		//oid connectToServer();
 
 		enum EngineState 
 		{

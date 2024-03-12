@@ -13,7 +13,7 @@ namespace TealEngine
 				this->parent->dettachComponent(this);
 			this->parent = node;
 			if(Core::getEngineState() != Core::EngineState::GAME_STOPPED)
-			onAttach();
+			this->onAttachCallbackHasBeenCalled = false;
 		}
 	}
 
@@ -31,16 +31,21 @@ namespace TealEngine
 	void Component::onAttach() {};
 	void Component::onMessageReceive() {};
 	void Component::onCollision(const Collision& collision) {};
-	void Component::GUIrender() {};
+	void Component::GUIRender() {};
 	void Component::imGuiRender(const std::string& windowName) {};
 	void Component::render(ShaderProgram* shader, unsigned int stages) {};
 	void Component::renderId() {};
 	void Component::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) {};
-
+	void Component::onClick(unsigned short button) {};
+	void Component::onWindowMousePress(unsigned short button) {};
+	void Component::onWindowMouseRelease(unsigned short button) {};
+	void Component::onMousePress(unsigned short button) {};
+	void Component::onMouseRelease(unsigned short button) {};
 	GameNode* Component::getParent() { return parent; }
 
 	Component::Component() : active(true), parent(nullptr) 
 	{
+		allComponents.emplace(this);
 		this->id = lastId++;
 		Component::idMap[id] = this;
 	};
@@ -81,6 +86,7 @@ namespace TealEngine
 
 	Component::~Component() 
 	{
+		allComponents.erase(this);
 		if (parent)
 			parent->dettachComponent(this);
 
@@ -96,6 +102,13 @@ namespace TealEngine
 		std::vector<std::string> setProps;
 		if(ImGui::CollapsingHeader((this->name + "###" + std::to_string((int)(long)this)).c_str()))
 		{	
+			if(ImGui::BeginDragDropSource()) 
+			{
+				ImGui::Text("%s", this->name.c_str());
+				Component* lvalueThis = this;
+				ImGui::SetDragDropPayload("ComponentInstance", &lvalueThis, sizeof(Component*));
+				ImGui::EndDragDropSource();
+			}
 			if(ImGui::BeginPopupContextItem()) 
 			{
 				if(ImGui::MenuItem("Delete component")) 
@@ -153,7 +166,7 @@ namespace TealEngine
 			return;
 		}
 		this->props[name] = prop;
-		prop->setParrentComponent(this);
+		prop->setparentComponent(this);
 	}
 
 	Json Component::toJson() 
@@ -210,6 +223,22 @@ namespace TealEngine
 		return idMap[id];
 	}
 
+	bool Component::isOnAttachCallbackHasBeenCalled() 
+	{
+		return onAttachCallbackHasBeenCalled;
+	}
+
+	void Component::cancelOnAttachCallback() 
+	{
+		onAttachCallbackHasBeenCalled = true;
+	}
+
+	bool Component::isValidComponent(Component* component) 
+	{
+		return allComponents.find(component) != allComponents.cend();
+	}
+
 	std::map<int, Component*> Component::idMap;
+	std::set<Component*> Component::allComponents;
 	int Component::lastId = 1;
 }

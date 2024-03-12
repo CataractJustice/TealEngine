@@ -31,28 +31,31 @@ namespace TealEngine {
 		static std::unordered_set<GameNode*> allNodes;
 		static std::map<unsigned int, GameNode*> idMap;
 		static unsigned int lastId;
-		static std::map<unsigned int, std::map<unsigned int, GameNode*>> groupsIdMap;
 		static map<string, set<GameNode*>> tagged;
 		static std::queue<GameNode*> destroyQueue;
+		static GameNode* selectedNode;
 		
 		set<string> tags;
-		bool willBeDestroyed;
+		unsigned short activeMButtonsMask;
 		unsigned short hierarchyDepth;
-		static GameNode* selectedNode;
+		bool willBeDestroyed;
 	protected:
-		bool active;
-		unsigned int id;
-		unsigned int groupId;
-		unsigned int groupLocalId;
-		bool onDestroyHasBeenCalled;
 		string name;
-		list<GameNode*> childNodes;
-		list<Component*> components;
+		std::vector<GameNode*> childNodes;
+		std::vector<Component*> components;
 		GameNode* parent;
-		std::string loadedFromFilePath;
+		unsigned int id;
+		int hierarchyIndex;
+		bool active;
+		bool onDestroyHasBeenCalled;
+		bool showProperties;
 
 		virtual void setParent(GameNode* parent);
 	public:
+		inline unsigned char getMouseButtonPressMask() 
+		{
+			return activeMButtonsMask;
+		};
 		const string& getName();
 		void rename(const string& name);
 
@@ -83,7 +86,6 @@ namespace TealEngine {
 					comps.push_back((T*)component);
 			return comps;
 		}
-
 
 		//returns length of path from root node to this node
 		unsigned short getHierarchyDepth();
@@ -125,8 +127,6 @@ namespace TealEngine {
 		T* getParentOfType() 
 		{
 			T* castedParent = dynamic_cast<T*>(parent);
-			if (!castedParent)
-				TE_DEBUG_ERROR("Parent either does not exist or isnt the right type.");
 			return castedParent;
 		}
 		//returns all child nodes
@@ -150,6 +150,17 @@ namespace TealEngine {
 		virtual void onParentChange();
 		//usualy called every frame
 		virtual void update() final;
+		//should be called after some mouse button was pressed and released while mouse cursor is hovered over the node
+		virtual void onClick(unsigned short button);
+		//called every time a mouse button is pressed while mouse cursor is hovered over the node
+		virtual void onMousePress(unsigned short button);
+		//called every time a mouse button is released
+		virtual void onMouseRelease(unsigned short button);
+		//called every time a mouse button is pressed
+		virtual void onWindowMousePress(unsigned short button);
+		//called every time a mouse button is released
+		virtual void onWindowMouseRelease(unsigned short button);
+
 		//recursively updates current and all lower nodes
 		void updateAll();
 		void editorUpdate();
@@ -168,7 +179,7 @@ namespace TealEngine {
 		//
 		virtual void onCollision(const Collision& collision, bool eventDown = true, bool eventUp = true);
 		//
-		void GUIrender();
+		void GUIRender();
 		//
 		void imGuiRender(const std::string& windowName);
 		//
@@ -194,37 +205,31 @@ namespace TealEngine {
 		
 		//Returns true if pointer is valid node and has not been deleted
 		//Also returns true if node is marked for deletion by a 'destroy()' method call but has not been deleted yet
-		static bool isNodeExist(GameNode* node);
+		static bool isValidNode(GameNode* node);
 
 		virtual Json toJson();
 		//returns node global id
 		int getId();
-		//returns id of the group
-		//returns 0 for no group
-		unsigned int getGroupId();
-		//returns node id inside the group
-		unsigned int getGroupLocalId();
-		//set node global id
+		//set node id
 		void setId(int id);
-		//set group id and node id local to the group
-		void setGroupAndLocalId(int groupId, int groupLocalId);
-		//returns node by its global id
+		//returns node by its id
 		//returns nullptr if no node with such id was found
 		static GameNode* getNodeById(int id);
-		//returns node by it's group and id local to that group
-		//returns nullptr if no node was found
-		static GameNode* getNodeByGroupAndLocalId(int groupId, int groupLocalId);
 		//returns currently selected node in editor
 		static GameNode* getSelectedNode();
 		//set current selected node in editor
 		static void setSelectedNode(GameNode* node);
-		//set filepath from which this node was loaded from
-		void setNodeFilePath(std::filesystem::path path);
 		//returns filepath from which this node was loaded from
 		std::filesystem::path getNodeFilePath();
 		//saves node to filepath it was loaded from
 		void save();
+		GameNode* getChildByIndex(int index);
+		Component* getComponentByIndex(int index);
 		//saves node to file
 		void saveAs(const std::filesystem::path& path);
+		static GameNode* loadNodeFromJsonFile(const std::filesystem::path& path);
+		static GameNode* nodeFromJson(const Json& json);
+		int getHierarchyIndex();
+		std::vector<int> getRelativeIndexPathTo(GameNode* node);
 	};
 }
