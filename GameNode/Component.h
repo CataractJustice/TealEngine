@@ -16,6 +16,7 @@ class FrameBuffer;
 		GameNode* parent;
 		static std::map<int, Component*> idMap;
 		static std::set<Component*> allComponents;
+		static std::set<Component*> renderableComponents;
 		void attachTo(GameNode* node);
 		std::string factoryName;
 		bool active;
@@ -24,6 +25,7 @@ class FrameBuffer;
 		int id;
 		static int lastId;
 		int index;
+		bool postConstructorDone;
 	protected:
 		std::unordered_map<std::string, IProp*> props;
 	public:
@@ -119,5 +121,9 @@ class FrameBuffer;
 
 		//cancels next onAttach callback call
 		void cancelOnAttachCallback();
+
+		void registerCallbackLists();
+		static void renderAllComponents(ShaderProgram* shader, unsigned int stages);
+		static Component base;
 	};
 }

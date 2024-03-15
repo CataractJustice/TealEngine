@@ -3,6 +3,7 @@
 #include "ComponentFactory.h"
 #include "Core.h"
 #include "Editor/Actions/PropSetAction.h"
+#include "System/VTable.h"
 namespace TealEngine 
 {
 	void Component::attachTo(GameNode* node) 
@@ -14,6 +15,11 @@ namespace TealEngine
 			this->parent = node;
 			if(Core::getEngineState() != Core::EngineState::GAME_STOPPED)
 			this->onAttachCallbackHasBeenCalled = false;
+		}
+		if(!postConstructorDone) 
+		{
+			registerCallbackLists();
+			postConstructorDone = true;
 		}
 	}
 
@@ -48,6 +54,7 @@ namespace TealEngine
 		allComponents.emplace(this);
 		this->id = lastId++;
 		Component::idMap[id] = this;
+		postConstructorDone = false;
 	};
 
 	bool Component::setProp(const Json& json) 
@@ -87,6 +94,7 @@ namespace TealEngine
 	Component::~Component() 
 	{
 		allComponents.erase(this);
+		renderableComponents.erase(this);
 		if (parent)
 			parent->dettachComponent(this);
 
@@ -238,7 +246,23 @@ namespace TealEngine
 		return allComponents.find(component) != allComponents.cend();
 	}
 
+	void Component::renderAllComponents(ShaderProgram* shader, unsigned int stages) 
+	{
+		for(Component* comp : renderableComponents) 
+		{
+			if(comp->isActive())
+				comp->render(shader, stages);
+		}
+	}
+
+	void Component::registerCallbackLists() 
+	{
+		if(isMethodOverriden(Component::base, this, &Component::render)) renderableComponents.emplace(this);
+	}
+
 	std::map<int, Component*> Component::idMap;
 	std::set<Component*> Component::allComponents;
+	std::set<Component*> Component::renderableComponents;
 	int Component::lastId = 1;
+	Component Component::base;
 }

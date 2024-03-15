@@ -9,6 +9,7 @@ namespace TealEngine
 		namespace Mouse
 		{
 			glm::vec2 deltaMPos = glm::vec2(0.0f, 0.0f);
+			glm::vec2 deltaMPoAccum = glm::vec2(0.0f, 0.0f);
 			double deltaSPos = 0.0;
 			bool mButton[3] = {0};
 			double scrollPos = 0;
@@ -28,6 +29,7 @@ namespace TealEngine
 			void moveCallback(GLFWwindow* window, double xpos, double ypos) 
 			{
 				if(!inputIsActive) return;
+				deltaMPoAccum += glm::vec2(xpos, ypos) - mousePos;
 				mousePos = glm::vec2(xpos, ypos);
 			}
 
@@ -66,6 +68,22 @@ namespace TealEngine
 			double getDeltaScrollPos() 
 			{
 				return deltaSPos;
+			}
+
+			void setCursorPosition(int px, int py) 
+			{
+				glfwSetCursorPos((GLFWwindow*)Graphics::window->gl_window_ptr_(), px, py);
+				mousePos = glm::vec2(px, py);
+			}
+
+			void setCursorHidden(bool hidden) 
+			{
+				if(hidden)
+					glfwSetInputMode((GLFWwindow*)Graphics::window->gl_window_ptr_(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				else 
+				{
+					glfwSetInputMode((GLFWwindow*)Graphics::window->gl_window_ptr_(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				}
 			}
 		}
 
@@ -112,7 +130,8 @@ namespace TealEngine
 			static glm::vec2 lastMousePos = Mouse::getMousePos();
 			static double lastScrollPos = Mouse::getScrollPos();
 
-			Mouse::deltaMPos = Mouse::getMousePos() - lastMousePos;
+			Mouse::deltaMPos = Mouse::deltaMPoAccum;
+			Mouse::deltaMPoAccum = glm::vec2(0.0f);
 			Mouse::deltaSPos = Mouse::getScrollPos() - lastScrollPos;
 
 			lastMousePos = Mouse::getMousePos();

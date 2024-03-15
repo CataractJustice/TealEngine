@@ -471,16 +471,7 @@ namespace TealEngine {
 	void GameNode::render(ShaderProgram* shader, unsigned int stages)
 	{
 		if (!active) return;
-		for (Component* comp : components)
-		{
-			if (comp->getActive())
-				comp->render(shader, stages);
-		}
-
-		for (GameNode* node : childNodes)
-		{
-			node->render(shader, stages);
-		}
+		Component::renderAllComponents(shader, stages);
 	}
 
 	void GameNode::renderId()

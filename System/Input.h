@@ -17,6 +17,8 @@ namespace TealEngine
 			//returns cnage of scroll position between two frames
 			double getDeltaScrollPos();
 			double getScrollPos();
+			void setCursorHidden(bool hidden);
+			void setCursorPosition(int px, int py);
 		}
 
 		namespace Keyboard 
