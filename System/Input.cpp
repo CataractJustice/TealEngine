@@ -85,6 +85,7 @@ namespace TealEngine
 				if(!inputIsActive) return;
 				if (action == GLFW_PRESS)
 				{
+					if(key == GLFW_KEY_F1) Core::uiSpace.showEditorUI = !Core::uiSpace.showEditorUI;
 				}
 				if (action == GLFW_REPEAT) 
 				{

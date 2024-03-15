@@ -91,10 +91,12 @@ namespace TealEngine
 		openWindow(EditorWindowNames::gameAssetsBrowser);
 
 		projectCreateWindowActive = 0;
+		showEditorUI = true;
 	}
 
 	void UISpace::display() 
 	{
+		if(!showEditorUI) return;
 		ImGui::DockSpaceOverViewport();
 		if(ImGui::BeginMainMenuBar()) 
 		{

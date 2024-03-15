@@ -29,6 +29,7 @@ namespace TealEngine
 		bool projectCreateWindowActive;
 		std::string projectCreateTitleInput;
 		public:
+		bool showEditorUI;
 		UISpace();
 		void init();
 		//displays file menu, docking space and all currently oppened windows
