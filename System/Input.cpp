@@ -1,6 +1,7 @@
 #include "Input.h"
 #include <iostream>
 #include "Core.h"
+#include "GameNode/Component.h"
 namespace TealEngine
 {
 	namespace Input
@@ -104,12 +105,14 @@ namespace TealEngine
 				if (action == GLFW_PRESS)
 				{
 					if(key == GLFW_KEY_F1) Core::uiSpace.showEditorUI = !Core::uiSpace.showEditorUI;
+					Component::onKeyPressCallbacks(key);
 				}
 				if (action == GLFW_REPEAT) 
 				{
 				}
 				if (action == GLFW_RELEASE)
 				{
+					Component::onKeyReleaseCallbacks(key);
 				}
 				keyboardKey[key] = action != GLFW_RELEASE;
 			}

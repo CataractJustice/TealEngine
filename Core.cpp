@@ -47,6 +47,7 @@ namespace TealEngine
 		FontManager fontManager;
 		PhysicsScene physicsScene;
 		ShapesRenderer shapesRenderer;
+		Profiler profiler;
 
 		Json originalSceneJson;
 		GameNode* originalScene;
@@ -74,110 +75,118 @@ namespace TealEngine
 
 		void update()
 		{
+			Profiler::ProfilerPoint frameProf(&profiler, "Frame");
 			static float updateTimer = 0.0f;
 			sceneclock.update();
-			updateTimer += sceneclock.deltaTime();
-			if(true) 
+			auto frameStart = std::chrono::high_resolution_clock::now();
+			Profiler::ProfilerPoint renderProf(&profiler, "Render");
+			//render ids
+			Profiler::ProfilerPoint idsProf(&profiler, "Ids");
+			/*
+			if(renderer.getActiveCamera()) 
 			{
-				//update modules
-				if(modulesNeedReload) 
+				if(idCamera->renderTexture.getWidth() != renderer.getActiveCamera()->renderTexture.getWidth() || idCamera->renderTexture.getHeight() != renderer.getActiveCamera()->renderTexture.getHeight())
 				{
-					reloadModules();
-					modulesNeedReload = false;
+					idCamera->renderTexture.create(renderer.getActiveCamera()->renderTexture.getWidth(), renderer.getActiveCamera()->renderTexture.getHeight());
+					idRenderer.resize(idCamera->renderTexture.getWidth(), idCamera->renderTexture.getHeight());
 				}
-				//Switch scene
-				if(nextScene) 
+				idCameraNode->setRelativeTransform(renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform());
+				switch(renderer.getActiveCamera()->getProjectionType()) 
 				{
-					delete sceneRoot;
-					sceneRoot = nextScene;
-					nextScene = nullptr;
+					case CameraProjectionType::PERSPECTIVE_CAMERA_PROJECTION:
+					idCamera->setPerspectiveProjection(renderer.getActiveCamera()->getFOV(), renderer.getActiveCamera()->getAspect(), renderer.getActiveCamera()->getNear(), renderer.getActiveCamera()->getFar());
+					break;
+					case CameraProjectionType::ORTHO_CAMERA_PROJECTION:
+					//idCamera->setOrthoProjection(renderer.getActiveCamera()->width, );
+					break;
 				}
-				else if(nextScenePath.length()) 
-				{
-					delete sceneRoot;
-					sceneRoot = GameNode::loadNodeFromJsonFile(nextScenePath);
-					nextScenePath = "";
-				}
-				//reset timer used for frame capping
-				updateTimer = 0.0f;
-				//Update engine state
-				if(engineState == EngineState::GAME_STOPPED && targetEngineState != EngineState::GAME_STOPPED) 
-				{
-					//we need engine state to be "GAME_PLAYING" so that onAttach and other play only callbacks get called
-					engineState = EngineState::GAME_PLAYING;
-					playImpl();
-				}
-				else if(engineState != EngineState::GAME_STOPPED && targetEngineState == EngineState::GAME_STOPPED) 
-				{
-					stopImpl();
-				}
-				engineState = targetEngineState;
-
-				Input::inputUpdate();
-				//run game logics
-				if(engineState == EngineState::GAME_PLAYING) 
-				{
-					sceneRoot->updateAll();
-					physicsScene.CollisionCheck();
-					physicsScene.CollisionFlush();
-				}
-				else 
-				{
-					sceneRoot->editorUpdate();
-				}
-				
-				//destruct objects marked as destroyed
-				GameNode::cleanupDestroyed();
-
-				//render ids
-				if(renderer.getActiveCamera()) 
-				{
-					if(idCamera->renderTexture.getWidth() != renderer.getActiveCamera()->renderTexture.getWidth() || idCamera->renderTexture.getHeight() != renderer.getActiveCamera()->renderTexture.getHeight())
-					{
-						idCamera->renderTexture.create(renderer.getActiveCamera()->renderTexture.getWidth(), renderer.getActiveCamera()->renderTexture.getHeight());
-						idRenderer.resize(idCamera->renderTexture.getWidth(), idCamera->renderTexture.getHeight());
-					}
-					idCameraNode->setRelativeTransform(renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform());
-					switch(renderer.getActiveCamera()->getProjectionType()) 
-					{
-						case CameraProjectionType::PERSPECTIVE_CAMERA_PROJECTION:
-						idCamera->setPerspectiveProjection(renderer.getActiveCamera()->getFOV(), renderer.getActiveCamera()->getAspect(), renderer.getActiveCamera()->getNear(), renderer.getActiveCamera()->getFar());
-						break;
-						case CameraProjectionType::ORTHO_CAMERA_PROJECTION:
-						//idCamera->setOrthoProjection(renderer.getActiveCamera()->width, );
-						break;
-					}
-					idRenderer.render(sceneRoot);
-				}
-				
-				
-				//render game
-				renderer.render(sceneRoot);
-
-				
-				glDisable(GL_CULL_FACE);
-				glDisable(GL_DEPTH_TEST);
+				idRenderer.render(sceneRoot);
+			}*/
+			idsProf.end();
+			//render game
+			Profiler::ProfilerPoint defferedProf(&profiler, "Deferred render");
+			renderer.render(sceneRoot);
+			
+			glDisable(GL_CULL_FACE);
+			glDisable(GL_DEPTH_TEST);
+			//Display render texture on screen
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0,0, Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
+			if(renderer.getActiveCamera()) 
+			{
 				glDisable(GL_BLEND);
-				//Display render texture on screen
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-				glViewport(0,0, Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
-				if(renderer.getActiveCamera())
-					Render::renderTexture(renderer.getActiveCamera()->renderTexture.id());
-				//Render GUI
-				sceneRoot->GUIRender();
-
-				//ImGUI
-				//start ImGUi frame
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplGlfw_NewFrame();
-				ImGui::NewFrame();
-				//Editor ui
-				uiSpace.display();
-				ImGui::Render();
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-				//Swap buffers and other
-				Graphics::display();
+				Render::renderTexture(renderer.getActiveCamera()->renderTexture.id());
 			}
+			defferedProf.end();
+			//Render GUI
+			Profiler::ProfilerPoint guiProf(&profiler, "Engine GUI");
+			sceneRoot->GUIRender();
+			guiProf.end();
+			//ImGUI
+			Profiler::ProfilerPoint imGuiProf(&profiler, "ImGui GUI");
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			//Editor ui
+			uiSpace.display();
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			imGuiProf.end();
+			renderProf.end();
+
+			Profiler::ProfilerPoint updateProf(&profiler, "Update");
+			//update modules
+			if(modulesNeedReload) 
+			{
+				reloadModules();
+				modulesNeedReload = false;
+			}
+			//Switch scene
+			if(nextScene) 
+			{
+				delete sceneRoot;
+				sceneRoot = nextScene;
+				nextScene = nullptr;
+			}
+			else if(nextScenePath.length()) 
+			{
+				delete sceneRoot;
+				sceneRoot = GameNode::loadNodeFromJsonFile(nextScenePath);
+				nextScenePath = "";
+			}
+			//Update engine state
+			if(engineState == EngineState::GAME_STOPPED && targetEngineState != EngineState::GAME_STOPPED) 
+			{
+				//we need engine state to be "GAME_PLAYING" so that onAttach and other play only callbacks get called
+				engineState = EngineState::GAME_PLAYING;
+				playImpl();
+			}
+			else if(engineState != EngineState::GAME_STOPPED && targetEngineState == EngineState::GAME_STOPPED) 
+			{
+				stopImpl();
+			}
+			engineState = targetEngineState;
+			Input::inputUpdate();
+			//run game logics
+			if(engineState == EngineState::GAME_PLAYING) 
+			{
+				sceneRoot->updateAll();
+				physicsScene.CollisionCheck();
+				physicsScene.CollisionFlush();
+			}
+			else 
+			{
+				sceneRoot->editorUpdate();
+			}
+			
+			//destruct objects marked as destroyed
+			GameNode::cleanupDestroyed();
+			updateProf.end();
+			
+			//Swap buffers and other
+			Profiler::ProfilerPoint displayProf(&profiler, "Display");
+			Graphics::display();
+			displayProf.end();
 		}
 
 		void init()

@@ -82,6 +82,10 @@ namespace TealEngine
 				ImGui::Text("Delta mouse position: %f | %f", mpd.x, mpd.y);
 				ImGui::Text("Scroll position: %d", (int)Input::Mouse::getScrollPos());
 			}
+			if(ImGui::CollapsingHeader("Profiling")) 
+			{
+				Core::profiler.display();
+			}
 		});
 
 		openWindow(EditorWindowNames::gameSceneTree);

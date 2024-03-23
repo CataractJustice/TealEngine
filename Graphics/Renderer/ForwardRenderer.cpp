@@ -12,7 +12,6 @@ namespace TealEngine {
 		fb.viewport(width, height);
 		if(this->depthTexture.id() == 0)this->depthTexture = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 		this->depthTexture.create(width, height);
-		fb.attachTexture(0, 0);
 		fb.attachDepthTexture(depthTexture.id());
 	}
 

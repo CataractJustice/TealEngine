@@ -47,6 +47,8 @@ namespace TealEngine
 	void Component::onWindowMouseRelease(unsigned short button) {};
 	void Component::onMousePress(unsigned short button) {};
 	void Component::onMouseRelease(unsigned short button) {};
+	void Component::onKeyPress(unsigned int key) {};
+	void Component::onKeyRelease(unsigned int key) {};
 	GameNode* Component::getParent() { return parent; }
 
 	Component::Component() : active(true), parent(nullptr) 
@@ -95,6 +97,8 @@ namespace TealEngine
 	{
 		allComponents.erase(this);
 		renderableComponents.erase(this);
+		onKeyPressComponents.erase(this);
+		onKeyReleaseComponents.erase(this);
 		if (parent)
 			parent->dettachComponent(this);
 
@@ -255,14 +259,36 @@ namespace TealEngine
 		}
 	}
 
+	void Component::onKeyPressCallbacks(unsigned int key) 
+	{
+		for(Component* comp : onKeyPressComponents) 
+		{
+			if(comp->isActive())
+				comp->onKeyPress(key);
+		}
+	}
+
+	void Component::onKeyReleaseCallbacks(unsigned int key) 
+	{
+		for(Component* comp : onKeyReleaseComponents) 
+		{
+			if(comp->isActive())
+				comp->onKeyRelease(key);
+		}
+	}
+
 	void Component::registerCallbackLists() 
 	{
 		if(isMethodOverriden(Component::base, this, &Component::render)) renderableComponents.emplace(this);
+		if(isMethodOverriden(Component::base, this, &Component::onKeyPress)) onKeyPressComponents.emplace(this);
+		if(isMethodOverriden(Component::base, this, &Component::onKeyRelease)) onKeyReleaseComponents.emplace(this);
 	}
 
 	std::map<int, Component*> Component::idMap;
 	std::set<Component*> Component::allComponents;
 	std::set<Component*> Component::renderableComponents;
+	std::set<Component*> Component::onKeyPressComponents;
+	std::set<Component*> Component::onKeyReleaseComponents;
 	int Component::lastId = 1;
 	Component Component::base;
 }

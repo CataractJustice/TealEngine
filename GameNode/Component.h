@@ -17,6 +17,8 @@ class FrameBuffer;
 		static std::map<int, Component*> idMap;
 		static std::set<Component*> allComponents;
 		static std::set<Component*> renderableComponents;
+		static std::set<Component*> onKeyPressComponents;
+		static std::set<Component*> onKeyReleaseComponents;
 		void attachTo(GameNode* node);
 		std::string factoryName;
 		bool active;
@@ -79,6 +81,10 @@ class FrameBuffer;
 		virtual void onMousePress(unsigned short button);
 		//
 		virtual void onMouseRelease(unsigned short button);
+		//
+		virtual void onKeyPress(unsigned int key);
+		//
+		virtual void onKeyRelease(unsigned int key);
 		void refreshProps();
 		GameNode* getParent();
 		//gets parent if parent is of type T, else throws an error
@@ -124,6 +130,8 @@ class FrameBuffer;
 
 		void registerCallbackLists();
 		static void renderAllComponents(ShaderProgram* shader, unsigned int stages);
+		static void onKeyPressCallbacks(unsigned int key);
+		static void onKeyReleaseCallbacks(unsigned int key);
 		static Component base;
 	};
 }

@@ -26,6 +26,7 @@ namespace TealEngine
 	}
 	void FrameBuffer::apply()
 	{
+
 		GLuint attachments[16];
 		GLubyte p = 0;
 		for (unsigned int i = 0; i < 16; i++) if (this->attachments[i])
@@ -35,6 +36,7 @@ namespace TealEngine
 		}
 		bool doBind = this != currentBindedFrameBuffer();
 		if(doBind) bind();
+		glReadBuffer(GL_NONE);
 		glDrawBuffers(p, attachments);
 		if(doBind) unbind();
 	}

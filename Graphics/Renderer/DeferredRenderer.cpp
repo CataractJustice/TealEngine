@@ -20,26 +20,12 @@ namespace TealEngine {
 		specular.create(width, height);
 		light.create(width, height);
 		fb.bind();
+		fb.attachTexture(activeCamera ? activeCamera->renderTexture.id() : albedo.id(), 0);
 		fb.attachTexture(albedo.id(), 1);
 		fb.attachTexture(position.id(), 2);
 		fb.attachTexture(normal.id(), 3);
 		fb.attachTexture(specular.id(), 4);
 		fb.attachTexture(light.id(), 5);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		fb.unbind();
-	}
-	void DeferredRenderer::render(GameNode* scene)
-	{
-		glDepthMask(true);
-		if(!activeCamera) return;
-		if(this->albedo.getWidth() != activeCamera->renderTexture.getWidth() || this->albedo.getHeight() != activeCamera->renderTexture.getHeight()) 
-		{
-			this->resize(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
-		}
-
-		fb.bind();
-		fb.attachTexture(activeCamera->renderTexture.id(), 0);
 		fb.enable(0);
 		fb.enable(1);
 		fb.enable(2);
@@ -47,38 +33,54 @@ namespace TealEngine {
 		fb.enable(4);
 		fb.enable(5);
 		fb.apply();
-		fb.viewport(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
+		fb.unbind();
+		combineLightShader.setTexture("AlbedoMap", albedo.id());
+		combineLightShader.setTexture("LightMap", light.id());
+		combineLightShader.setTexture("Dither", Core::textureManager.get("RGBNoise.png").id());
+	}
+	void DeferredRenderer::render(GameNode* scene)
+	{
+		if(!activeCamera) return;
+		if(this->albedo.getWidth() != activeCamera->renderTexture.getWidth() || this->albedo.getHeight() != activeCamera->renderTexture.getHeight()) 
+		{
+			this->resize(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
+			fb.viewport(activeCamera->renderTexture.getWidth(), activeCamera->renderTexture.getHeight());
+		}
+
+		Profiler::ProfilerPoint modelsProf(&Core::profiler, "Models");
+		fb.bind();
+		fb.enable(0);
+		fb.enable(1);
+		fb.enable(2);
+		fb.enable(3);
+		fb.enable(4);
+		fb.enable(5);
+		fb.apply();
+		glDepthMask(true);
+		//ForwardRenderer::resize(this->albedo.getWidth(), this->albedo.getHeight());
 		applyConfig();
 		glEnable(GL_CULL_FACE);
 		glDisable(GL_BLEND);
 		glCullFace(GL_BACK);
-		
 		renderModels(scene, nullptr, MeshRenderer::RenderPass::DeferredPass);
-		
+		modelsProf.end();
+		Profiler::ProfilerPoint postProcessProf(&Core::profiler, "Post");
 		//light pass
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
 		scene->postProcess(getActiveCamera()->renderTexture.id(), albedo.id(), position.id(), normal.id(), specular.id(), light.id(), &(this->fb));
-		fb.enable(0);
-		fb.apply();
+		postProcessProf.end();
+		Profiler::ProfilerPoint lightBlendProf(&Core::profiler, "Light blend");
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
-		combineLightShader.setTexture("AlbedoMap", albedo.id());
-		combineLightShader.setTexture("LightMap", light.id());
-		combineLightShader.setTexture("Dither", Core::textureManager.get("RGBNoise.png").id());
+		glDepthMask(false);
+		fb.apply();
 		Render::renderShader(&combineLightShader);
-
-		
-		glDisable(GL_BLEND);
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
+		lightBlendProf.end();
 		Render::VP_matrix = activeCamera->getPV();
 		
-		renderModels(scene, nullptr, MeshRenderer::RenderPass::DebugPass);
-		Core::shapesRenderer.renderAll();
+		//renderModels(scene, nullptr, MeshRenderer::RenderPass::DebugPass);
+		//Core::shapesRenderer.renderAll();
 		fb.unbind();
 	}
 }

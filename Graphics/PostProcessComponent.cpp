@@ -26,37 +26,45 @@ namespace TealEngine
 			material->setTexture("NormalMap", normal);
 			material->setTexture("SpecularMap", specular);
 			material->setTexture("LightMap", light);
+			fb.bind();
+			fb.attachTexture(unlitColor, DeferredRenderer::OutputLayout);
+			fb.attachTexture(litColor, DeferredRenderer::AlbedoLayout);
+			fb.attachTexture(position, DeferredRenderer::PositionLayout);
+			fb.attachTexture(normal, DeferredRenderer::NormalLayout);
+			fb.attachTexture(specular, DeferredRenderer::SpecularLayout);
+			fb.attachTexture(light, DeferredRenderer::LightLayout);
 			if(Core::renderer.getActiveCamera()) 
 			{
 				material->setUniform("CamPos", Core::renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform().getPosition());
 			}
 			if(outputUnlit) 
-				frameBuffer->enable(DeferredRenderer::OutputLayout); 
+				fb.enable(DeferredRenderer::OutputLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::OutputLayout);
+				fb.disable(DeferredRenderer::OutputLayout);
 			if(outputLit) 
-				frameBuffer->enable(DeferredRenderer::AlbedoLayout); 
+				fb.enable(DeferredRenderer::AlbedoLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::AlbedoLayout);
+				fb.disable(DeferredRenderer::AlbedoLayout);
 			if(outputPosition) 
-				frameBuffer->enable(DeferredRenderer::PositionLayout); 
+				fb.enable(DeferredRenderer::PositionLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::PositionLayout);
+				fb.disable(DeferredRenderer::PositionLayout);
 			if(outputNormal) 
-				frameBuffer->enable(DeferredRenderer::NormalLayout); 
+				fb.enable(DeferredRenderer::NormalLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::NormalLayout);
+				fb.disable(DeferredRenderer::NormalLayout);
 			if(outputSpecular) 
-				frameBuffer->enable(DeferredRenderer::SpecularLayout); 
+				fb.enable(DeferredRenderer::SpecularLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::SpecularLayout);
+				fb.disable(DeferredRenderer::SpecularLayout);
 			if(outputLight) 
-				frameBuffer->enable(DeferredRenderer::LightLayout); 
+				fb.enable(DeferredRenderer::LightLayout); 
 			else 
-				frameBuffer->disable(DeferredRenderer::LightLayout);
-			frameBuffer->apply();
+				fb.disable(DeferredRenderer::LightLayout);
+			fb.apply();
 			glBlendFunc(GL_ONE, GL_ZERO);
 			Render::renderShader(material);
+			fb.unbind();
 		}
 	}
 	EXPORT_COMPONENT(PostProcessComponent);

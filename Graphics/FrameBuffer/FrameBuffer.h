@@ -1,4 +1,5 @@
 #pragma once
+#include "libs/glew-2.2.0/include/GL/glew.h"
 namespace TealEngine 
 {
 	class FrameBuffer

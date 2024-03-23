@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include <chrono>
 #include "System/Input.h"
 #include "Graphics/Renderer/DeferredRenderer.h"
 #include "Graphics/Renderer/IdRenderer.h"
@@ -15,6 +16,7 @@
 #include "Physics/PhysicsScene.h"
 #include "Graphics/Renderer/ShapesRenderer.h"
 #include "ResourceManagment/FontManager.h"
+#include "System/Profiler.h"
 namespace TealEngine 
 {
 	namespace Core 
@@ -31,7 +33,7 @@ namespace TealEngine
 		extern PhysicsScene physicsScene;
 		extern ShapesRenderer shapesRenderer;
 		extern FontManager fontManager;
-
+		extern Profiler profiler;
 		void update(); 
 
 		void setProject(Project project);

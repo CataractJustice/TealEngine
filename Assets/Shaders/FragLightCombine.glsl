@@ -7,7 +7,7 @@ uniform sampler2D AlbedoMap;
 uniform sampler2D LightMap;
 uniform sampler2D Dither;
 #define DitherResolution (256.0f)
-#define DitherStrength (1.0f / 240.0f)
+#define DitherStrength (1.0f / 120.0f)
 
 void main()
 {
