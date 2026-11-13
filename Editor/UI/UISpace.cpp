@@ -6,6 +6,7 @@
 #include "EditorUI/MaterialEditor.h"
 #include "EditorUI/ProjectPropertiesWindow.h"
 #include "System/Input.h"
+#include "System/Logger.h"
 
 
 namespace TealEngine 
@@ -32,7 +33,7 @@ namespace TealEngine
 			if(Core::getEngineState() == Core::EngineState::GAME_STOPPED) 
 			{
 				ImGui::SetCursorPos(ImVec2(availX / 2.0f - controllButtonSize.x / 2.0f, ImGui::GetCursorPosY()));
-				if(ImGui::ImageButton(ImTextureID((long)playButtonTexture.id()), controllButtonSize)) 
+				if(ImGui::ImageButton(ImTextureID((long long)playButtonTexture.id()), controllButtonSize)) 
 				{
 					Core::play();
 				}
@@ -42,21 +43,21 @@ namespace TealEngine
 				ImGui::SetCursorPos(ImVec2(availX / 2.0f - controllButtonSize.x, ImGui::GetCursorPosY()));
 				if(Core::getEngineState() == Core::EngineState::GAME_PLAYING) 
 				{
-					if(ImGui::ImageButton(ImTextureID((long)pauseButtonTexture.id()), controllButtonSize)) 
+					if(ImGui::ImageButton(ImTextureID((long long)pauseButtonTexture.id()), controllButtonSize)) 
 					{
 						Core::pause();
 					}
 				}
 				else 
 				{
-					if(ImGui::ImageButton(ImTextureID((long)playButtonTexture.id()), controllButtonSize)) 
+					if(ImGui::ImageButton(ImTextureID((long long)playButtonTexture.id()), controllButtonSize)) 
 					{
 						Core::play();
 					}
 				}
 				ImGui::SameLine();
 				ImGui::SetCursorPos(ImVec2(availX / 2.0f, ImGui::GetCursorPosY()));
-				if(ImGui::ImageButton(ImTextureID((long)stopButtonTexture.id()), controllButtonSize)) 
+				if(ImGui::ImageButton(ImTextureID((long long)stopButtonTexture.id()), controllButtonSize)) 
 				{
 					Core::stop();
 				}
@@ -71,7 +72,7 @@ namespace TealEngine
 		addWindowOption(EditorWindowNames::textureViewer, [](){ 
 			static int textureId = 0;
 			ImGui::InputInt("Texture id", &textureId);
-			ImGui::Image(ImTextureID((long)textureId), ImVec2(512.0f, 512.0f));
+			ImGui::Image(ImTextureID((long long)textureId), ImVec2(512.0f, 512.0f));
 		});
 		addWindowOption(EditorWindowNames::debugInfo, [](){
 			if(ImGui::CollapsingHeader("Input")) 
@@ -87,6 +88,12 @@ namespace TealEngine
 				Core::profiler.display();
 			}
 		});
+
+		addWindowOption(EditorWindowNames::logger, [](){
+			Logger::imguiDisplay();
+		});
+
+		addWindowOption(EditorWindowNames::networkDictionary, [](){ Core::networkDictionary.display(); });
 
 		openWindow(EditorWindowNames::gameSceneTree);
 		openWindow(EditorWindowNames::gameViewport);

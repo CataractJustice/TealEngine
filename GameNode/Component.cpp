@@ -4,6 +4,7 @@
 #include "Core.h"
 #include "Editor/Actions/PropSetAction.h"
 #include "System/VTable.h"
+#include "GameNode/SceneNode.h"
 namespace TealEngine 
 {
 	void Component::attachTo(GameNode* node) 
@@ -18,7 +19,6 @@ namespace TealEngine
 		}
 		if(!postConstructorDone) 
 		{
-			registerCallbackLists();
 			postConstructorDone = true;
 		}
 	}
@@ -30,17 +30,14 @@ namespace TealEngine
 	void Component::rename(const std::string& name) { this->name = name; };
 	void Component::editorUpdate() {};
 	void Component::update() {};
-	void Component::onAwake() {};
 	void Component::onDestroy() {};
 	void Component::onParentChange() {};
+	void Component::onAwake() {};
 	void Component::onSleep() {};
 	void Component::onAttach() {};
-	void Component::onMessageReceive() {};
 	void Component::onCollision(const Collision& collision) {};
 	void Component::GUIRender() {};
 	void Component::imGuiRender(const std::string& windowName) {};
-	void Component::render(ShaderProgram* shader, unsigned int stages) {};
-	void Component::renderId() {};
 	void Component::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) {};
 	void Component::onClick(unsigned short button) {};
 	void Component::onWindowMousePress(unsigned short button) {};
@@ -48,8 +45,40 @@ namespace TealEngine
 	void Component::onMousePress(unsigned short button) {};
 	void Component::onMouseRelease(unsigned short button) {};
 	void Component::onKeyPress(unsigned int key) {};
+	void Component::onKeyRepeat(unsigned int key) {};
 	void Component::onKeyRelease(unsigned int key) {};
+	void Component::onChar(unsigned int unicode) {};
+	void Component::onChildAdd(GameNode* node, GameNode* parent) {};
+	void Component::onChildRemove(GameNode* node, GameNode* parent) {};
+	void Component::onComponentAdd(Component* component, GameNode* parent) {};
+	void Component::onComponentRemove(Component* component, GameNode* parent) {};
+	void Component::onSceneChildAdd(GameNode* node, GameNode* parent) {};
+	void Component::onSceneChildRemove(GameNode* node, GameNode* parent) {};
+	void Component::onSceneComponentAdd(Component* component, GameNode* parent) {};
+	void Component::onSceneComponentRemove(Component* component, GameNode* parent) {};
+	void Component::onHostPeerConnect(PeerInfo& peerInfo) {};
+	void Component::onHostPeerDisconnect(PeerInfo& peerInfo) {};
+	void Component::onHostPeerPacket(PeerInfo& peerInfo, const void* data, int size) {};
+	void Component::onClientConnect() {};
+	void Component::onClientConnectFail() {};
+	void Component::onClientDisconnect() {};
+	void Component::onClientPacket(const void* data, int size) {};
+	void Component::onPropRefresh() {};
+	void Component::render(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) {};
+	void Component::shadowRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) {};
+	void Component::postRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) {};
+	void Component::transparentRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) {};
 	GameNode* Component::getParent() { return parent; }
+	const GameNode* Component::getParentConst() const { return parent; }
+
+	void Component::setNetworkId(NetworkId netId) 
+	{
+		if(this->getParent() && this->getParent()->getSceneNode()) 
+		{
+			((SceneNode*)this->getParent()->getSceneNode())->updateComponentNetworkId(this->netId, netId, this);
+		}
+		this->netId = netId;
+	}
 
 	Component::Component() : active(true), parent(nullptr) 
 	{
@@ -96,9 +125,6 @@ namespace TealEngine
 	Component::~Component() 
 	{
 		allComponents.erase(this);
-		renderableComponents.erase(this);
-		onKeyPressComponents.erase(this);
-		onKeyReleaseComponents.erase(this);
 		if (parent)
 			parent->dettachComponent(this);
 
@@ -106,20 +132,45 @@ namespace TealEngine
 		{
 			delete keyval.second;
 		}
+		if(Input::Keyboard::getFocusedCharInput() == this) Input::Keyboard::focusCharInput(nullptr);
 	}
 
 	void Component::displayProps(bool& componentDeleted) 
 	{
-		if(this->name.length() == 0) return;
+		std::string name = this->name;
+		if(this->name.length() == 0) { name = "Unnamed"; }
+		
 		std::vector<std::string> setProps;
-		if(ImGui::CollapsingHeader((this->name + "###" + std::to_string((int)(long)this)).c_str()))
+		if(ImGui::CollapsingHeader((name + "###" + std::to_string((int)(long long)this)).c_str()))
 		{	
 			if(ImGui::BeginDragDropSource()) 
 			{
-				ImGui::Text("%s", this->name.c_str());
+				ImGui::Text("%s", name.c_str());
 				Component* lvalueThis = this;
 				ImGui::SetDragDropPayload("ComponentInstance", &lvalueThis, sizeof(Component*));
 				ImGui::EndDragDropSource();
+			}
+			if(
+				isMethodOverriden(Component::base, this, &Component::onClientPacket) ||
+				isMethodOverriden(Component::base, this, &Component::onHostPeerPacket)
+			)
+			{
+				std::string comboLabel = "Network id label##" + std::to_string(this->getId());
+				const char generatedIdLabel[] = "[Code Generated]";
+				const std::vector<std::string>& labels = Core::networkDictionary.getLabels();
+				const bool idIsGenerated = (this->netId[0] + 1 > labels.size()) || this->netId[1];
+				const int intNetId = (int)this->netId[0];
+				if(ImGui::BeginCombo(comboLabel.c_str(), idIsGenerated ? generatedIdLabel : labels[intNetId].c_str())) 
+				{
+					for(int i = 0; i < labels.size(); i++) 
+					{
+						if(ImGui::Selectable(labels[i].c_str(), intNetId == i)) 
+						{
+							setNetworkId({(long long)i, 0});
+						}
+					}
+					ImGui::EndCombo();
+				}
 			}
 			if(ImGui::BeginPopupContextItem()) 
 			{
@@ -135,13 +186,14 @@ namespace TealEngine
 				oldValue["name"] = prop.first;
 				oldValue["value"] = prop.second->get();
 
-				if(prop.second->display((prop.first + "##" + std::to_string((int)(long)this)).c_str())) 
+				if(prop.second->display((prop.first + "##" + std::to_string((int)(long long)this)).c_str())) 
 				{
 					setProps.push_back(prop.first);
 					Json newValue;
 					newValue["name"] = prop.first;
 					newValue["value"] = prop.second->get();
-					Core::actionList.pushAction(new PropSetAction(this, oldValue, newValue));
+					//As of right now it is a leak I think?
+					//Core::actionList.pushAction(new PropSetAction(this, oldValue, newValue));
 				}
 			}
 			for(const std::string& propName : setProps) 
@@ -159,6 +211,7 @@ namespace TealEngine
 		{
 			prop.second->refresh();
 		}
+		onPropRefresh();
 	}
 
 	void Component::removeProp(const std::string& name) 
@@ -169,6 +222,7 @@ namespace TealEngine
 
 	void Component::addProp(IProp* prop, const std::string& name) 
 	{
+		prop->setparentComponent(this);
 		auto iterator = this->props.find(name);
 
 		if(iterator != this->props.cend()) 
@@ -178,13 +232,16 @@ namespace TealEngine
 			return;
 		}
 		this->props[name] = prop;
-		prop->setparentComponent(this);
 	}
 
 	Json Component::toJson() 
 	{
 		Json json;
 		json["class"] = name;
+		if(netId[0] + 1 < Core::networkDictionary.getLabels().size()) 
+		{
+			json["netid"] = (int)netId[0];
+		}
 		std::vector<Json> propsJson;
 		for(auto& prop : props) 
 		{
@@ -201,7 +258,13 @@ namespace TealEngine
 	{
 		std::string componentClass = json["class"];
 		Component* component = ComponentFactory::instanceComponent(componentClass);
+		
+		auto netIdIt = json.find("netid");
 		if(!component) return nullptr;
+		if(netIdIt != json.cend()) 
+		{
+			component->setNetworkId({netIdIt->get<int>(), 0});
+		}
 		auto propsIt = json.find("props");
 		if(propsIt != json.cend()) 
 		{
@@ -250,45 +313,10 @@ namespace TealEngine
 		return allComponents.find(component) != allComponents.cend();
 	}
 
-	void Component::renderAllComponents(ShaderProgram* shader, unsigned int stages) 
-	{
-		for(Component* comp : renderableComponents) 
-		{
-			if(comp->isActive())
-				comp->render(shader, stages);
-		}
-	}
-
-	void Component::onKeyPressCallbacks(unsigned int key) 
-	{
-		for(Component* comp : onKeyPressComponents) 
-		{
-			if(comp->isActive())
-				comp->onKeyPress(key);
-		}
-	}
-
-	void Component::onKeyReleaseCallbacks(unsigned int key) 
-	{
-		for(Component* comp : onKeyReleaseComponents) 
-		{
-			if(comp->isActive())
-				comp->onKeyRelease(key);
-		}
-	}
-
-	void Component::registerCallbackLists() 
-	{
-		if(isMethodOverriden(Component::base, this, &Component::render)) renderableComponents.emplace(this);
-		if(isMethodOverriden(Component::base, this, &Component::onKeyPress)) onKeyPressComponents.emplace(this);
-		if(isMethodOverriden(Component::base, this, &Component::onKeyRelease)) onKeyReleaseComponents.emplace(this);
-	}
+	void Component::onWindowResize(int width, int height) {};
 
 	std::map<int, Component*> Component::idMap;
 	std::set<Component*> Component::allComponents;
-	std::set<Component*> Component::renderableComponents;
-	std::set<Component*> Component::onKeyPressComponents;
-	std::set<Component*> Component::onKeyReleaseComponents;
 	int Component::lastId = 1;
 	Component Component::base;
 }

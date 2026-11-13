@@ -1,7 +1,7 @@
 #pragma once
 #include "GameNode/Component.h"
 #include <filesystem>
-#include "Graphics/Texture/Texture.h"
+#include "Graphics/Texture.h"
 namespace TealEngine 
 {
 	class GameAssetsBrowser

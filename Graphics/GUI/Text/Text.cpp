@@ -1,3 +1,4 @@
+/*
 #include "Text.h"
 #include "Graphics/FrameBuffer/FrameBuffer.h"
 #include "Math/map.h"
@@ -121,4 +122,4 @@ namespace TealEngine
 	FrameBuffer Text::TextRenderBuffer;
 
 	EXPORT_COMPONENT(Text);
-}
+}*/

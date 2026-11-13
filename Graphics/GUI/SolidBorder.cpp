@@ -1,3 +1,4 @@
+/*
 #include "SolidBorder.h"
 #include "GameNode/GameNodeGUI.h"
 #include "Graphics/Renderer/RenderUtil.h"
@@ -45,4 +46,4 @@ namespace TealEngine
 		MeshRenderer::render(BasicMeshes::square.sharedMesh(), &shader, GL_TRIANGLES);
 	}
 	EXPORT_COMPONENT(SolidBorder);
-}
+}*/

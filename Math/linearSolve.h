@@ -1,8 +1,6 @@
 #pragma once
 #include <limits>
-//Calculates the x-coordinate solution for a linear equation passing through two points (px0, py0) and (px1, py1)
-//Given a y-coordinate 'find', the function returns the corresponding x-coordinate
-//Note: The function assumes that the line is not vertical (py1 != py0).
+//Returns x coordinate of an intersection point of a line going through points (px0, py0) and (px1, py1) and a line defined as y=find 
 template<class T>
 inline T solveLinearEquationFromTwoPoints(T px0, T py0, T px1, T py1, T find) 
 {

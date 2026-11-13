@@ -7,11 +7,10 @@ in vec2 TexCoord;
 
 layout (location = 5) out vec4 LightColor;
 
-//deferred render textures
-//uniform sampler2D RenderTexture;
-//uniform sampler2D AlbedoMap;
 uniform sampler2D PositionMap;
 uniform sampler2D NormalMap;
+uniform sampler2D TransparentPositionMap;
+uniform sampler2D TransparentNormalMap;
 uniform sampler2D SpecularMap;
 
 uniform sampler2D ShadowMap[MAX_CASCADES];
@@ -22,10 +21,9 @@ uniform int cascades;
 uniform vec3 direction;
 uniform vec3 viewPos;
 uniform vec4 color;
+uniform vec4 indirectColor;
 
-#define SSSfactor 0.60
-
-float lightCalc(vec3 position, vec3 normal)
+float lightCalc(vec3 position)
 {
 	for(int k = 0; k < cascades; k++)
 	{
@@ -37,20 +35,35 @@ float lightCalc(vec3 position, vec3 normal)
 		else
 		{
 			proj = proj * 0.5 + 0.5;
-			return (proj.z <= texture(ShadowMap[k], proj.xy).r + 0.01f) ? 1.0f : 0.0f;
+			return texture(ShadowMap[k], proj.xy).r > (proj.z - 0.0001f) ? 1.0f : 0.0f;
 		}
 	}
-	return 0.0f;
+	return 1.0f;
 }
 
 void main()
 {
 	vec3 normal = texture(NormalMap, TexCoord).xyz;
 	vec3 position = vec3(texture(PositionMap, TexCoord));
+	vec4 transparentPositionAlpha = texture(TransparentPositionMap, TexCoord);
 	vec3 viewReflection = normalize(-reflect(position - viewPos, normal));
 	vec4 spectex = texture(SpecularMap, TexCoord);
 	float spec = pow(max(0.0f,dot(viewReflection, direction)) * spectex.z, spectex.y) * spectex.x;
-	float diffuse = max(0.0f,dot(-normal, direction));
-	float light = lightCalc(position, normal);
-	LightColor = vec4(color.xyz*color.w, 1.0) * (spec/(1.0f+diffuse) + diffuse) * light;//((light > 0.0f) ? (1.0f) : (0.0f)), max(0.0f, min(0.0f, light)+1.0f), SSSfactor);
+	float alignment = dot(-normal, direction);
+	float diffuse = max(0.0f,alignment);
+	float light = lightCalc(position);
+	float indirectIntensity = alignment * 0.5f + 0.5f;
+	if(transparentPositionAlpha.w > 0.0f) 
+	{
+		transparentPositionAlpha.w = clamp(transparentPositionAlpha.w, 0.0f, 1.0f);
+		vec3 transparentNormal = texture(TransparentNormalMap, TexCoord).xyz;
+		float tAlignment = dot(-transparentNormal, direction);
+		float tDiffuse = max(0.0f,tAlignment);
+		float transparentLight = lightCalc(transparentPositionAlpha.xyz);
+		spec = mix(spec, 0.0f, transparentPositionAlpha.w);
+		diffuse = mix(diffuse, tDiffuse, transparentPositionAlpha.w);
+		light = mix(light, transparentLight, transparentPositionAlpha.w);
+		indirectIntensity = mix(indirectIntensity, tAlignment * 0.5f + 0.5f, transparentPositionAlpha.w);
+	}
+	LightColor = vec4(color.xyz*color.w, 1.0) * (spec/(1.0f+diffuse) + diffuse) * light + indirectColor * indirectIntensity;
 }

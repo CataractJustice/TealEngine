@@ -7,9 +7,11 @@ namespace TealEngine
 	{
 		private:
 			std::map<std::string, void*> handles;
+			std::map<std::string, long long> mtime;
 		public:
 		void loadDir(const std::string& path);
 		void unloadAll();
+		bool checkUpdates();
 
 		~DLLoader();
 	};

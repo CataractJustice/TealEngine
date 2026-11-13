@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include "GameNode/Component.h"
 #include "Graphics/Renderer/RenderUtil.h"
@@ -30,4 +31,4 @@ namespace TealEngine
 		//displays text
 		void GUIRender() override;
 	};
-}
+}*/

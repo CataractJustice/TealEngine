@@ -3,6 +3,7 @@
 #include "libs/glm/vec2.hpp"
 namespace TealEngine 
 {
+	class Component;
 	namespace Input
 	{
 		void setInputActive(bool active);
@@ -17,13 +18,22 @@ namespace TealEngine
 			//returns cnage of scroll position between two frames
 			double getDeltaScrollPos();
 			double getScrollPos();
-			void setCursorHidden(bool hidden);
 			void setCursorPosition(int px, int py);
+			enum class DefaultDisableCursorOption 
+			{
+				KeepValue,
+				DisableOnFrameStart,
+				EnableOnFrameStart
+			};
+			void setDisableCursorDefault(DefaultDisableCursorOption option);
+			void setDisableCursorCurrent(bool disabled);
 		}
 
 		namespace Keyboard 
 		{
 			bool isKeyPressed(unsigned int key);
+			void focusCharInput(Component* focusComp);
+			Component* getFocusedCharInput();
 		}
 
 		void inputUpdate();

@@ -9,7 +9,14 @@ namespace TealEngine
 {
 	FrameBuffer::FrameBuffer() 
 	{
+		vw = 1;
+		vh = 1;
 		FBO = 0;
+		for(int i = 0; i < 16; i++) 
+		{
+			attachments[i] = false;
+			attachedTextures[i] = 0;
+		}
 	}
 	void FrameBuffer::unbind()
 	{
@@ -72,11 +79,15 @@ namespace TealEngine
 				attachments[id] = true;
 				attachedTextures[id] = texture;
 			}
+			else 
+			{
+				attachments[id] = false;
+			}
 			if(doBind) unbind();
 		}
 		else if(id != 255)
 		{
-			TE_DEBUG_ERROR("FrameBuffer::attachTexture(GLuint texture, GLubyte id) ERROR: id should be lower than 16.");
+			throw std::runtime_error("Too many textures");
 		}
 	}
 
@@ -113,6 +124,7 @@ namespace TealEngine
 
 	FrameBuffer* FrameBuffer::currentBindedFrameBuffer() 
 	{
+		if(bindStackSize <= 0) return 0;
 		return bindStack[bindStackSize - 1];
 	}
 

@@ -4,16 +4,14 @@ in vec2 TexCoord;
 
 layout (location = 5) out vec4 LightColor;
 
+uniform vec3 viewPos;
 //uniform sampler2D RenderTexture;
 uniform sampler2D AlbedoMap;
 uniform sampler2D PositionMap;
 uniform sampler2D NormalMap;
 uniform sampler2D SpecularMap;
-
-uniform vec3 position;
-uniform float radius;
-uniform vec3 viewPos;
 uniform vec4 color;
+uniform vec3 position;
 uniform vec3 CLQRatios;
 
 void main()

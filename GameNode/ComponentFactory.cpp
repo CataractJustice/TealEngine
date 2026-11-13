@@ -1,18 +1,19 @@
 #include "ComponentFactory.h"
-#include <dlfcn.h>
 #include "FileSystem/getDirectoryList.h"
+#include "System/Logger.h"
+#include <format>
 namespace TealEngine 
 {
 	Component* ComponentFactory::instanceComponent(const std::string& className) 
 	{
-		auto mangledNameIt = mangledNames.find(className);
-		if(mangledNameIt == mangledNames.cend()) 
+		auto mangledNameIt = getMangledNames().find(className);
+		if(mangledNameIt == getMangledNames().cend()) 
 		{
-			TE_DEBUG_ERROR("No component with class name \"" + className + "\" is registered, returning nullptr instead");
+			Logger::logInfo(std::format("No component named {}.", className));
 			return nullptr;
 		}
 
-		Component* comp = instancers[mangledNameIt->second]->newInstance();
+		Component* comp = getInstancers()[mangledNameIt->second]->newInstance();
 		comp->rename(className);
 		return comp;
 	}
@@ -21,7 +22,7 @@ namespace TealEngine
 	{
 		static const char* cStrArray[4096];
 		int i = 0;
-		for(auto& demangledMangledPair : mangledNames)
+		for(auto& demangledMangledPair : getMangledNames())
 		{
 			cStrArray[i] = demangledMangledPair.first.c_str();
 			i++;
@@ -31,9 +32,18 @@ namespace TealEngine
 
 	int ComponentFactory::componentClassesCount() 
 	{
-		return ComponentFactory::instancers.size();
+		return ComponentFactory::getInstancers().size();
 	}
 
-	std::map<std::string, ComponentFactory::IComponentInstancer*> ComponentFactory::instancers;
-	std::map<std::string, std::string> ComponentFactory::mangledNames;
+	std::map<std::string, ComponentFactory::IComponentInstancer*>& ComponentFactory::getInstancers() 
+	{
+		static std::map<std::string, ComponentFactory::IComponentInstancer*> instancers = std::map<std::string, ComponentFactory::IComponentInstancer*>();
+		return instancers;
+	}
+	std::map<std::string, std::string>& ComponentFactory::getMangledNames() 
+	{
+		static std::map<std::string, std::string> mangledNames = std::map<std::string, std::string>();
+		return mangledNames;
+	}
+	
 }

@@ -71,7 +71,7 @@ namespace TealEngine
 		}
 		colla.normal = normal;
 		float g0 = sfc->getScalarFieldAt(colla.pos);
-		float g1 = sfc->getScalarFieldAt(colla.pos + colla.normal * 0.01f);
+		float g1normal = sfc->getScalarFieldAt(colla.pos + colla.normal * 0.01f);
 		depth = glm::min(depth, glm::distance(bc->from, bc->to));
 
 		colla.depth = depth;
@@ -85,6 +85,13 @@ namespace TealEngine
 		collb.normal = -colla.normal;
 		collb.pos = colla.pos;
 		collb.relativePos = glm::vec3(0.0f);
+
+		if(normal.x == 0.0f && normal.y == 0.0f && normal.z == 0.0f || (isnanf(normal.x) || isnanf(normal.z) || isnanf(normal.z))) 
+		{
+			colla.depth = collb.depth = -100000.0f;
+			colla.normal = glm::vec3(0.0f, 1.0f, 0.0f);
+			collb.normal = glm::vec3(0.0f, -1.0f, 0.0f);
+		}
 
 		return { colla, collb };
 	}

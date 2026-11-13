@@ -11,7 +11,7 @@ namespace TealEngine {
 		lastModifyStamp = rand();
 	}
 
-	Transform Transform::operator *(const Transform& b)
+	Transform Transform::operator *(const Transform& b) const
 	{
 		Transform a = *this;
 		a.onChange();
@@ -23,7 +23,7 @@ namespace TealEngine {
 		return a;
 	}
 
-	Transform Transform::operator /(const Transform& b)
+	Transform Transform::operator /(const Transform& b) const
 	{
 		Transform a = *this;
 		a.onChange();
@@ -46,7 +46,7 @@ namespace TealEngine {
 		return *this;
 	}
 
-	bool Transform::operator ==(const Transform& b)
+	bool Transform::operator ==(const Transform& b) const
 	{
 		if (position[3][0] != b.position[3][0]) return false;
 		if (position[3][1] != b.position[3][1]) return false;
@@ -58,7 +58,7 @@ namespace TealEngine {
 		return true;
 	}
 
-	bool Transform::operator != (const Transform& b)
+	bool Transform::operator != (const Transform& b) const
 	{
 		return !(*this == b);
 	}
@@ -98,7 +98,7 @@ namespace TealEngine {
 
 	vec3 Transform::getScale() const
 	{
-		return scale * vec4(1.0f);
+		return vec3(scale[0][0], scale[1][1], scale[2][2]);
 	}
 
 	void Transform::rotate(float angle, const vec3& axis)
@@ -146,7 +146,11 @@ namespace TealEngine {
 
 	void Transform::lookAt(const glm::vec3& target, const glm::vec3& up) 
 	{
-		this->rotation = glm::lookAt(glm::vec3(0.0f), target, up);
+		target = glm::normalize(target);
+		rotation[2] = glm::vec4(target, 0.0f);
+		rotation[0] = glm::vec4(glm::normalize(-glm::cross(target, up)), 0.0f);
+		rotation[1] = glm::vec4(glm::normalize(glm::cross(target, glm::vec3(rotation[0]))), 0.0f);
+		rotation[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		onChange();
 	}
 	void Transform::lookAt(const glm::vec3& from, const glm::vec3& target, const glm::vec3& up) 
@@ -156,17 +160,17 @@ namespace TealEngine {
 
 	vec3 Transform::forward() const
 	{
-		return rotation * vec4(0.0f, 0.0f, 1.0f, 1.0f);
+		return rotation[2];
 	}
 
 	vec3 Transform::up() const
 	{
-		return rotation * vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		return rotation[1];
 	}
 
 	vec3 Transform::right() const
 	{
-		return rotation * vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		return -rotation[0];
 	}
 
 	const mat4& Transform::getMatrix() const
@@ -200,20 +204,20 @@ namespace TealEngine {
 	vec3 Transform::pointFromGlobalToLocal(vec3 pos, bool ignoreScale) const
 	{
 		pos -= this->getPosition();
-		pos = vec3(dot(pos, this->right()), dot(pos, this->up()), dot(pos, this->forward()));
+		pos = vec3(dot(pos, -this->right()), dot(pos, this->up()), dot(pos, this->forward()));
 		if (!ignoreScale) pos /= this->getScale();
 		return pos;
-	}
+	}	
 
 	vec3 Transform::pointFromLocalToGlobal(vec3 pos, bool ignoreScale) const
 	{
 		if (!ignoreScale) pos *= this->getScale();
-		pos = this->right() * pos.x + this->up() * pos.y + this->forward() * pos.z;
+		pos = rotation * vec4(pos, 1.0f);
 		pos += this->getPosition();
 		return pos;
 	}
 
-	vec3 Transform::pointFromLocalToTransform(vec3 pos, Transform& transform, bool ignoreScale) const
+	vec3 Transform::pointFromLocalToTransform(vec3 pos, const Transform& transform, bool ignoreScale) const
 	{
 		return transform.pointFromGlobalToLocal(pointFromLocalToGlobal(pos, ignoreScale), ignoreScale);
 	}
@@ -226,7 +230,6 @@ namespace TealEngine {
 		matrix /= rotation;
 		scale = glm::scale(mat4(1.0f), vec3(matrix * vec4(1.0f)));
 		onChange();
-		lastModifyStamp++;
 	}
 
 	unsigned int Transform::getLastModifyStamp() const

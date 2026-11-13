@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include "GameNode/Component.h"
 #include "Renderer/RenderUtil.h"
@@ -15,3 +16,4 @@ namespace TealEngine
 		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) override;
 	};
 }
+*/

@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "GameNode/ComponentFactory.h"
 #include <fstream>
-
+#include "Graphics/MaterialIO.h"
 namespace TealEngine 
 {
 	MaterialEditor::MaterialEditor() 
@@ -24,71 +24,75 @@ namespace TealEngine
 				comboShaderList += kval.first;
 				comboShaderList.append(1, '\0');
 				indexToShaderName.push_back(kval.first);
-				if(this->currentMaterial->id() == kval.second.id()) 
+				if(this->currentMaterial->getShaderProgram()->getId() == kval.second.getId()) 
 				{
 					shaderItem = indexToShaderName.size() - 1;
 				}
 			}
 			if(ImGui::Combo("Shader#materialEditor", &shaderItem, comboShaderList.c_str())) 
 			{
-				this->currentMaterial = &(Core::materialsManager.getLoadedMap()[currentMaterialName] = Core::shadersManager.get(indexToShaderName[shaderItem]));
+				currentMaterial->setProgram(&Core::shadersManager.get(indexToShaderName[shaderItem]));
 			}
 			if(this->currentMaterial) 
 			{
 				ImGui::InputText("Material name", &currentMaterialName);
-				for(auto& uniform : this->currentMaterial->getUniformsMap()) 
+				int uIndex = 0;
+				for(Kirino::ShaderProgram::UniformRecord uniform : this->currentMaterial->getShaderProgram()->getUniforms()) 
 				{
-					switch (uniform.second.getType())
+					switch (uniform.type)
 					{
 					case GL_FLOAT:
-						ImGui::DragFloat(uniform.first.c_str(), (float*)uniform.second.valueptr());
+						ImGui::DragFloat(uniform.name.c_str(), (float*)currentMaterial->getUniformDataPtrByIndex(uIndex));
 						break;
 					case GL_INT:
-						ImGui::InputInt(uniform.first.c_str(), (int*)uniform.second.valueptr());
+						ImGui::InputInt(uniform.name.c_str(), (int*)currentMaterial->getUniformDataPtrByIndex(uIndex));
 						break;
 					case GL_FLOAT_VEC2:
-						ImGui::DragFloat2(uniform.first.c_str(), (float*)uniform.second.valueptr());
+						ImGui::DragFloat2(uniform.name.c_str(), (float*)currentMaterial->getUniformDataPtrByIndex(uIndex));
 						break;
 					case GL_FLOAT_VEC3:
-						ImGui::DragFloat3(uniform.first.c_str(), (float*)uniform.second.valueptr());
+						ImGui::DragFloat3(uniform.name.c_str(), (float*)currentMaterial->getUniformDataPtrByIndex(uIndex));
 						break;
 					case GL_FLOAT_VEC4:
-						ImGui::DragFloat4(uniform.first.c_str(), (float*)uniform.second.valueptr());
+						ImGui::DragFloat4(uniform.name.c_str(), (float*)currentMaterial->getUniformDataPtrByIndex(uIndex));
 						break;
 					default:
 						break;
 					}
+					uIndex++;
 				}
 				std::vector<Texture*> indexToTexture;
 				std::string comboTextureList = "";
-				for(auto& texture : this->currentMaterial->getTextureMap()) 
+				int samplerIndex = 0;
+				for(Kirino::ShaderProgram::UniformRecord samplerRecord : this->currentMaterial->getShaderProgram()->getSamplers()) 
 				{
+					unsigned int sampler = currentMaterial->getSamplerByIndex(samplerIndex);
 					int comboTextureItem = -1;
 					for(auto& kval : Core::textureManager.getLoadedMap()) 
 					{
 						comboTextureList += kval.first;
 						comboTextureList.append(1, '\0');
 						indexToTexture.push_back(&kval.second);
-						if(kval.second.id() == texture.second.second) 
+						if(kval.second.id() == sampler) 
 						{
 							comboTextureItem = indexToTexture.size() - 1;
 						}
 					}
-					if(ImGui::Combo((texture.first + "##materialEditorTexture").c_str(), &comboTextureItem, comboTextureList.c_str())) 
+					if(ImGui::Combo((samplerRecord.name + "##materialEditorTexture").c_str(), &comboTextureItem, comboTextureList.c_str())) 
 					{
-						texture.second.second = indexToTexture[comboTextureItem]->id();
+						unsigned int newSampler = indexToTexture[comboTextureItem]->id();
+						currentMaterial->setTexture(samplerRecord.name, &newSampler, 1, 0);
 					}
-					
-					
 					
 					if(comboTextureItem >= 0) 
 					{
-						ImGui::Image((ImTextureID)((long)indexToTexture[comboTextureItem]->id()), ImVec2(indexToTexture[comboTextureItem]->getWidth()/indexToTexture[comboTextureItem]->getHeight()*32.0f, 32.0f));
+						ImGui::Image((ImTextureID)((long long)indexToTexture[comboTextureItem]->id()), ImVec2(indexToTexture[comboTextureItem]->getWidth()/indexToTexture[comboTextureItem]->getHeight()*64.0f, 64.0f));
 					}
+					samplerIndex++;
 				}
 				if(ImGui::Button("Save##materialEditor")) 
 				{
-					this->currentMaterial->saveMaterial(this->currentMaterialFile, this->currentMaterialName);
+					Kirino::MaterialIO::save(*currentMaterial, currentMaterialName, currentMaterialFile.replace_extension(".mbf"));
 				}
 			}
 		}
@@ -99,35 +103,28 @@ namespace TealEngine
 		{
 			if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MaterialPath")) 
 			{
-				std::ifstream jsonFile((char*)payload->Data);
-				Json json;
-				bool validJson = true;
-				try 
+				Kirino::MaterialIO::MaterialFileInfo info = Kirino::MaterialIO::info((char*)payload->Data);
+				
+				//if file is not a valid material then make new material
+				if(info.valid == false) 
 				{
-					json = Json::parse(jsonFile);
-				}
-				catch (const nlohmann::json::parse_error& e)
-				{
-					validJson = false;
-				}
-				Core::materialsManager.load((char*)payload->Data);
-				if(!validJson || (json.find("name") == json.cend()) || Core::materialsManager.getLoadedMap().find(json["name"].get<std::string>()) == Core::materialsManager.getLoadedMap().cend()) 
-				{
-					//if file is not a valid material then make new material
 					int newMaterialNumber = 0;
 					while(Core::materialsManager.getLoadedMap().find(std::string("NewMaterial") + std::to_string(newMaterialNumber)) != Core::materialsManager.getLoadedMap().cend()) 
 					{
 						newMaterialNumber++;
 					}
 					currentMaterialName = "NewMaterial" + std::to_string(newMaterialNumber);
-					Core::materialsManager.getLoadedMap()[currentMaterialName] = Core::shadersManager.get("Deferred");
+					Kirino::Material& newMat = Core::materialsManager.getLoadedMap()[currentMaterialName];
+					newMat.setProgram(&Core::shadersManager.get("Deferred"));
 					this->currentMaterial = &Core::materialsManager.get(currentMaterialName);
 				}
 				else 
 				{
+					//if material is not loaded - load it
+					if(Core::materialsManager.exists(info.name)) Core::materialsManager.load((char*)payload->Data);
 					//if file is a valid material then use it
-					currentMaterialName = json["name"];
-					this->currentMaterial = &Core::materialsManager.get(json["name"]);
+					currentMaterialName = info.name;
+					this->currentMaterial = &Core::materialsManager.get(info.name);
 				}
 				this->currentMaterialFile = std::filesystem::path((char*)payload->Data);
 			}

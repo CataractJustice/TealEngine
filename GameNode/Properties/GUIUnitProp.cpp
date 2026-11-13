@@ -66,6 +66,7 @@ void parseUnitsString(const char* str, float& px, float& ww, float& wh, float& r
 			negative = false;
 			//Here we assume that all unit suffics are at least 2 chars long
 			str++;
+			if(*str == 0) return;
 		}
 		str++;
 	}

@@ -16,8 +16,8 @@ namespace TealEngine
 			return Collider::ColliderType::BOX;
 		}
 		
-		BoxCollider();
+		virtual void getAABoundingBox(glm::vec3& from, glm::vec3& to) override;
 		
-		virtual void render(ShaderProgram* shader, unsigned int stages);
+		BoxCollider();
 	};
 }

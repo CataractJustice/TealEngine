@@ -24,5 +24,8 @@ namespace TealEngine
 		{
 			return ColliderType::AABC;
 		}
+		
+		
+		virtual void getAABoundingBox(glm::vec3& from, glm::vec3& to) { from = glm::vec3(this->from); to = glm::vec3(this->to); };
 	};
 }

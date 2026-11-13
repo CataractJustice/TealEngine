@@ -36,7 +36,6 @@ namespace TealEngine
 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  
 			glEnable(GL_BLEND);
-
 			return 0;
 		}
 

@@ -17,17 +17,17 @@ namespace TealEngine {
 
 	public:
 
-		Transform operator *(const Transform& b);
+		Transform operator *(const Transform& b) const;
 
-		Transform operator /(const Transform& b);
+		Transform operator /(const Transform& b) const;
 
 		Transform& operator *=(const Transform& b);
 
 		Transform& operator /=(const Transform& b);
 
-		bool operator ==(const Transform& b);
+		bool operator ==(const Transform& b) const;
 
-		bool operator != (const Transform& b);
+		bool operator != (const Transform& b)  const;
 
 		void setPosition(const glm::vec3& vector);
 
@@ -73,7 +73,7 @@ namespace TealEngine {
 
 		glm::vec3 pointFromLocalToGlobal(glm::vec3 pos, bool ignoreScale = false) const;
 
-		glm::vec3 pointFromLocalToTransform(glm::vec3 pos, Transform& transform, bool ignoreScale = false) const;
+		glm::vec3 pointFromLocalToTransform(glm::vec3 pos, const Transform& transform, bool ignoreScale = false) const;
 
 		void setMatrix(glm::mat4 matrix);
 

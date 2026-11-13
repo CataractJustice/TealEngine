@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Graphics/Texture/Texture.h"
+#include "Graphics/Texture.h"
 #include "libs/glm/vec2.hpp"
 #include <map>
 struct FT_FaceRec_;

@@ -47,7 +47,7 @@ namespace TealEngine
 
 		float getHeightAtPosition(glm::vec2 pos) 
 		{
-			Transform& wt = this->getParentOfType<GameNode3D>()->getWorldTransform();
+			const Transform& wt = this->getParentOfType<GameNode3D>()->getWorldTransform();
 			pos -= glm::vec2(wt.getX(), wt.getZ());
 			pos /= glm::vec2(scale.x, scale.z);
 			return linear2DGridInterpolation(glm::mod(pos, 1.0f), 

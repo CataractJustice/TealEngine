@@ -4,9 +4,9 @@ namespace TealEngine
 {
 	void TextureManager::loadImpl(std::filesystem::path path) 
 	{
-		this->loadedResources[path.filename()] = Texture();
-		this->loadedResources[path.filename()].loadFromFile(path.string());
-		this->loadedResources[path.filename()].generateMipmap();
+		this->loadedResources[path.filename().string()] = Texture();
+		this->loadedResources[path.filename().string()].loadFromFile(path.string());
+		this->loadedResources[path.filename().string()].generateMipmap();
 	}
 
 	TextureManager::TextureManager() 

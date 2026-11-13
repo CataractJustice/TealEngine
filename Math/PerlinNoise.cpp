@@ -1,11 +1,11 @@
 #include "PerlinNoise.h"
-float PerlinNoise::fx = 0.0f;
-float PerlinNoise::fy = 0.0f;
-float PerlinNoise::fz = 0.0f;
-float PerlinNoise::n[2][2][2];
 
 float PerlinNoise::get(float x, float y, float z, unsigned int octaves, float persistance, float lacunarity)
 {
+	float fx = 0.0f;
+	float fy = 0.0f;
+	float fz = 0.0f;
+	float n[2][2][2];
 	fx = glm::fract(x), fy =glm::fract(y), fz = glm::fract(z);
 	for (int i = 0; i < 2; i++)
 		for (int j = 0; j < 2; j++)

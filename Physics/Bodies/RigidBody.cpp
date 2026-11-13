@@ -2,7 +2,6 @@
 #include "GameNode/ComponentProp.h"
 #include "libs/glm/gtc/type_ptr.hpp"
 #include "Core.h"
-#include "Graphics/Renderer/Shapes/Line3D.h"
 namespace TealEngine 
 {
 	void RigidBody::setRadius(float r)
@@ -17,15 +16,18 @@ namespace TealEngine
 
 	void RigidBody::update()
 	{
-		velocity += additionalVelocity;
-		torque = newtorque;
-		additionalVelocity = vec3(0.0f);
+		//velocity += additionalVelocity;
+		//torque = newtorque;
+		additionalVelocity = glm::vec3(0.0f);
 		this->getParentOfType<GameNode3D>()->getRelativeTransform().translate(velocity);
 		if (!fixRotation && length(torque))
 			this->getParentOfType<GameNode3D>()->getRelativeTransform().globalRotate(-length(torque) * 2.0 * glm::pi<float>(), torque);
 		else
 			torque = glm::vec3(0.0f);
-		addVelocity(-glm::vec3(0.0f, 0.00025f, 0.0f));
+		if(!useObjectLocalGravity) 
+			addVelocity(globalGravityAcceleration);
+		else
+			addVelocity(objectLocalGravity);
 	}
 
 	glm::vec3 RigidBody::getVelocity()
@@ -35,7 +37,8 @@ namespace TealEngine
 
 	void RigidBody::addVelocity(glm::vec3 vel)
 	{
-		additionalVelocity += vel;
+		//additionalVelocity += vel;
+		velocity += vel;
 	}
 
 	void RigidBody::addForce(glm::vec3 force, ForceMode mode)
@@ -60,34 +63,37 @@ namespace TealEngine
 
 		if (fixRotation || (vel.x == 0 && vel.y == 0 && vel.z == 0))
 		{
-			additionalVelocity += vel;
+			//additionalVelocity += vel;
+			velocity += vel;
 			return;
 		}
 
 		glm::vec3 lv = pos - this->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
 		
 		glm::vec3 initialPointTorqueVelocity = getVelocityAtPos(pos) - getVelocity();
-		glm::vec3 newPointTorqueVelocity = initialPointTorqueVelocity + (vel - dot(vel, glm::normalize(lv)) * glm::normalize(lv)) * glm::exp(-glm::length(lv));
+		glm::vec3 newPointTorqueVelocity = initialPointTorqueVelocity + (vel - dot(vel, glm::normalize(lv)) * glm::normalize(lv)) * (1.0f - glm::exp(-glm::length(lv)/2.0f));
 
 		if(abs(glm::dot(glm::normalize(-lv), glm::normalize(newPointTorqueVelocity))) > 0.998f || (newPointTorqueVelocity.x == 0.0f && newPointTorqueVelocity.y == 0.0f && newPointTorqueVelocity.z == 0.0f))
 		{
-			additionalVelocity += vel;
+			//additionalVelocity += vel;
+			velocity += vel;
 			return;
 		}
 	
 		if (torque.x == 0.0f && torque.y == 0.0f && torque.z == 0.0f)
-			newtorque = glm::normalize(glm::cross(newPointTorqueVelocity, lv)) * length(newPointTorqueVelocity);
+			torque = glm::normalize(glm::cross(newPointTorqueVelocity, lv)) * length(newPointTorqueVelocity);
 		else
 		{
 			glm::vec3 newTorqueAxis = glm::normalize(glm::cross(newPointTorqueVelocity, lv));
 			glm::vec3 lerpedTorqueAxis = glm::normalize(glm::normalize(newTorqueAxis) * length(vel) + glm::normalize(torque) * length(initialPointTorqueVelocity));
 			float revolutionPerimeter = glm::abs(glm::dot(lv, glm::normalize(glm::cross(glm::cross(lerpedTorqueAxis, lv), lerpedTorqueAxis))) * 2.0 * glm::pi<float>());
-			newtorque = lerpedTorqueAxis * length(newPointTorqueVelocity) / revolutionPerimeter;
+			torque = lerpedTorqueAxis * length(newPointTorqueVelocity) / revolutionPerimeter;
 		}
 
 		glm::vec3 newPointVelocity;
 
-		additionalVelocity += targetPointVelocity - velocity - newPointTorqueVelocity;
+		//additionalVelocity += targetPointVelocity - velocity - newPointTorqueVelocity;
+		velocity += targetPointVelocity - velocity - newPointTorqueVelocity;
 	}
 
 	glm::vec3 RigidBody::getVelocityAtPos(glm::vec3 pos)
@@ -97,14 +103,12 @@ namespace TealEngine
 		glm::vec3 lv = pos - this->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
 		float revolutionPerimeter = glm::abs(glm::dot(lv, glm::normalize(glm::cross(glm::cross(lv, torque), torque))) * 2.0 * glm::pi<float>());
 		glm::vec3 tvel = glm::normalize(glm::cross(lv, torque)) * length(torque) * revolutionPerimeter;
-		if (!isnan(tvel.x) && !isnan(tvel.y) && !isnan(tvel.z))
+		if (!std::isnan(tvel.x) && !std::isnan(tvel.y) && !std::isnan(tvel.z))
 		{
-			Core::shapesRenderer.pushShape(Line3D(pos, pos + getVelocity() + tvel, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0.01f));
 			return getVelocity() + tvel;
 		}
 		else
 		{
-			Core::shapesRenderer.pushShape(Line3D(pos, pos + getVelocity(), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0.01f));
 			return getVelocity();
 		}
 
@@ -112,7 +116,7 @@ namespace TealEngine
 
 	void RigidBody::setTorque(glm::vec3 torque)
 	{
-		newtorque = torque;
+		this->torque = torque;
 	}
 
 	PhysicMaterial& RigidBody::Material()
@@ -128,10 +132,14 @@ namespace TealEngine
 		this->addProp(new FloatProp(&this->material.mass), "Mass");
 		this->addProp(new FloatProp(&this->material.bouncines), "Bouncines");
 		this->addProp(new FloatProp(&this->material.friction), "Friction");
+		objectLocalGravity = glm::vec3(0.0f);
+		useObjectLocalGravity = false;
 	}
 
-	void RigidBody::onCollision(const Collision& collision)
+	void RigidBody::onCollision(const Collision& coll)
 	{
+		Collision collision = coll;
+		collision.depth -= 0.002f;
 		RigidBody* rbody = nullptr;
 		glm::vec3 thisCollVel = getVelocityAtPos(collision.pos);
 		std::vector<RigidBody*> otherBodies = collision.collidedWith->getParent()->findComponentsByType<RigidBody>();
@@ -151,7 +159,7 @@ namespace TealEngine
 			{
 				addVelocityAtPos(collision.pos, collision.normal * (iv - nv));
 				glm::vec3 frictionvec = glm::normalize(glm::cross(glm::cross(collision.normal, thisCollVel - rbodyCollVel), collision.normal));
-				if (!isnan(frictionvec.x) && !isnan(frictionvec.y) && !isnan(frictionvec.z))
+				if (!std::isnan(frictionvec.x) && !std::isnan(frictionvec.y) && !std::isnan(frictionvec.z))
 				{
 					float relativevel = dot(thisCollVel - rbodyCollVel, frictionvec);
 					addVelocityAtPos(collision.pos, -frictionvec * relativevel * (1.0f - glm::exp(-(Material().friction + rbody->Material().friction))) * 0.5f);
@@ -165,10 +173,10 @@ namespace TealEngine
 			glm::vec3 frictionvec = glm::normalize(glm::cross(glm::cross(collision.normal, thisCollVel), collision.normal));
 			float normalCollVel = glm::dot(thisCollVel, -collision.normal);
 			if (normalCollVel > 0.0f)
-				addVelocityAtPos(collision.pos, glm::dot(thisCollVel, -collision.normal) * collision.normal * (1.0f + Material().bouncines));
+				addVelocityAtPos(collision.pos, normalCollVel * collision.normal * (1.0f + Material().bouncines));
 
 			float mv = glm::dot(thisCollVel, frictionvec);
-			if (!isnan(frictionvec.x) && !isnan(frictionvec.y) && !isnan(frictionvec.z)) 
+			if (!std::isnan(frictionvec.x) && !std::isnan(frictionvec.y) && !std::isnan(frictionvec.z)) 
 			{
 					addVelocityAtPos(collision.pos, -frictionvec * mv * (1.0f - glm::exp(-Material().friction)));
 			}
@@ -176,4 +184,5 @@ namespace TealEngine
 			this->getParentOfType<GameNode3D>()->getRelativeTransform().translate(collision.depth * collision.normal);
 		}
 	}
+	glm::vec3 RigidBody::globalGravityAcceleration = -glm::vec3(0.0f, 0.005f, 0.0f);
 }

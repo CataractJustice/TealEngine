@@ -25,7 +25,7 @@ namespace TealEngine
 					scaleFactor = minPixelsSize / ((float)longSide);
 			}
 
-			ImGui::Image(ImTextureID((long)(this->valueref<Texture*>()->id())), ImVec2(oWidth * scaleFactor, oHeight * scaleFactor));
+			ImGui::Image(ImTextureID((long long)(this->valueref<Texture*>()->id())), ImVec2(oWidth * scaleFactor, oHeight * scaleFactor));
 		}
 		
 		return edited;

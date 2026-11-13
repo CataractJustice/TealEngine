@@ -17,7 +17,7 @@ namespace TealEngine
 		glm::vec2 deltaMouse = Input::Mouse::getDeltaMousePos();
 
 		if(Input::Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
-			transform.translate((transform.right() * deltaMouse.x * strifeSpeed * zoomFactor + transform.up() * deltaMouse.y * strifeSpeed * zoomFactor) * 0.002f);
+			transform.translate((-transform.right() * deltaMouse.x * strifeSpeed * zoomFactor + transform.up() * deltaMouse.y * strifeSpeed * zoomFactor) * 0.002f);
 
 		if(Input::Mouse::isButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 			this->view += deltaMouse * this->lookSensitivity * glm::vec2(1.0f, -1.0f) * 0.001f;

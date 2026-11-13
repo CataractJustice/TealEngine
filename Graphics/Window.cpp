@@ -10,7 +10,7 @@ namespace TealEngine
 	std::map<void*, Window*> glfwWindowRelations = std::map<void*, Window*>();
 	Window* findByGLFWwindow(void* glfwW) { return glfwWindowRelations[glfwW]; }
 
-	void windowResizeCallback(GLFWwindow* window, int width, int height)
+	void windowResizeCallbackCommon(GLFWwindow* window, int width, int height)
 	{
 		Window* ourWindow = findByGLFWwindow(window);
 		ourWindow->resize(width, height);
@@ -31,15 +31,17 @@ namespace TealEngine
 		Window::window = glfwCreateWindow(width, height, title, NULL, NULL);
 		Window::windowWidth = width;
 		Window::windowHeight = height;
-		glfwSetWindowSizeCallback((GLFWwindow*)window, windowResizeCallback);
+		glfwSetWindowSizeCallback((GLFWwindow*)window, windowResizeCallbackCommon);
 		primMonVidMode = (void*)glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwWindowRelations[window] = this;
+		windowResizeCallback = nullptr;
 	}
 
 	void Window::resize(int w, int h) 
 	{
 		windowWidth = w;
 		windowHeight = h;
+		if(windowResizeCallback) windowResizeCallback(w, h);
 	}
 
 	unsigned int Window::getScreenWidth() { return ((GLFWvidmode*)(primMonVidMode))->width; }

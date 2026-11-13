@@ -12,6 +12,8 @@ namespace TealEngine
 			return Collider::ColliderType::SPHERE;
 		}
 
+		virtual void getAABoundingBox(glm::vec3& from, glm::vec3& to);
+
 		SphereCollider() 
 		{
 			radius = 1.0f;

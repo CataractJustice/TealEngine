@@ -10,20 +10,12 @@
 #include <filesystem>
 #include <unordered_set>
 #include "NlohmannJson/json.hpp"
+#include "Network/Connection.h"
 
 using Json = nlohmann::json;
 
-enum NODE_RELATION 
-{
-	THIS_NODE,
-	NOT_RELATED_NODE,
-	PARENT_NODE,
-	CHILD_NODE
-};
-
 namespace TealEngine {
 	class FrameBuffer;
-	class ShaderProgram;
 	class Component;
 	class GameNode
 	{
@@ -31,42 +23,45 @@ namespace TealEngine {
 		static std::unordered_set<GameNode*> allNodes;
 		static std::map<unsigned int, GameNode*> idMap;
 		static unsigned int lastId;
-		static map<string, set<GameNode*>> tagged;
+		static std::map<std::string, std::set<GameNode*>> tagged;
 		static std::queue<GameNode*> destroyQueue;
 		static GameNode* selectedNode;
+
+		GameNode* sceneNode = nullptr;
 		
-		set<string> tags;
-		unsigned short activeMButtonsMask;
-		unsigned short hierarchyDepth;
-		bool willBeDestroyed;
+		std::set<std::string> tags = std::set<std::string>();
+		unsigned short activeMButtonsMask = 0;
+		unsigned short hierarchyDepth = 0;
 	protected:
-		string name;
-		std::vector<GameNode*> childNodes;
-		std::vector<Component*> components;
-		GameNode* parent;
-		unsigned int id;
-		int hierarchyIndex;
-		bool active;
-		bool onDestroyHasBeenCalled;
-		bool showProperties;
+		bool willBeDestroyed = false;
+		std::string name = "";
+		std::vector<GameNode*> childNodes = {};
+		std::vector<Component*> components = {};
+		GameNode* parent = nullptr;
+		unsigned int id = 0;
+		int hierarchyIndex = 0;
+		bool active = true;
+		bool onDestroyHasBeenCalled = false;
+		bool showProperties = false;
 
 		virtual void setParent(GameNode* parent);
+		void destroyMark();
 	public:
 		inline unsigned char getMouseButtonPressMask() 
 		{
 			return activeMButtonsMask;
 		};
-		const string& getName();
-		void rename(const string& name);
-
+		const std::string& getName();
+		void rename(const std::string& name);
+		inline const std::vector<Component*>& getComponents() { return components; };
 		//checks if node has given tag added
-		bool hasTag(const string& tag);
+		bool hasTag(const std::string& tag);
 		//adds tag to a node
-		void addTag(const string& tag);
+		void addTag(const std::string& tag);
 		//removes tag from node
-		void removeTag(const string& tag);
+		void removeTag(const std::string& tag);
 		//returns set of ALL nodes with given tag added
-		static set<GameNode*> findNodesByTag(const string& tag);
+		static std::set<GameNode*> findNodesByTag(const std::string& tag);
 
 		//component system
 
@@ -78,12 +73,38 @@ namespace TealEngine {
 		void dettachComponent(Component* component);
 		template<class T>
 		//returns all components of given type
-		std::vector<T*> findComponentsByType() 
+		std::vector<T*> findComponentsByType(bool recursive = false)
 		{
 			std::vector<T*> comps;
 			for (Component* component : components)
 				if (dynamic_cast<T*>(component))
 					comps.push_back((T*)component);
+			if(recursive) 
+			{
+				for(GameNode* child : childNodes) 
+				{
+					std::vector<T*> subComponents = child->findComponentsByType<T>(true);
+					comps.insert(comps.end(), subComponents.begin(), subComponents.end());
+				}
+			}
+			return comps;
+		}
+
+		template<class T>
+		std::vector<const T*> findComponentsByTypeConst(bool recursive = false) const
+		{
+			std::vector<const T*> comps;
+			for (const Component* component : components)
+				if (dynamic_cast<const T*>(component))
+					comps.push_back((const T*)component);
+			if(recursive) 
+			{
+				for(const GameNode* child : childNodes) 
+				{
+					std::vector<const T*> subComponents = child->findComponentsByTypeConst<T>(true);
+					comps.insert(comps.end(), subComponents.begin(), subComponents.end());
+				}
+			}
 			return comps;
 		}
 
@@ -114,7 +135,7 @@ namespace TealEngine {
 
 				if (childsOfChilds)
 				{
-					vector<T*> childsOfChild = node->findChildsByType<T>(true);
+					std::vector<T*> childsOfChild = node->findChildsByType<T>(true);
 					if (childsOfChild.size() > 0)
 						res.insert(res.end(), childsOfChild.begin(), childsOfChild.end());
 				}
@@ -136,20 +157,20 @@ namespace TealEngine {
 		//returns childs with matching name
 		std::vector<GameNode*> findChildsByName(std::string name);
 		//node is active only if active property is true for it and all of its parents
-		//use .getActiveProperty to get this exact node activity property
-		bool getActive();
+		//use .getActiveThis to get this exact node activity property
+		bool getActive() const;
 		//returns value of node activity property
 		//node can be innactive while having activity property set to true but any of it's parent nodes is innactive
 		//use .getActive() to check if node is actually active
-		inline bool getActiveProperty() { return this->active; };
+		inline bool getActiveThis() const { return this->active; };
 		//events:
 
 		//enables/disables node, calls onSleep or onAwake for components
-		void setActive(bool active);
+		virtual void setActive(bool active);
 		//called when parent changes
 		virtual void onParentChange();
 		//usualy called every frame
-		virtual void update() final;
+		virtual void update();
 		//should be called after some mouse button was pressed and released while mouse cursor is hovered over the node
 		virtual void onClick(unsigned short button);
 		//called every time a mouse button is pressed while mouse cursor is hovered over the node
@@ -160,15 +181,25 @@ namespace TealEngine {
 		virtual void onWindowMousePress(unsigned short button);
 		//called every time a mouse button is released
 		virtual void onWindowMouseRelease(unsigned short button);
+		//
+		virtual void onChildAdd(GameNode* child, GameNode* parent);
+		//
+		virtual void onChildRemove(GameNode* child, GameNode* parent);
+		//
+		virtual void onComponentAdd(Component* component, GameNode* node);
+		//
+		virtual void onComponentRemove(Component* component, GameNode* node);
+		//
+		void refreshGUI();
+		virtual void setSceneNode(GameNode* sceneNode);
+		inline GameNode* getSceneNode() { return sceneNode; };
 
 		//recursively updates current and all lower nodes
 		void updateAll();
-		void editorUpdate();
+		virtual void editorUpdate();
 		
 		void refreshProps();
 
-		//Called whenever node recives a messgae, calls onMessageReceive(packet) for all components of this node
-		virtual void onMessageReceive();
 		//Server side method
 		//Should return true if you want to node to be 'visible' for given peer
 		//Server will send node itself and messages to node to given peer if node is 'visible' for them
@@ -182,9 +213,6 @@ namespace TealEngine {
 		void GUIRender();
 		//
 		void imGuiRender(const std::string& windowName);
-		//
-		virtual void render(ShaderProgram* shader = nullptr, unsigned int stages = 0);
-		void renderId();
 
 		//
 		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer);
@@ -196,7 +224,7 @@ namespace TealEngine {
 		//Marks node for deletion
 		//The node will be removed from the tree after all updates in current frame are finished
 		//If called more than once all calls after the first will be ignored
-		inline void destroy() { if (!willBeDestroyed) { destroyQueue.push(this); willBeDestroyed = true; } };
+		void destroy();
 		//Deletes nodes marked for deletion
 		static void cleanupDestroyed();
 

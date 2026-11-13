@@ -29,6 +29,8 @@ namespace TealEngine
 
 		static std::pair<Collision, Collision>BoxToScalarField(BoxCollider* bc, ScalarFieldCollider* sfc);
 
-		static std::pair<Collision, Collision> SolveCollision(Collider* a, Collider* b, bool& isAnyCollisionOccured);
+		static std::vector<std::pair<Collision, Collision>> AnyToTiles(Collider* any, TilesCollider* tc);
+
+		static std::vector<std::pair<Collision, Collision>> SolveCollision(Collider* a, Collider* b, bool& hasAnyCollisionOccured);
 	};
 }

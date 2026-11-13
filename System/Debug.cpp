@@ -4,10 +4,5 @@ namespace TealEngine
 {
 	namespace Debug 
 	{
-		string logStr;
-		void saveLog() 
-		{
-		
-		}
 	}
 }

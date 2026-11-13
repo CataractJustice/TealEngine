@@ -5,7 +5,6 @@
 #include "ComponentFactory.h"
 #include "libs/glm/gtc/type_ptr.hpp"
 #include <fstream>
-#include "Graphics/Renderer/Shapes/Line3D.h"
 #include "Core.h"
 using namespace glm;
 
@@ -25,6 +24,7 @@ namespace TealEngine
 				for (Component* comp : components)
 					comp->onDestroy();
 		onDestroyHasBeenCalled = true;
+		delete transformProp;
 	}
 
 	void GameNode3D::setParent(GameNode* parent)
@@ -36,11 +36,11 @@ namespace TealEngine
 			hasGameNode3DParent = false;
 	}
 
-	Transform& GameNode3D::getWorldTransform()
+	const Transform& GameNode3D::getWorldTransform() const
 	{
 		if (hasGameNode3DParent)
 		{
-			Transform& parentTransform = ((GameNode3D*)parent)->getWorldTransform();
+			const Transform& parentTransform = ((GameNode3D*)parent)->getWorldTransform();
 			bool parentTransformModified = parentTransform.getLastModifyStamp() != parentWorldTransformLastModifyStamp;
 			bool transformModified = transformLastModifyStamp != transform.getLastModifyStamp();
 			if (parentTransformModified || transformModified)
@@ -104,18 +104,5 @@ namespace TealEngine
 	{
 		this->transformProp->display("Transform");
 		GameNode::displayProps();
-	}
-
-	void GameNode3D::render(ShaderProgram* shader, unsigned int stages) 
-	{
-		if(this == GameNode::getSelectedNode()) 
-		{
-			Transform& wTransform = this->getWorldTransform();
-			glm::vec3 position = wTransform.getPosition();
-			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.right()*1.5f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0.02f));
-			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.up()*1.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.02f));
-			Core::shapesRenderer.pushShape(Line3D(position, position+wTransform.forward()*1.5f, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0.02f));
-		}
-		GameNode::render(shader, stages);
 	}
 }

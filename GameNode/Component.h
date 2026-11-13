@@ -4,10 +4,30 @@
 #include <map>
 #include <set>
 #include <unordered_map>
-
+#include "Network/Connection.h"
+#include "Kirino/StateColletion.h"
 namespace TealEngine 
 {
-class FrameBuffer;
+	struct FrustumPlanes 
+	{
+		glm::vec3 nearNormal;
+		float nearD;
+		glm::vec3 farNormal;
+		float farD;
+		glm::vec3 leftNormal;
+		float leftD;
+		glm::vec3 rightNormal;
+		float rightD;
+		glm::vec3 upNormal;
+		float upD;
+		glm::vec3 bottomNormal;
+		float bottomD;
+	};
+	struct RenderTexturesCollection 
+	{
+		unsigned int color, position, normal, specular, unlit, depth, transparentPositionAlpha, transparentNormal;
+	};
+	class FrameBuffer;
 	class Component 
 	{
 	private:
@@ -16,9 +36,6 @@ class FrameBuffer;
 		GameNode* parent;
 		static std::map<int, Component*> idMap;
 		static std::set<Component*> allComponents;
-		static std::set<Component*> renderableComponents;
-		static std::set<Component*> onKeyPressComponents;
-		static std::set<Component*> onKeyReleaseComponents;
 		void attachTo(GameNode* node);
 		std::string factoryName;
 		bool active;
@@ -28,6 +45,7 @@ class FrameBuffer;
 		static int lastId;
 		int index;
 		bool postConstructorDone;
+		NetworkId netId;
 	protected:
 		std::unordered_map<std::string, IProp*> props;
 	public:
@@ -62,13 +80,7 @@ class FrameBuffer;
 		//
 		virtual void imGuiRender(const std::string& windowName);
 		//
-		virtual void render(ShaderProgram* shader, unsigned int stages);
-		//
-		virtual void renderId();
-		//
 		virtual void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer);
-		//
-		virtual void onMessageReceive();
 		//
 		virtual void onCollision(const Collision& collision);
 		//called after some mouse button was pressed and released while mouse cusor is hovered above the node
@@ -84,16 +96,75 @@ class FrameBuffer;
 		//
 		virtual void onKeyPress(unsigned int key);
 		//
+		virtual void onKeyRepeat(unsigned int key);
+		//
 		virtual void onKeyRelease(unsigned int key);
+		//
+		virtual void onChar(unsigned int unicode);
+		//called every time a child added to this component parent node or one of its child nodes
+		virtual void onChildAdd(GameNode* node, GameNode* parent);
+		//called every time a child removed from this component parent node or one of its child nodes
+		virtual void onChildRemove(GameNode* node, GameNode* parent);
+		//called every time a child added to this component parent node or one of its child nodes
+		virtual void onComponentAdd(Component* component, GameNode* parent);
+		//called every time a component removed from this component parent node or one of its child nodes
+		virtual void onComponentRemove(Component* component, GameNode* parent);
+		//called every time a node added to the scene
+		virtual void onSceneChildAdd(GameNode* node, GameNode* parent);
+		//called every time a node removed from the scene
+		virtual void onSceneChildRemove(GameNode* node, GameNode* parent);
+		//called every time a component added to the scene
+		virtual void onSceneComponentAdd(Component* component, GameNode* parent);
+		//called every time a component removed from the scene
+		virtual void onSceneComponentRemove(Component* component, GameNode* parent);
+		//
+		virtual void onWindowResize(int width, int height);
+		//
+		virtual void onPropRefresh();
+		//
+		virtual void render(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures);
+		//
+		virtual void shadowRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures);
+		//
+		virtual void postRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures);
+		//
+		virtual void transparentRender(Kirino::StateColletion& state, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures);
+		/*
+		Network section
+		*/
+		//called on a host every time a new client is connected
+		virtual void onHostPeerConnect(PeerInfo& peerInfo);
+		//called on a host every time a client disconnects
+		virtual void onHostPeerDisconnect(PeerInfo& peerInfo);
+		//called on a host every time a packet is received from a client
+		virtual void onHostPeerPacket(PeerInfo& peerInfo, const void* data, int size);
+		//called on a client after connecting to a host
+		virtual void onClientConnect();
+		//called on a client after disconnecting from a host
+		virtual void onClientDisconnect();
+		//called on a client after receiving a packet from a host
+		virtual void onClientPacket(const void* data, int size);
+		//called if client fails to connect to a host
+		virtual void onClientConnectFail();
+
+		void setNetworkId(NetworkId netId);
+		inline NetworkId getNetworkId() const { return netId; }
+
 		void refreshProps();
 		GameNode* getParent();
+		const GameNode* getParentConst() const;
 		//gets parent if parent is of type T, else throws an error
 		template<typename T>
 		T* getParentOfType()
 		{
 			T* castedParent = dynamic_cast<T*>(parent);
-			if (!castedParent)
-				TE_DEBUG_ERROR("Parent either does not exist or isnt the right type.");
+			return castedParent;
+		}
+		//
+		template<typename T>
+		const T* getParentOfTypeConst() const
+		{
+			T* castedParent = dynamic_cast<T*>(parent);
 			return castedParent;
 		}
 		Component();
@@ -128,10 +199,6 @@ class FrameBuffer;
 		//cancels next onAttach callback call
 		void cancelOnAttachCallback();
 
-		void registerCallbackLists();
-		static void renderAllComponents(ShaderProgram* shader, unsigned int stages);
-		static void onKeyPressCallbacks(unsigned int key);
-		static void onKeyReleaseCallbacks(unsigned int key);
 		static Component base;
 	};
 }

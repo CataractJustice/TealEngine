@@ -7,6 +7,8 @@
 #include <fstream>
 #include "NlohmannJson/json.hpp"
 #include "Core.h"
+#include "System/Logger.h"
+#include <format>
 using Json = nlohmann::json;
 namespace TealEngine {
 
@@ -28,7 +30,7 @@ namespace TealEngine {
 		GLuint loc = glGetUniformLocation(this->program, name.c_str());
 		if (loc == -1) 
 		{
-			TE_DEBUG_WARNING("Could not find uniform with name \"" + name + "\" in shader.");
+			Logger::logInfo(std::format("Uniform name {} not found in shader program {}.", name, this->program));
 		}
 		glUniform1i(loc, this->texture.size());
 		this->texture[name] = std::pair<GLuint, GLuint>(texture.size(), 0);
@@ -188,7 +190,7 @@ namespace TealEngine {
 	
 	void ShaderProgram::setUniform(std::string name, glm::mat4* mat, int size) 
 	{ 
-		float* matv = new float[long(16 * size)];
+		float* matv = new float[(long long)(16 * size)];
 		for (int i = 0; i < size; i++)
 			memcpy(matv + i * 16, value_ptr(mat[i]), sizeof(float) * 16);
 		uniforms[name].setm4fv(matv, size);
@@ -219,10 +221,11 @@ namespace TealEngine {
 
 	void ShaderProgram::saveMaterial(const std::filesystem::path& path, const std::string& name) 
 	{
+		/*
 		std::string shaderName = "";
 		for(const auto& shader : Core::shadersManager.getLoadedMap()) 
 		{
-			if(shader.second.id() == this->id()) 
+			if(shader.second.getId() == this->) 
 			{
 				shaderName = shader.first;
 			}
@@ -292,6 +295,6 @@ namespace TealEngine {
 		materialJson["textures"] = textures;
 
 		std::ofstream outputFile(path);
-		outputFile << materialJson;
+		outputFile << materialJson;*/
 	}
 }

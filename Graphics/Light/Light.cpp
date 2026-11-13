@@ -1,33 +1,58 @@
 #include "Light.h"
-#include "Graphics/Renderer/DeferredRenderer.h"
 #include "GameNode/ComponentFactory.h"
+#include "Graphics/DeferredRenderer.h"
 #include "Core.h"
+#include "Kirino/Material.h"
 #include <map>
 
 namespace TealEngine
 {
-	ShaderProgram pLightShader;
-	ShaderProgram dLightShader;
-	ShaderProgram aLightShader;
-	ShaderProgram combineLightShader;
-	ShaderProgram shadowMapShader;
-	ForwardRenderer shadowMapRenderer;
-	
-	std::map<std::string, ShaderProgram> lightShaders;
+	Kirino::Material* pLightMaterial = nullptr;
+	Kirino::Material* dLightMaterial = nullptr;
+	Kirino::Material* aLightShader = nullptr;
+	Kirino::Material* ssaoMaterial = nullptr;
+	Kirino::Material* combineLightShader = nullptr;
+	Kirino::Material* shadowMapMaterial = nullptr;
+	Kirino::Material* shadowMapMaterialInstanced = nullptr;
+	Kirino::Material* lightAddMaterial = nullptr;
+	Kirino::Material* depthPostMaterial = nullptr;
 
 	void lightInit()
 	{
-		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/LightShaders.sp");
-		ShaderProgram::loadShadersFromJson(lightShaders, "./Assets/Shaders/DepthShader.sp");
-		dLightShader 		=	lightShaders["DirectionLight"];
-		pLightShader 		=	lightShaders["PointLight"];
-		combineLightShader 	= 	lightShaders["LightCombine"];
-		shadowMapShader 	= 	lightShaders["Depth"];
+		if(pLightMaterial) delete pLightMaterial;
+		if(dLightMaterial) delete dLightMaterial;
+		if(shadowMapMaterial) delete shadowMapMaterial;
+		if(shadowMapMaterialInstanced) delete shadowMapMaterialInstanced;
+		if(ssaoMaterial) delete ssaoMaterial;
+		if(lightAddMaterial) delete lightAddMaterial;
+		if(depthPostMaterial) delete depthPostMaterial;
+		pLightMaterial = new Kirino::Material;
+		dLightMaterial = new Kirino::Material;
+		shadowMapMaterial = new Kirino::Material;
+		shadowMapMaterialInstanced = new Kirino::Material;
+		ssaoMaterial = new Kirino::Material;
+		lightAddMaterial = new Kirino::Material;
+		depthPostMaterial = new Kirino::Material;
+		pLightMaterial->setProgram(&Core::shadersManager.get("PointLight"));
+		dLightMaterial->setProgram(&Core::shadersManager.get("DirectionLight"));
+		lightAddMaterial->setProgram(&Core::shadersManager.get("LightAdd"));
+		depthPostMaterial->setProgram(&Core::shadersManager.get("LightDepthPost"));
+
+		unsigned int ditherId = Core::textureManager.get("RGBANoise.png").id();
+		ssaoMaterial->setProgram(&Core::shadersManager.get("SSAO"));
+		ssaoMaterial->setTexture("Dither", &ditherId);
+		ssaoMaterial->setUniformBlock("CameraBlock", Core::materialsManager.getDefaultUBOs().at("CameraBlock"));
+
+		shadowMapMaterial->setProgram(&Core::shadersManager.get("ShadowMap"));
+		shadowMapMaterialInstanced->setProgram(&Core::shadersManager.get("ShadowMapInstanced"));
+		shadowMapMaterial->setUniformBlock("CameraBlock", Core::materialsManager.getDefaultUBOs().at("CameraBlock"));
+		shadowMapMaterial->setUniformBlock("TransformBlock", Core::materialsManager.getDefaultUBOs().at("TransformBlock"));
+		shadowMapMaterialInstanced->setUniformBlock("CameraBlock", Core::materialsManager.getDefaultUBOs().at("CameraBlock"));
 	}
 
 	void DirectionLight::updateCameraPos(int i, Camera* camera)
 	{
-		vec3 segmentCorner;
+		glm::vec3 segmentCorner;
 		float ratioSum = 0.0f;
 		float currentZRatioSum = 0.0f;
 		float currZ = camera->getNear();
@@ -39,30 +64,30 @@ namespace TealEngine
 			zSegment += (shadowFar) * (this->cascadesRatio[j] / ratioSum);
 		}
 		
-		vec3 pos = camera->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
-		vec4 p1 = glm::inverse(camera->getPV()) * vec4(-1.0f, -1.0f, 1.0f, 1.0f);
-		vec4 p2 = glm::inverse(camera->getPV()) * vec4(1.0f, -1.0f, 1.0f, 1.0f);
-		vec4 p3 = glm::inverse(camera->getPV()) * vec4(-1.0f, 1.0f, 1.0f, 1.0f);
-		vec4 p4 = glm::inverse(camera->getPV()) * vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		glm::vec3 pos = camera->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
+		glm::vec4 p1 = glm::inverse(camera->getPV()) * glm::vec4(-1.0f, -1.0f, 1.0f, 1.0f);
+		glm::vec4 p2 = glm::inverse(camera->getPV()) * glm::vec4(1.0f, -1.0f, 1.0f, 1.0f);
+		glm::vec4 p3 = glm::inverse(camera->getPV()) * glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f);
+		glm::vec4 p4 = glm::inverse(camera->getPV()) * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		p1 /= p1.w;
 		p2 /= p2.w;
 		p3 /= p3.w;
 		p4 /= p4.w;
-		vec3 d1 = glm::normalize(vec3(p1) - pos);
-		vec3 d2 = glm::normalize(vec3(p2) - pos);
-		vec3 d3 = glm::normalize(vec3(p3) - pos);
-		vec3 d4 = glm::normalize(vec3(p4) - pos);
+		glm::vec3 d1 = glm::normalize(glm::vec3(p1) - pos);
+		glm::vec3 d2 = glm::normalize(glm::vec3(p2) - pos);
+		glm::vec3 d3 = glm::normalize(glm::vec3(p3) - pos);
+		glm::vec3 d4 = glm::normalize(glm::vec3(p4) - pos);
 
-		vec3 c1 = pos + d1 * currZ;
-		vec3 c2 = pos + d2 * currZ;
-		vec3 c3 = pos + d3 * currZ;
-		vec3 c4 = pos + d4 * currZ;
-		vec3 c5 = pos + d1 * zSegment;
-		vec3 c6 = pos + d2 * zSegment;
-		vec3 c7 = pos + d3 * zSegment;
-		vec3 c8 = pos + d4 * zSegment;
+		glm::vec3 c1 = pos + d1 * currZ;
+		glm::vec3 c2 = pos + d2 * currZ;
+		glm::vec3 c3 = pos + d3 * currZ;
+		glm::vec3 c4 = pos + d4 * currZ;
+		glm::vec3 c5 = pos + d1 * zSegment;
+		glm::vec3 c6 = pos + d2 * zSegment;
+		glm::vec3 c7 = pos + d3 * zSegment;
+		glm::vec3 c8 = pos + d4 * zSegment;
 
-		vec3 segmentMin = 
+		glm::vec3 segmentMin = 
 		glm::min(
 			glm::min(
 				glm::min(c1, c2),
@@ -74,7 +99,7 @@ namespace TealEngine
 			)
 		);
 
-		vec3 segmentMax = 
+		glm::vec3 segmentMax = 
 		glm::max(
 			glm::max(
 				glm::max(c1, c2),
@@ -87,13 +112,14 @@ namespace TealEngine
 		);
 
 		Transform& camTransform = ((GameNode3D*)shadowCamera[i])->getRelativeTransform();
-		vec3 center = (segmentMin + segmentMax) / 2.0f;//pos + camera->getNear() * forward + ((currZ + zSegment) / 2.0f) * forward * (camera->getFar() - camera->getNear());
+		glm::vec3 center = (segmentMin + segmentMax) / 2.0f;//pos + camera->getNear() * forward + ((currZ + zSegment) / 2.0f) * forward * (camera->getFar() - camera->getNear());
 
-		vec3 scale = vec3(glm::length(segmentMax - segmentMin));
+		glm::vec3 scale = segmentMax - segmentMin;
+		float scalemax = glm::max(scale.x, glm::max(scale.y, scale.z));
 		camTransform.setPosition(center);
 		camTransform.setRotationMatrix(((GameNode3D*)this->getParent())->getWorldTransform().getRotationMatrix());
 
-		shadowCamera[i]->findComponentsByType<Camera>()[0]->setOrthoProjection(scale.x, scale.y, -shadowFar, scale.z);
+		shadowCamera[i]->findComponentsByType<Camera>()[0]->setOrthoProjection(scalemax, scalemax, -shadowFar, scalemax);
 	}
 
 	void DirectionLight::setCascadeRatio(unsigned int cascade, float ratio)
@@ -106,30 +132,34 @@ namespace TealEngine
 		return (Camera*)(this->shadowCamera[index]->findComponentsByType<Camera>()[0]);
 	}
 
-	void DirectionLight::setupUniforms(GLuint render, GLuint albedo, GLuint position, GLuint normal, GLuint specular, vec3 viewPos)
+	void DirectionLight::setupUniforms(const RenderTexturesCollection& renderTextures, glm::vec3 viewPos)
 	{
-		//dLightShader.setTexture("RenderTexture", render);
-		//dLightShader.setTexture("AlbedoMap", albedo);
-		dLightShader.setTexture("PositionMap", position);
-		dLightShader.setTexture("NormalMap", normal);
-		dLightShader.setTexture("SpecularMap", specular);
-		mat4 PV[8];
+		dLightMaterial->setTexture("PositionMap", &renderTextures.position, 1, 0);
+		dLightMaterial->setTexture("NormalMap", &renderTextures.normal, 1, 0);
+		dLightMaterial->setTexture("SpecularMap", &renderTextures.specular, 1, 0);
+		dLightMaterial->setTexture("TransparentPositionMap", &renderTextures.transparentPositionAlpha, 1, 0);
+		dLightMaterial->setTexture("TransparentNormalMap", &renderTextures.transparentNormal, 1, 0);
+		glm::mat4 PV[8];
+		unsigned int shadowMapsArray[8];
+		memset(shadowMapsArray, 0, sizeof(shadowMapsArray));
 		for (unsigned int i = 0; i < shadowCascades(); i++)
 		{
-			dLightShader.setTexture("ShadowMap", i, getShadowCamera(i)->renderTexture.id());
+			shadowMapsArray[i] = shadowMaps[i].id();
 			PV[i] = getShadowCamera(i)->getPV();
 		}
 
+		dLightMaterial->setTexture("ShadowMap[0]", shadowMapsArray, 8, 0);
 
-		vec3 direction = ((GameNode3D*)this->getParent())->getWorldTransform().forward();
+		glm::vec3 direction = ((GameNode3D*)this->getParent())->getWorldTransform().forward();
 		int resolution = shadowResolution(), cascades = shadowCascades();
 
-		dLightShader.setUniform("lightModel", PV, cascades);
-		dLightShader.setUniform("direction", direction);
-		dLightShader.setUniform("viewPos", viewPos);
-		dLightShader.setUniform("color", color);
-		dLightShader.setUniform("resolution", resolution);
-		dLightShader.setUniform("cascades", cascades);
+		dLightMaterial->setUniform("lightModel[0]", PV, sizeof(PV), 0);
+		dLightMaterial->setUniform("direction", &direction, sizeof(direction), 0);
+		dLightMaterial->setUniform("viewPos", &viewPos, sizeof(viewPos), 0);
+		dLightMaterial->setUniform("color", &color, sizeof(color), 0);
+		dLightMaterial->setUniform("indirectColor", &indirectColor, sizeof(indirectColor), 0);
+		dLightMaterial->setUniform("resolution", &resolution, sizeof(int), 0);
+		dLightMaterial->setUniform("cascades", &cascades, sizeof(int), 0);
 	}
 
 	GLuint DirectionLight::shadowResolution()
@@ -148,49 +178,71 @@ namespace TealEngine
 		addProp(new FloatProp((float*)&this->shadowFar), "Shadow distance");
 		addProp(new IntProp((int*)&this->cascades), "Count of cascades");
 		addProp(new ColorProp(glm::value_ptr(this->color)), "Light color");
+		addProp(new ColorProp(glm::value_ptr(this->indirectColor)), "Light indirect color");
 		resolution = shadow_resolution;
 		this->shadowFar = shadowFar;
 		this->cascades = cascades;
+
 		for (unsigned int i = 0; i < 8; i++) {
-			cascadesRatio[i] = (i*i+1.0f) * (i*i+1.0f);
+			cascadesRatio[i] = (i*i+1.0f);
 			GameNode* cameraNode = new GameNode3D();
 			Camera* camera = new Camera();
 			cameraNode->attachComponent(camera);
 			shadowCamera.push_back(cameraNode);
-			camera->renderTexture = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT);
-			camera->renderTexture.create(resolution, resolution);
-			camera->renderTexture.setParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			camera->renderTexture.setParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			this->shadowMaps[i] = Texture(GL_TEXTURE_2D, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT);
+			this->shadowMaps[i].create(resolution, resolution, 0);
+			this->frameBuffers[i].attachDepthTexture(shadowMaps[i].id());
+			this->frameBuffers[i].viewport(resolution, resolution);
+			this->depthPostFramebuffers[i].attachTexture(shadowMaps[i].id(), 0);
+			this->depthPostFramebuffers[i].enable(0);
+			this->depthPostFramebuffers[i].viewport(resolution, resolution);
 		}
-		
 	}
-
+	DirectionLight::~DirectionLight()
+	{
+		for(int i = 0; i < 8; i++) 
+		{
+			delete shadowCamera[i];
+		}
+	}
 	void DirectionLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer)
 	{
-		frameBuffer->disable(DeferredRenderer::OutputLayout);
-		frameBuffer->disable(DeferredRenderer::AlbedoLayout);
-		frameBuffer->disable(DeferredRenderer::PositionLayout);
-		frameBuffer->disable(DeferredRenderer::NormalLayout);
-		frameBuffer->disable(DeferredRenderer::SpecularLayout);
-		frameBuffer->enable(DeferredRenderer::LightLayout);
-		frameBuffer->apply();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE);
-		shadowMapRenderer.setDepthClear(true);
-		shadowMapRenderer.setDepthTest(true);
+	}
 
+	void DirectionLight::renderLight(const RenderTexturesCollection& renderTextures, Camera* camera, DeferredRenderer* renderer) 
+	{
+		//render shadows
+		glDepthMask(true);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		glClearDepth(1.0);
 		for (int c = 0; c < shadowCascades(); c++)
 		{
-			updateCameraPos(c, Core::renderer.getActiveCamera());
-			shadowMapRenderer.resize(shadowResolution(), shadowResolution());
-			shadowMapRenderer.setCamera(getShadowCamera(c));
-			shadowMapRenderer.fb.attachDepthTexture(getShadowCamera(c)->renderTexture.id());
-			shadowMapRenderer.render(Core::getRoot(), &shadowMapShader, MeshRenderer::RenderPass::ShadowMapPass);
-		}
+			if((frameCounter - c) % (1 << c)) continue;
+			updateCameraPos(c, camera);
+			
+			Core::setCamera(shadowCamera[c]->findComponentsByType<Camera>()[0]);
+			frameBuffers[c].bind();
+			frameBuffers[c].apply();
+			glClear(GL_DEPTH_BUFFER_BIT);
+			//renderer->getRendererList().render(shadowMapMaterialInstanced);
+			renderer->renderModels(shadowMapMaterial);
+			if(frameBuffers[c].getDepthTexture() != shadowMaps[c].id()) throw "frame buffer depth texture id does not match the shadow map texture id";
+			
+			float pixelsize = 1.0f / (float)resolution;
+			depthPostMaterial->setUniform("pixelsize", &pixelsize, sizeof(float), 0);
+			unsigned int shadowmapid = this->shadowMaps[c].id();
+			depthPostMaterial->setTexture("shadowmap", &shadowmapid);
+			Render::renderShader(depthPostMaterial);
+			frameBuffers[c].unbind();
+		}	
 		glDisable(GL_DEPTH_TEST);
+		glDepthMask(false);
 		glDisable(GL_CULL_FACE);
-		setupUniforms(light, unlitColor, position, normal, specular, Core::renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform().getPosition());
-		Render::renderShader(&dLightShader);
+		setupUniforms(renderTextures, camera->getParentOfType<GameNode3D>()->getWorldTransform().getPosition());
+		Render::renderShader(dLightMaterial);
+		frameCounter++;
 	}
 
 	/*
@@ -228,52 +280,83 @@ namespace TealEngine
 		//resolution cap is not necessary but is implemented to prevent accidental crashes from too extreeme values
 		if(resolution > 8192) resolution = 8192;
 		for (unsigned int i = 0; i < cascades; i++) {
-			Camera* camera = shadowCamera[i]->findComponentsByType<Camera>()[0];
-			camera->renderTexture.create(resolution, resolution);
+			//resize shadow maps
+			frameBuffers[i].viewport(resolution, resolution);
+			shadowMaps[i].create(resolution, resolution, 0);
+			frameBuffers[i].attachDepthTexture(shadowMaps[i].id());
 		}
 	}
 
 	PointLight::PointLight(glm::vec4 color, float radius) 
 	{
 		this->color = color;
-		this->radius = radius;
+		this->CLQRatios = glm::vec3(0.0f, 1.0f, 1.0f);
 		addProp(new ColorProp(glm::value_ptr(this->color)), "Color");
-		addProp(new FloatVecProp(glm::value_ptr(this->attenuation), 3), "Constant/Linear/Quadratic attenuation ratio");
-		addProp(new FloatProp(&this->radius), "Radius");
+		addProp(new FloatVecProp(glm::value_ptr(this->CLQRatios), 3), "Constant/Linear/Quadratic attenuation ratio");
+		//addProp(new FloatProp(&this->radius), "Radius");
 	}
 
-	void PointLight::postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer)
+	void PointLight::renderLight(const RenderTexturesCollection& renderTextures, Camera* camera, DeferredRenderer* renderer) 
+	{	
+		position = this->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
+		pLightMaterial->setTexture("PositionMap", &renderTextures.position, 1, 0);
+		pLightMaterial->setTexture("NormalMap", &renderTextures.normal, 1, 0);
+		pLightMaterial->setTexture("SpecularMap", &renderTextures.specular, 1, 0);
+		glm::vec3 viewPos = camera->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
+		pLightMaterial->setUniform("viewPos", &viewPos, sizeof(float) * 3, 0);
+		pLightMaterial->setUniform("color", &color, sizeof(float) * 4, 0);
+		//pLightMaterial->setUniform("radius", &radius, sizeof(float) * 1, 0);
+		pLightMaterial->setUniform("CLQRatios", &CLQRatios, sizeof(float) * 3, 0);
+		Render::renderShader(pLightMaterial);
+	}
+
+	SSAO::SSAO() : ssaoBufferTexture(GL_TEXTURE_2D, GL_RGB32F, GL_RGB, GL_FLOAT)
 	{
-		frameBuffer->disable(DeferredRenderer::OutputLayout);
-		frameBuffer->disable(DeferredRenderer::AlbedoLayout);
-		frameBuffer->disable(DeferredRenderer::PositionLayout);
-		frameBuffer->disable(DeferredRenderer::NormalLayout);
-		frameBuffer->disable(DeferredRenderer::SpecularLayout);
-		frameBuffer->enable(DeferredRenderer::LightLayout);
-		frameBuffer->apply();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
+		addProp(new FloatProp(&strength), "Strength");
+		addProp(new FloatProp(&radius), "Radius");
+		addProp(new ColorProp(glm::value_ptr(ambient)), "Ambient");
+		strength = 0.5f;
+		radius = 0.1f;
+
+		ssaoBufferTexture.create(1, 1, 0);
 		
-		pLightShader.setTexture("RenderTexture", light);
-		pLightShader.setTexture("PositionMap", position);
-		pLightShader.setTexture("NormalMap", normal);
-		pLightShader.setTexture("SpecularMap", specular);
+		fbo.bind();
+		fbo.attachTexture(ssaoBufferTexture.id(), 0);
+		fbo.enable(1);
+		fbo.apply();
+		fbo.unbind();
+	}
+	
+	void SSAO::renderLight(const RenderTexturesCollection& renderTextures, Camera* camera, DeferredRenderer* renderer) 
+	{
 
-
-		vec3 lightPos = ((GameNode3D*)this->getParent())->getWorldTransform().getPosition();
-		vec3 viewPos = Core::renderer.getActiveCamera()->getParentOfType<GameNode3D>()->getWorldTransform().getPosition();
-
-		pLightShader.setUniform("position", lightPos);
-		pLightShader.setUniform("viewPos", viewPos);
-		pLightShader.setUniform("color", color);
-		pLightShader.setUniform("CLQRatios", attenuation);
-		pLightShader.setUniform("radius", radius);
-
-		Render::renderShader(&pLightShader);
+		fbo.bind();
+		fbo.apply();
+		//glDisable(GL_BLEND);
+		glClear(GL_COLOR_BUFFER_BIT);
+		int w = camera->getWidth() / 4.0f;
+		int h = camera->getHeight() / 4.0f;
+		if(ssaoBufferTexture.getWidth() != w || ssaoBufferTexture.getHeight() != h) 
+		{
+			fbo.viewport(w, h);
+			ssaoBufferTexture.create(w, h);
+		} 
+		ssaoMaterial->setTexture("PositionMap", &renderTextures.position, 1, 0);
+		ssaoMaterial->setTexture("NormalMap", &renderTextures.normal, 1, 0);
+		glm::vec3 dir = camera->getParentOfType<GameNode3D>()->getWorldTransform().forward();
+		ssaoMaterial->setUniform("direction", &dir, sizeof(float) * 3, 0);
+		ssaoMaterial->setUniform("strength", &strength, sizeof(float), 0);
+		ssaoMaterial->setUniform("radius", &radius, sizeof(float), 0);
+		ssaoMaterial->setUniform("ambient", &ambient, sizeof(float) * 4, 0);
+		Render::renderShader(ssaoMaterial);
+		//glEnable(GL_BLEND);
+		fbo.unbind();
+		unsigned int ssaoTexId = ssaoBufferTexture.id();
+		lightAddMaterial->setTexture("textureImage", &ssaoTexId, 1, 0);
+		Render::renderShader(lightAddMaterial);
 	}
 
+	EXPORT_COMPONENT(SSAO);
 	EXPORT_COMPONENT(DirectionLight);
 	EXPORT_COMPONENT(PointLight);
 }

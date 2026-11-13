@@ -25,6 +25,7 @@ namespace TealEngine
 		inline void setTitle(const std::string& title) { this->projectProperties["title"] = title; }
 		inline void setPath(const std::string& path) { this->projectProperties["path"] = path; }
 		inline void setDefaultScene(const std::string& defaultScene) { this->projectProperties["defaultScene"] = defaultScene; }
+		inline bool isOpen() { return this->projectProperties.find("path") != this->projectProperties.cend();}
 
 		void save();
 	};

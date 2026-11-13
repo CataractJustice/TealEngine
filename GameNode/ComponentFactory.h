@@ -21,28 +21,29 @@ namespace TealEngine
 				}
 			};
 
-			static std::map<std::string, IComponentInstancer*> instancers;
-			static std::map<std::string, std::string> mangledNames;
+		static std::map<std::string, IComponentInstancer*>& getInstancers();
+		static std::map<std::string, std::string>& getMangledNames();
 		public:
 		template<class T>
 		static void registerComponent(const std::string& demangledName) 
 		{
 			std::string mangledName = typeid(T).name();
-			auto instancerIt = instancers.find(mangledName);
-			mangledNames[demangledName] = mangledName;
-			if(instancerIt == instancers.cend())
-				instancers[mangledName] = new ComponentInstancer<T>();
+			auto instancerIt = getInstancers().find(mangledName);
+			getMangledNames()[demangledName] = mangledName;
+			if(instancerIt == getInstancers().cend())
+				getInstancers()[mangledName] = new ComponentInstancer<T>();
 		}
 
 		template<class T>
 		static void unregisterComponent() 
 		{
-			instancers.erase(typeid(T).name());
-			for(auto it = mangledNames.begin(); it != mangledNames.end(); it++) 
+			delete getInstancers()[typeid(T).name()];
+			getInstancers().erase(typeid(T).name());
+			for(auto it = getMangledNames().begin(); it != getMangledNames().end(); it++) 
 			{
 				if(it->second == typeid(T).name()) 
 				{
-					mangledNames.erase(it);
+					getMangledNames().erase(it);
 					break;
 				}
 			}
@@ -51,6 +52,13 @@ namespace TealEngine
 		static Component* instanceComponent(const std::string& className);
 		static const char** cStrComponentClassesArray();
 		static int componentClassesCount();
+		~ComponentFactory() 
+		{
+			for(auto instancer : getInstancers()) 
+			{
+				delete instancer.second;
+			}
+		}
 	};
 
 	template<class T>

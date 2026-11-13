@@ -4,6 +4,7 @@
 #include "GameNode/GameNode3D.h"
 #include "Graphics/Camera.h"
 #include "Editor/Components/EditorCameraController.h"
+#include <format>
 namespace TealEngine
 {
 	Project Project::open(const std::string& directory) 
@@ -57,7 +58,6 @@ namespace TealEngine
 		editorNodes->addChild(editorCameraNode);
 
 		Camera* editorCamera = new Camera();
-		editorCamera->setAsEditorPrimary();
 		EditorCameraController* editorCameraController = new EditorCameraController();
 		editorCameraNode->attachComponent(editorCamera);
 		editorCameraNode->attachComponent(editorCameraController);
@@ -96,7 +96,11 @@ namespace TealEngine
 	void Project::loadLibs() 
 	{
 		this->dlLoader.unloadAll();
-		this->dlLoader.loadDir(this->projectProperties["path"].get<std::string>() + "/build");
+		#ifdef WIN32_
+			this->dllLoader.loadDir(std::format("{}/build-mingw/"), this->projectProperties["path"].get<std::string>())
+		#else
+			this->dlLoader.loadDir(std::format("{}/build-linux", this->projectProperties["path"].get<std::string>()));
+		#endif
 	}
 
 	void Project::save() 

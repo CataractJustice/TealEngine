@@ -62,6 +62,10 @@ _deps
 
 build
 builds
+build-linux
+build-mingw
 
 .vscode
 .vs
+perf.data
+perf.data.old

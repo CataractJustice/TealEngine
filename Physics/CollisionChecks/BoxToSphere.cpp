@@ -8,8 +8,8 @@ namespace TealEngine
 {
 	std::pair<Collision, Collision> CollisionSolver::BoxToSphere(BoxCollider* bc, SphereCollider* sc) 
 	{
-		Transform& bt = bc->getParentOfType<GameNode3D>()->getWorldTransform();
-		Transform& st = sc->getParentOfType<GameNode3D>()->getWorldTransform();
+		const Transform& bt = bc->getParentOfType<GameNode3D>()->getWorldTransform();
+		const Transform& st = sc->getParentOfType<GameNode3D>()->getWorldTransform();
 		glm::vec3 blright = bt.right();
 		glm::vec3 blup = bt.up();
 		glm::vec3 blforward = bt.forward();

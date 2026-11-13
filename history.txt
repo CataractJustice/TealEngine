@@ -1,0 +1,1000 @@
+  458  ls
+  459  cat update.sh 
+  460  ssh root@65.21.188.12
+  461  resolvectl flush-caches
+  462  ping maidbooru.com
+  463  ping privproxy.maidbooru.com
+  464  ping idbooru.com
+  465  cd Documents/
+  466  ls
+  467  cat serverip
+  468  cat serip
+  469  ls
+  470  mkdir [K]
+  471  cd \[K\]/
+  472  ls
+  473  echo "JWJ2KI35hK" >> 3xuiu
+  474  echo "y5i4gV2GIq" >> 3xuip
+  475  echo "Dqzhep7xDqA2al5zRP" >> 3xuibp
+  476  echo "https://maidbooru.com/Dqzhep7xDqA2al5zRP" >> 3xuiurl
+  477  cd Repos/MIKU/
+  478  cat update.sh 
+  479  ssh root@65.21.188.12
+  480  ls
+  481  ssh root@65.21.188.12
+  482  cd Repos/
+  483  ls
+  484  cd Scripts/
+  485  ls
+  486  cd localserver/
+  487  ls
+  488  cat findlocalserverip.sh 
+  489  krita
+  490  ssh root@65.21.188.12
+  491  krita actor-mea-popotan-725223_large.jpg 
+  492  ./recaf.jar 
+  493  java -jar recaf.jar 
+  494  recaf.jar 
+  495  recaf
+  496  cd Downloads/
+  497  sudo strace -f -t -e trace=file java -jar recaf-gui-0.8.8.jar 
+  498  sudo strace -f -t -e trace=file java -jar recaf-gui-0.8.8.jar | grep recaf >> out.txt
+  499  strace -f -t -e trace=file java -jar recaf-gui-0.8.8.jar | grep recaf >> out.txt
+  500  strace -f -t -e trace=file java -jar recaf-gui-0.8.8.jar & grep recaf >> out.txt
+  501  clear
+  502  strace -o out.txt -f -t -e trace=file java -jar recaf-gui-0.8.8.jar
+  503  clear
+  504  cat out.txt | grep recaf
+  505  krita
+  506  ssh root@65.21.188.12
+  507  scp -r mods/ root@65.21.188.12:/home/web/1.7.10/mods
+  508  ssh root@65.21.188.12
+  509  scp -r resources/ root@65.21.188.12:/home/web/1.7.10/resources
+  510  scp -r config/ root@65.21.188.12:/home/web/1.7.10/config/
+  511  scp -r * root@65.21.188.12:/home/web/1.7.10/
+  512  ls
+  513  cat ServerStart.sh 
+  514  ls
+  515  mkdir new
+  516  ./update.sh 
+  517  ssh root@65.21.188.12
+  518  cd Downloads/
+  519  ffmpeg -i 1755384311432u.webm inc.mp4
+  520  ffmpeg -i scale=240:-1 1755384311432u.webm inc.mp4
+  521  ffmpeg scale=240:-1 -i 1755384311432u.webm inc.mp4
+  522  ffmpeg -filter:v scale=240:-1 -i 1755384311432u.webm inc.mp4
+  523  ffmpeg -i 1755384311432u.webm -filter:v scale=240:-1 inc.mp4
+  524  ssh root@65.21.188.12
+  525  update.sh
+  526  A
+  527  ls
+  528  ssh root@65.21.188.12
+  529  krita 28100.png 
+  530  cd Downloads/
+  531  krita 28100.png
+  532  ssh root@65.21.188.12
+  533  ls
+  534  cd 1.12.2forgeserver/
+  535  ls
+  536  scp * root@65.21.188.12:/home/web/1.12.2f
+  537  ls
+  538  scp -r libraries/ root@65.21.188.12:/home/web/1.12.2f
+  539  ls
+  540  cd Videos/
+  541  ls
+  542  ls Kappashiro/
+  543  clear
+  544  mkdir AkatsukiRecords
+  545  cd AkatsukiRecords/
+  546  yt-dlp --download-archive archive.txt --write-sub --sub-lang "en.*" https://www.youtube.com/@Akatsuki-Records
+  547  clear
+  548  yt-dlp -U
+  549  yt-dlp --download-archive archive.txt --write-sub --sub-lang "en.*" https://www.youtube.com/@Akatsuki-Records
+  550  ffmpeg -ss 0.5 -i vtrading.mp4 -c:v libx264 -c:a aac vtrading1.mp4
+  551  cd ..
+  552  ffmpeg -ss 0.5 -i vtrading.mp4 -c:v libx264 -c:a aac vtrading1.mp4
+  553  ffmpeg -ss 0.5 -i vtrading.mp4 -c:a aac vtrading1.mp4
+  554  open vtrading1
+  555  open vtrading1.mp4 
+  556  clear
+  557  ffmpeg -ss 0.5 -i vtrading.mp4 -c:v libx264 -c:a aac vtrading1.mp4
+  558  ffmpeg -i vtrading.mp4 -ss 0.5 -c:v copy -c:a copy vtrading1.mp4 
+  559  open vtrading1.mp4 
+  560  open vtrading.mp4 
+  561  ffmpeg -i vtrading.mp4 -ss 00:00:00.5 -c:v copy -c:a copy vtrading1.mp4 
+  562  open vtrading.mp4 
+  563  open vtrading1.mp4 
+  564  ffmpeg -i vtrading.mp4 -ss 00:00:00.5 -c:v copy -c:a copy -copyts -avoid_negative_ts make_zero vtrading1.mp4
+  565  open vtrading1.mp4 
+  566  ffmpeg -i vtrading.mp4 vt.gif
+  567  open vt.gif 
+  568  clear
+  569  ffmpeg -i vtrading.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" -c:v gif vt.gif
+  570  open vt.gif 
+  571  which ffmpeg
+  572  rm /usr/local/bin/ffmpeg 
+  573  sudo rm /usr/local/bin/ffmpeg 
+  574  ffmpeg
+  575  open *.mp4
+  576  which ffmpeg
+  577  cd Videos/
+  578  ffmpeg -ss 0.5 -i vtrading.mp4 -c copy vtrading1.mp4
+  579  open vtrading1
+  580  open vtrading1.mp4 
+  581  ffmpeg -ss 0.5 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  582  ffmpeg -ss 0.05 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  583  ffmpeg -ss 0.15 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  584  ffmpeg -ss 0.55 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  585  ffmpeg -ss 0.56 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  586  ffmpeg -ss 0.6 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  587  ffmpeg -ss 0.7 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  588  ffmpeg -ss 0.8 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  589  ffmpeg -ss 0.9 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  590  ffmpeg -ss 1 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  591  ffmpeg -ss 1.1 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  592  ffmpeg -ss 1.2 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  593  ffmpeg -ss 1.5 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  594  ffmpeg -ss 1.6 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  595  ffmpeg -ss 1.7 -i vtrading.mp4 -c:v libx264 -c:a aac -strict experimental vtrading1.mp4
+  596  [200~ffmpeg -i input.mp4 -ss 00:05:14 -to 00:05:15 -c copy output.mp4~clear
+  597  clear
+  598  ffmpeg -i minecraft\ manhunts\ be\ like...\ \[mN5_1awBr3k\].webm -ss 00:05:14 -to 00:05:15 -c copy output.mp4
+  599  open output.mp4 
+  600  ffmpeg -i minecraft\ manhunts\ be\ like...\ \[mN5_1awBr3k\].webm\ -ss 00:05:14 -to 00:05:15 -c:v libx264 -c:a aac -strict experimental out.mp4
+  601  ffmpeg -i minecraft\ manhunts\ be\ like...\ \[mN5_1awBr3k\].webm -ss 00:05:14 -to 00:05:15 -c:v libx264 -c:a aac -strict experimental out.mp4
+  602  open out.mp4 
+  603  ffmpeg -i minecraft\ manhunts\ be\ like...\ \[mN5_1awBr3k\].webm -ss 00:05:15 -to 00:05:16 -c:v libx264 -c:a aac -strict experimental out.mp4
+  604  clear
+  605  sadasdffmpeg -i input.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" -c:v gif output.gifclear
+  606  clear
+  607  ls
+  608  ffmpeg -i out.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" -c:v gif vt.gif
+  609  open vt.gif
+  610  ffmpeg -i out.mp4 -vf "fps=10,scale=640:-1:flags=lanczos" -c:v gif vt.gif
+  611  cd Videos
+  612  yt-dlp https://www.youtube.com/watch?v=mN5_1awBr3k
+  613  ffmpeg -ss 00:05:14 -i minecraft\ manhunts\ be\ like...\ \[mN5_1awBr3k\].webm -t 2 -c copy vtrading.mp4
+  614  ls
+  615  open vtrading.mp4 
+  616  ffmpeg -ss 0.5 -i vtrading.mp4 -c copy vtrading1.mp4
+  617  open vtrading1.mp4 
+  618  ffmpeg -ss 01-i vtrading.mp4 -c copy vtrading1.mp4
+  619  ffmpeg -ss 1 -i vtrading.mp4 -c copy vtrading1.mp4
+  620  open vtrading1.mp4 
+  621  sudo apt install fcrackzip
+  622  fcrackzip res.zip 
+  623  fcrackzip res.zip  -v
+  624  cd build
+  625  ld
+  626  ls
+  627  serve .
+  628  rm -r *
+  629  ls
+  630  cd bui
+  631  ls
+  632  cd debug/
+  633  ls
+  634  ./easyrpg-player 
+  635  cd ..
+  636  git pull
+  637  git add src
+  638  gti status
+  639  git status
+  640  git commint -m "merge"
+  641  git commit -m "merge"
+  642  git pull
+  643  git add CMakeLists.txt 
+  644  git commit -m "merge"
+  645  git pull
+  646  cd build/debug/
+  647  rm -r *
+  648  cd ..
+  649  ls
+  650  cd ..
+  651  ls
+  652  cd ..
+  653  ls
+  654  cd OldYno/
+  655  ls
+  656  cd ..
+  657  ls
+  658  cd KohakuMove/
+  659  ls
+  660  cd Player/
+  661  code .
+  662  ls
+  663  cd Documents/
+  664  ls
+  665  cd ~/Repos/
+  666  ls
+  667  cd MIKU/
+  668  ls
+  669  cat update.sh 
+  670  yt-dlp ls
+  671  ls
+  672  cd ~/Apps/
+  673  ls
+  674  cd bin
+  675  ls
+  676  touch maidbooru
+  677  ls
+  678  ls\
+  679  ls
+  680  cat ~/Repos/MIKU/update.sh
+  681  echo "ssh root@65.21.188.12" >> maidbooru 
+  682  echo "\#\!/bin/bash\nssh root@65.21.188.12" >> maidbooru 
+  683  cat maidbooru 
+  684  nano maidbooru 
+  685  ls
+  686  chmod +x maidbooru 
+  687  cd ~
+  688  maidbooru 
+  689  export PATH="$HOME/Apps/platform-tools:$PATH"
+  690  adb shell
+  691  ls
+  692  cd ..
+  693  adb install Typostuck.ttf
+  694  adb install Typostuck.apk
+  695  cd ..
+  696  ls
+  697  cd Apps
+  698  ls
+  699  adb push Typostuck.ttf /system/fonts/
+  700  su adb push Typostuck.ttf /system/fonts/
+  701  sudo adb push Typostuck.ttf /system/fonts/
+  702  adb root
+  703  adb rootadb remount
+  704  adb remount
+  705  adb disable-verity
+  706  adb shell
+  707  adb disable-verity
+  708  adb reboot
+  709  su
+  710  adb shell
+  711  cd back
+  712  node serve.js 
+  713  cd back
+  714  tsc maidbooru.ts 
+  715  node serve.js 
+  716  cd back
+  717  node serve.js 
+  718  tsc maidbooru.ts 
+  719  node serve.js 
+  720  tsc maidbooru.ts 
+  721  node serve.js 
+  722  tsc maidbooru.ts 
+  723  node serve.js 
+  724  tsc maidbooru.ts 
+  725  node serve.js 
+  726  tsc maidbooru.ts 
+  727  node serve.js 
+  728  tsc maidbooru.ts 
+  729  node serve.js 
+  730  tsc maidbooru.ts 
+  731  wine setup.exe 
+  732  cd ..
+  733  cd APPLOCALE/
+  734  ls
+  735  wine apploc.msi 
+  736  wine applocale
+  737  wine setup.exe 
+  738  LANG="ja_JP.UTF8" wine setup.exe 
+  739  LC_ALL="ja_JP"
+  740  env LC_ALL="ja_JP"
+  741  wine setup.exe 
+  742  sind Lunch.exe 
+  743  wine Lunch.exe 
+  744  cd ~/Apps/
+  745  git clone https://github.com/tyolab/winelocale.git
+  746  cd winelocale/
+  747  ./install 
+  748  wineloc
+  749  winelocale
+  750  cd ~/Do
+  751  cd ~/Downloads/
+  752  ls
+  753  cd POPOTAN_DVD/
+  754  ls
+  755  cd POPOTAN_DVD/
+  756  ls
+  757  wineloc -l ja_JP setup.exe 
+  758  cd ..
+  759  wineloc -l ja_JP POPOTAN_DVD.iso 
+  760  cd popotan/
+  761  ls
+  762  cd ..
+  763  ls
+  764  cd POPOTAN_DVD/
+  765  ls
+  766  wineloc -l ja_JP ぽぽたんDVD.msi
+  767  wineloc -l ja_JP "ぽぽたんDVD.msi"
+  768  wine "ぽぽたんDVD.msi"
+  769  ls
+  770  wine Lunch.exe 
+  771  cd Videos/
+  772  ls
+  773  mkdir ynv2
+  774  cd ynv2
+  775  yt-dlp https://www.youtube.com/watch?v=qIAcRIkcTRk
+  776  yt-dlp https://www.youtube.com/watch?v=eiMqOU81D34&t=1s
+  777  yt-dlp https://www.youtube.com/watch?v=KXVIBMh4KQc -t mp3
+  778  wine lain_night.scr 
+  779  wine lain_denchu.scr 
+  780  wine lain_denchu.scr /s
+  781  wine lain_night.scr /s
+  782  wine lain_denchu.scr /s
+  783  sortmaid . ~ -famidev --id Pictures
+  784  ls
+  785  cd AkatsukiRecords/
+  786  ls
+  787  cd ..
+  788  cd assets/
+  789  ls
+  790  sortmaid . ~ -famidev --id Pictures
+  791  sortmaid . ~ -famide --id Pictures
+  792  cd ..
+  793  cd clip
+  794  ls
+  795  cd ..
+  796  cd Videos/
+  797  sortmaid . ~ -famide --id Pictures
+  798  sortmaid . ~ -famidev --id Pictures
+  799  cd Documents/
+  800  ls
+  801  cd ~/Downloads/
+  802  ls
+  803  sortmaid . ~ -famidev
+  804  sortmaid . ~ -famidev -id Pictures
+  805  ls
+  806  cd Telegram\ Desktop/
+  807  ls
+  808  sortmaid . ~ -famidev -id Pictures
+  809  sortmaid . ~ -famidev --id Pictures
+  810  sortmaid ~/Images ~ -famidev --id Pictures
+  811  ls
+  812  cd ..
+  813  ls
+  814  cd new
+  815  ls
+  816  cd ..
+  817  ls
+  818  cd ..
+  819  ls
+  820  cd b
+  821  ls
+  822  shred
+  823  cd Apps/tor-browser/Browser/Downloads/
+  824  shred -z *
+  825  ls
+  826  cat 1755291337509.jpg 
+  827  open 1755291337509.jpg 
+  828  rm *
+  829  wine TimeSplittersRewind-Win64-Shipping.exe 
+  830  maidbooru 
+  831  ssh root@213.111.148.254
+  832  ssh-copy-id -i ~/.ssh/id_rsa.pub root@213.111.148.254
+  833  ssh root@213.111.148.254
+  834  cd Documents/
+  835  mkdir ovpncerts
+  836  cd ovpncerts/
+  837  scp root@213.111.148.254:/etc/openvpn/easy-rsa/pki/char.crt
+  838  scp root@213.111.148.254:/etc/openvpn/easy-rsa/pki/char.crt .
+  839  scp root@213.111.148.254://etc/openvpn/easy-rsa/pki/char.crt .
+  840  scp root@213.111.148.254:/etc/openvpn/easy-rsa/pki/issued/char.crt .
+  841  scp root@213.111.148.254:/etc/openvpn/easy-rsa/pki/ca.crt .
+  842  ssh root@213.111.148.254
+  843  openvpn
+  844  sudo cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/
+  845  ls /etc/openvpn/
+  846  open /etc/openvpn/client
+  847  open /etc/openvpn/client.conf 
+  848  sudo open /etc/openvpn/client.conf 
+  849  ssh root@213.111.148.254
+  850  shred *
+  851  shred -r *
+  852  shred Emma.7z ./Emma/* 
+  853  shred Emma.7z ./Emma/* -z
+  854  shred Emma.7z ./Emma/* -zv
+  855  mv Downloads.zip ../.
+  856  ls
+  857  shred -zv *
+  858  rm *
+  859  cd .cache/thumbnails/
+  860  ls
+  861  shred -rzv
+  862  shred -zv fail/*
+  863  shred -zv ./fail/blender/
+  864  shred -zv ./fail/blender/*
+  865  ls fail/
+  866  ls large/
+  867  shred -zv ./large/*
+  868  shred -zv ./normal/*
+  869  mv Downlols
+  870  ls
+  871  ls large/
+  872  shred -zv ./large/*
+  873  rm ./large/*
+  874  rm ./normal/*
+  875  maidbooru 
+  876  which maidbooru 
+  877  cat maidbooru
+  878  cat ./Repos/Scripts/
+  879  ls ./Repos/Scripts/
+  880  ls ./Apps/bin
+  881  ls ./Apps/bin/maidbooru 
+  882  cat ./Apps/bin/maidbooru 
+  883  scp root@65.21.188.12:/var/www/recordings/stream* .
+  884  open stream-1765461395.flv 
+  885  maidbooru 
+  886  maidbooru 
+  887  krita
+  888  scp sweetheart@192.168.65.113:/home/sweetheart/.minecraft/saves/* ./Documents/worlds/.
+  889  mkdir ./Games/worlds
+  890  scp sweetheart@192.168.65.113:/home/sweetheart/.minecraft/saves/* ./Games/worlds/.
+  891  scp s-r weetheart@192.168.65.113:/home/sweetheart/.minecraft/saves/* ./Games/worlds/.
+  892  scp -r weetheart@192.168.65.113:/home/sweetheart/.minecraft/saves/* ./Games/worlds/.
+  893  scp -r sweetheart@192.168.65.113:/home/sweetheart/.minecraft/saves/* ./Games/worlds/.
+  894  cd Repos/Scripts/localserver/
+  895  ls
+  896  ./ssh.sh 
+  897  ls
+  898  cd build
+  899  ls
+  900  ./aaslplay 
+  901  ./aaslplay
+  902  ./aaslplay /home/sweet/Music/S1_WW.wav 
+  903  g++ main.cpp -o pino
+  904  g++ main.cpp -o pino -lasound -lm
+  905  ./pino 
+  906  ./build/pino 
+  907  cd Repos
+  908  mkdir pino
+  909  cd pino/
+  910  touch main.cpp
+  911  ./build/pino 
+  912  touch main.cpp
+  913  ./build/pino 
+  914  touch main.cpp
+  915  ./build/pino 
+  916  clear
+  917  ./build/pino 
+  918  clear
+  919  ./build/pino 
+  920  clear
+  921  ./build/pino 
+  922  krita
+  923  sudo apt install Xephyr
+  924  sudo apt install xephyr
+  925  sudo apt install xserver-xephyr
+  926  Xephyr -screen 1024x768 :1 &
+  927  export DISPLAY=:1
+  928  openbox &
+  929  startxfce4 &
+  930  steam
+  931  Xephyr -screen 1024x768 :1 &
+  932  clear
+  933  Xephyr -screen 1024x768 :1 &
+  934  xdotool search "Terra"
+  935  orig=$(xdotool getwindowfocus)
+  936  xdotool mousedown --sync --window 186646529 3
+  937  xdotool windowactivate $orig
+  938  orig=$(xdotool getwindowfocus)
+  939  xdotool mousedown --window 186646529 3
+  940  xdotool windowactivate $orig
+  941  xdotool windowactivate 186646529; xdotool mousedown 3; 
+  942  xdotool windowactivate 186646529; xdotool mousedown 3; xdotool windowactivate $orig
+  943  xdotool windowactivate 186646529; xdotool mousedown 3; sleep 1; xdotool windowactivate $orig
+  944  xdotool windowactivate 186646529; sleep 1; xdotool mousedown 3; sleep 1; xdotool windowactivate $orig
+  945  orig=$(xdotool getwindowfocus)
+  946  xdotool mousedown --window 186646529 3
+  947  xdotool windowactivate $orig
+  948  orig=$(xdotool getwindowfocus)
+  949  xdotool mousedown --window 186646529 3
+  950  xdotool windowactivate $orig
+  951  xdotool mousedown --window 186646529 3
+  952  xautomation
+  953  sudp apt install xautomation
+  954  sudo apt install xautomation
+  955  xte
+  956  xte --window
+  957  xte --help
+  958  xdotool search "TerraTech"
+  959  xinput list
+  960  xdotool --window
+  961  xdotool --window 186646529 mousedown 3
+  962  xdotool mousedown --window 186646529 3
+  963  xdotool mousemove --window 186646529 0 0 
+  964  xdotool mousemove --window 186646529 0 0 mousedown --window 186646529 3
+  965  cd Repos/
+  966  mkdir OtherBuilds
+  967  cd OtherBuilds/
+  968  git clone https://github.com/jordansissel/xdotool.git
+  969  cd xdotool/
+  970  ls
+  971  autoreconf 
+  972  make
+  973  make install
+  974  sudo make install
+  975  xdotool --version
+  976  xdotool search
+  977  xdotool search "TerraTech
+  978  :
+  979  "
+  980  xdotool search "TerraTech"
+  981  xdotool --window 186646529 
+  982  xdotool window 186646529 mousedown 3
+  983  xdotool --window 186646529 
+  984  xdotool mousedown 3 --window 186646529 
+  985  xdotool mousedown 3 window 186646529 
+  986  xdotool help
+  987  xdotool
+  988  xdotool search Terra
+  989  xdotool search TerraTech
+  990  xdotool mousedown 3[B window 186646529
+  991  xdotool search TerraTech
+  992  xdotool window 186646529
+  993  xdotool window 186646529 mousedown 3
+  994  xdotool --window 186646529 mousedown 3
+  995  xdotool --version
+  996  sudp apt install xdotool
+  997  sudo apt install xdotool
+  998  sudo apt install --only-upgrade xdotool
+  999  apt-get install xdotool
+ 1000  sudo apt-get install xdotool
+ 1001  Xephyr -screen 1024x768 :1 &
+ 1002  export DISPLAY=:1
+ 1003  steam
+ 1004  clear
+ 1005  neofetch 
+ 1006  Xephyr -screen 1920x1080 :1 &
+ 1007  export DISPLAY=:1
+ 1008  steam
+ 1009  openbox
+ 1010  sudo apt install openbox
+ 1011  Xephyr -screen 1920x1080 :1 &
+ 1012  export DISPLAY=:1
+ 1013  openbox &
+ 1014  steam
+ 1015  clear
+ 1016  cinnamon-session &
+ 1017  cinnamon-session
+ 1018  openbox
+ 1019  export DISPLAY=:1
+ 1020  openbox 
+ 1021  steam
+ 1022  clear
+ 1023  Xephyr -screen 1920x1080 :1 &
+ 1024  export DISPLAY=:1
+ 1025  steam
+ 1026  steam & 
+ 1027  steam steam://rungameid/2313330
+ 1028  clear
+ 1029  sudo apt install xnest
+ 1030  Xnest :1 -geometry 1024x768 &
+ 1031  export DISPLAY=:1
+ 1032  openbox &
+ 1033  steam &
+ 1034  steam
+ 1035  Xnest :1 -geometry 1024x768 &
+ 1036  export DISPLAY=:1
+ 1037  openbox &
+ 1038  steam &
+ 1039  clear
+ 1040  steam
+ 1041  openbox
+ 1042  openbox screen
+ 1043  openbox -h
+ 1044  openbox -help
+ 1045  openbox --help
+ 1046  openbox --exit
+ 1047  export DISPLAY=:1
+ 1048  clear
+ 1049  openbox --help
+ 1050  openbox --replace
+ 1051  clear
+ 1052  steam
+ 1053  clear
+ 1054  Xephyr -screen 1920x1080 :1 -ac
+ 1055  glxgears
+ 1056  docker
+ 1057  cd Repos/
+ 1058  cd OtherBuilds/x11docker/
+ 1059  cd dockerfile-x11docker-cinnamon/
+ 1060  docker
+ 1061  docker run Dockerfile
+ 1062  docker run ./Dockerfile
+ 1063  docker run 
+ 1064  ls
+ 1065  docker run ./Dockerfile
+ 1066  docker run ./dockerfile
+ 1067  docker build
+ 1068  xephyr
+ 1069  Xephyr 
+ 1070  Xephyr -screen 1920x1080 :1 &
+ 1071  openbox
+ 1072  export DISPLAY=:1
+ 1073  openbox
+ 1074  clear
+ 1075  x11docker --gpu x11docker/xfce glxgears
+ 1076  systemctl start docker
+ 1077  x11docker --gpu x11docker/xfce glxgears
+ 1078  systemctl start docker
+ 1079  x11docker --gpu x11docker/xfce glxgears
+ 1080  sudo apt-get purge -y docker-engine docker docker.io docker-ce docker-ce-cli containerd runc
+ 1081  docker
+ 1082  docker stop
+ 1083  systemctl stop docker
+ 1084  sudo apt-get purge -y docker.io
+ 1085  docker
+ 1086  systemctl stop docker.socket
+ 1087  AppImageTool TEA
+ 1088  ls
+ 1089  ./TealEngineLauncher-x86_64.AppImage 
+ 1090  AppImageTool TEA
+ 1091  ./TealEngineLauncher-x86_64.AppImage 
+ 1092  AppImageTool TEA
+ 1093  ./TealEngineLauncher-x86_64.AppImage 
+ 1094  AppImageTool TEA
+ 1095  ./TealEngineLauncher-x86_64.AppImage 
+ 1096  AppImageTool TEA
+ 1097  ./TealEngineLauncher-x86_64.AppImage 
+ 1098  AppImageTool TEA
+ 1099  ./TealEngineLauncher-x86_64.AppImage 
+ 1100  AppImageTool TEA
+ 1101  ./TealEngineLauncher-x86_64.AppImage 
+ 1102  cd Repos
+ 1103  cd TE/TealEngine/
+ 1104  cp ../../*.AppImage .
+ 1105  ls
+ 1106  ./TealEngineLauncher-x86_64.AppImage 
+ 1107  cd Repos
+ 1108  mkdir TEA
+ 1109  cd TEA
+ 1110  mkdir usr
+ 1111  open .
+ 1112  ./appimagetool-x86_64.AppImage 
+ 1113  ./appimagetool-x86_64.AppImage --help
+ 1114  cd Repos/TE/TealEngine/
+ 1115  cmake INSTALL
+ 1116  mkdir appimage
+ 1117  cd appimage/
+ 1118  cmake install ..
+ 1119  ls
+ 1120  make
+ 1121  ls
+ 1122  ..
+ 1123  cd ..
+ 1124  ls
+ 1125  rm -r appimage
+ 1126  clear
+ 1127  cd Repos/
+ 1128  cd TE/TealEngine/
+ 1129  ls
+ 1130  open .
+ 1131  krita
+ 1132  cd back
+ 1133  node serve.js 
+ 1134  npm install express
+ 1135  node serve.js 
+ 1136  npm install express
+ 1137  node serve.js 
+ 1138  npm install express
+ 1139  node serve.js 
+ 1140  node serve
+ 1141  cd back
+ 1142  node serve
+ 1143  cd back
+ 1144  node serve.js 
+ 1145  cd back
+ 1146  node serve
+ 1147  cd ..
+ 1148  git init .
+ 1149  touch .gitignore
+ 1150  ls
+ 1151  ls -a
+ 1152  rm -r .git
+ 1153  cd ..
+ 1154  git clone https://github.com/CataractJustice/AVoterSS
+ 1155  mv -r Voter/ AVoterSS/
+ 1156  mv Voter/* AVoterSS/
+ 1157  cd AVoterSS/
+ 1158  ls
+ 1159  code .
+ 1160  cd back
+ 1161  node serve.js 
+ 1162  git status
+ 1163  git add .
+ 1164  cd ..
+ 1165  git add .
+ 1166  git status
+ 1167  git commit -m "Add stats page and stats api"
+ 1168  git push
+ 1169  cd back
+ 1170  node serve.js 
+ 1171  git status
+ 1172  git add .
+ 1173  git push
+ 1174  git add .
+ 1175  git commit -m "change const to let "
+ 1176  git push
+ 1177  clear
+ 1178  node serve.js 
+ 1179  cd ..
+ 1180  git add .
+ 1181  git status
+ 1182  cd back
+ 1183  node serve.js 
+ 1184  cd ..
+ 1185  git status
+ 1186  git rm back/statscache.json 
+ 1187  git status
+ 1188  gut add .
+ 1189  git add .
+ 1190  git status
+ 1191  git rm --cached back/statscache.json 
+ 1192  git status
+ 1193  git add .
+ 1194  git status 
+ 1195  git add .gitignore 
+ 1196  git rm back/statscache.json 
+ 1197  git add .
+ 1198  git status
+ 1199  git add .
+ 1200  git status
+ 1201  git commit -m "Stats page load character info, change layout"
+ 1202  git push
+ 1203  git status
+ 1204  cd back
+ 1205  node serve.js 
+ 1206  cd ..
+ 1207  git status
+ 1208  git add .
+ 1209  git status
+ 1210  git add .
+ 1211  git status
+ 1212  git commit -m "fix image size in stats page"
+ 1213  git push
+ 1214  cd back
+ 1215  node serve.js 
+ 1216  cd back
+ 1217  node serve.js 
+ 1218  npm install
+ 1219  node serve.js 
+ 1220  rn data.json 
+ 1221  rm data.json 
+ 1222  cd ..
+ 1223  git add .
+ 1224  git status
+ 1225  git commit -m "Remove data.json (unused)"
+ 1226  git push
+ 1227  cd  back
+ 1228  node serve.js 
+ 1229  cat HytaleClient 
+ 1230  1;1;120;120;1;0x61;1;21;22c61;1;21;22c1;1;120;120;1;0x;31R61;1;21;22cclear
+ 1231  clear
+ 1232  head -10 HytaleClient 
+ 1233  head -50 HytaleClient 
+ 1234  strings HytaleClient 
+ 1235  flatpak list
+ 1236  flatpak info --show-command com.hypixel.HytaleLauncher
+ 1237  flatpak info com.hypixel.HytaleLauncher 
+ 1238  flatpak info --show-command com.hypixel.HytaleLauncher 
+ 1239  flatpak info help
+ 1240  flatpak info
+ 1241  flatpak info --help
+ 1242  flatpak info --show-runtime com.hypixel.HytaleLauncher 
+ 1243  flatpak info -l com.hypixel.HytaleLauncher 
+ 1244  cd /var/lib/flatpak/
+ 1245  ls
+ 1246  cd app
+ 1247  ls
+ 1248  cd ..
+ 1249  ls appstream/
+ 1250  cd ~
+ 1251  cd .local/share/
+ 1252  cd flatpak/
+ 1253  ls
+ 1254  ls app
+ 1255  cd app
+ 1256  ls com.hypixel.HytaleLauncher/
+ 1257  cd com.hypixel.HytaleLauncher/
+ 1258  open .
+ 1259  flatpak 
+ 1260  cd .local/
+ 1261  ls
+ 1262  cd share/
+ 1263  cd flatpak/app/
+ 1264  ls
+ 1265  cd com.hypixel.HytaleLauncher/
+ 1266  ls
+ 1267  cd x86_64/
+ 1268  ls
+ 1269  cd master/
+ 1270  ls
+ 1271  cd ..
+ 1272  cd..
+ 1273  cd ..
+ 1274  ls
+ 1275  cd ..
+ 1276  ls
+ 1277  cd applications/
+ 1278  ls
+ 1279  open .
+ 1280  shred -z ./*
+ 1281  rm *
+ 1282  cd ~/.cache/
+ 1283  cd thumbnails/
+ 1284  ls
+ 1285  shred ./fail/
+ 1286  shred -r ./fail/
+ 1287  shred -rz ./fail/
+ 1288  shred -rz ./fail
+ 1289  shred -z ./fail/*
+ 1290  shred -z ./fail/blender/*
+ 1291  shred -z ./fail/gnome-thumbnail-factory/*
+ 1292  shred -z ./fail/blender/*
+ 1293  ls
+ 1294  shred ./large/*
+ 1295  shred ./normal/*
+ 1296  rm -r *
+ 1297  ls
+ 1298  sudo ./binaryninja 
+ 1299  pgrep HytaleClient
+ 1300  pgrep -a HytaleClient
+ 1301  pgrep HytaleClient 
+ 1302  gdb -p 12500
+ 1303  sudo gdb -p 12500
+ 1304  pgrep -a HytaleClient
+ 1305  clear
+ 1306  cd .var/
+ 1307  ls
+ 1308  cd app/
+ 1309  ls
+ 1310  cd com.hypixel.HytaleLauncher/
+ 1311  ls
+ 1312  cd cache/
+ 1313  ls
+ 1314  cd ..
+ 1315  cd data/
+ 1316  ls
+ 1317  cd Hytale/
+ 1318  ls
+ 1319  cd install/
+ 1320  ls
+ 1321  cd release/
+ 1322  ls
+ 1323  cd package/
+ 1324  ls
+ 1325  cd game/
+ 1326  ls
+ 1327  cd latest/
+ 1328  ls
+ 1329  cd Client/
+ 1330  ls
+ 1331  clear
+ 1332  ./HytaleClient --app-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest --user-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/UserData --java-exec /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/jre/latest/bin/java --auth-mode authenticated --uuid 608dd1b4-0d7b-490f-bae4-330ca9c2b83b --name Meah --identity-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njg0MjYxNTQsImlhdCI6MTc2ODQyMjU1NCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiMjgzY2E5NDctMmNhYy00YzVkLTgyNzYtNzA0N2MwNmViNTI0IiwicHJvZmlsZSI6eyJ1c2VybmFtZSI6Ik1lYWgiLCJlbnRpdGxlbWVudHMiOlsiZ2FtZS5iYXNlIl0sInNraW4iOiJ7XCJib2R5Q2hhcmFjdGVyaXN0aWNcIjpcIkRlZmF1bHQuNDhcIixcInVuZGVyd2VhclwiOlwiU3VpdC5CbHVlXCIsXCJmYWNlXCI6XCJGYWNlX0FnZWRcIixcImVhcnNcIjpcIkRlZmF1bHRcIixcIm1vdXRoXCI6XCJNb3V0aF9EZWZhdWx0XCIsXCJoYWlyY3V0XCI6XCJGcmluZ2UuQmxhY2tcIixcImZhY2lhbEhhaXJcIjpcIk1vdXN0YWNoZS5CbGFja1wiLFwiZXllYnJvd3NcIjpcIk1lZGl1bS5CbGFja1wiLFwiZXllc1wiOlwiTWVkaXVtX0V5ZXMuQmx1ZUxpZ2h0XCIsXCJwYW50c1wiOlwiTGVhdGhlclBhbnRzLkJsYWNrXCIsXCJvdmVycGFudHNcIjpudWxsLFwidW5kZXJ0b3BcIjpcIkNvc3R1bWVTaGlydC5DYXJtaW5cIixcIm92ZXJ0b3BcIjpcIlRyZW5jaENvYXQuQmxhY2tcIixcInNob2VzXCI6XCJMZWF0aGVyQm9vdHMuUmVkXCIsXCJoZWFkQWNjZXNzb3J5XCI6bnVsbCxcImZhY2VBY2Nlc3NvcnlcIjpudWxsLFwiZWFyQWNjZXNzb3J5XCI6bnVsbCxcInNraW5GZWF0dXJlXCI6bnVsbCxcImdsb3Zlc1wiOlwiQmFzaWNHbG92ZXNfQmFzaWMuQmxhY2tcIixcImNhcGVcIjpudWxsfSJ9LCJzY29wZSI6Imh5dGFsZTpjbGllbnQiLCJzdWIiOiI2MDhkZDFiNC0wZDdiLTQ5MGYtYmFlNC0zMzBjYTljMmI4M2IifQ.P56aVd-BJzm0VUMuICFnCcXzN5gzctfBuLiJQm9g1qsOIwsVB-abOCIxd0AkqD1MkRncv5KXUhwKWQQY5m2kDQ --session-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njg0MjYxNTQsImlhdCI6MTc2ODQyMjU1NCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiMjgzY2E5NDctMmNhYy00YzVkLTgyNzYtNzA0N2MwNmViNTI0Iiwic2NvcGUiOiJoeXRhbGU6Y2xpZW50Iiwic3ViIjoiNjA4ZGQxYjQtMGQ3Yi00OTBmLWJhZTQtMzMwY2E5YzJiODNiIn0.jMCPhY98ZKvlexHuOHS8QJbDfW4vhn1zx35NPx5OF0WtGVWiDw62wF24ildW8s7wojHh8JThUauextP6_g8JBg
+ 1333  ./HytaleClient --app-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest --user-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/UserData --java-exec /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/jre/latest/bin/java --auth-mode authenticated --uuid 608dd1b4-0d7b-490f-bae4-330ca9c2b83b --name Meah --identity-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njg0MjYxNTQsImlhdCI6MTc2ODQyMjU1NCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiMjgzY2E5NDctMmNhYy00YzVkLTgyNzYtNzA0N2MwNmViNTI0IiwicHJvZmlsZSI6eyJ1c2VybmFtZSI6Ik1lYWgiLCJlbnRpdGxlbWVudHMiOlsiZ2FtZS5iYXNlIl0sInNraW4iOiJ7XCJib2R5Q2hhcmFjdGVyaXN0aWNcIjpcIkRlZmF1bHQuNDhcIixcInVuZGVyd2VhclwiOlwiU3VpdC5CbHVlXCIsXCJmYWNlXCI6XCJGYWNlX0FnZWRcIixcImVhcnNcIjpcIkRlZmF1bHRcIixcIm1vdXRoXCI6XCJNb3V0aF9EZWZhdWx0XCIsXCJoYWlyY3V0XCI6XCJGcmluZ2UuQmxhY2tcIixcImZhY2lhbEhhaXJcIjpcIk1vdXN0YWNoZS5CbGFja1wiLFwiZXllYnJvd3NcIjpcIk1lZGl1bS5CbGFja1wiLFwiZXllc1wiOlwiTWVkaXVtX0V5ZXMuQmx1ZUxpZ2h0XCIsXCJwYW50c1wiOlwiTGVhdGhlclBhbnRzLkJsYWNrXCIsXCJvdmVycGFudHNcIjpudWxsLFwidW5kZXJ0b3BcIjpcIkNvc3R1bWVTaGlydC5DYXJtaW5cIixcIm92ZXJ0b3BcIjpcIlRyZW5jaENvYXQuQmxhY2tcIixcInNob2VzXCI6XCJMZWF0aGVyQm9vdHMuUmVkXCIsXCJoZWFkQWNjZXNzb3J5XCI6bnVsbCxcImZhY2VBY2Nlc3NvcnlcIjpudWxsLFwiZWFyQWNjZXNzb3J5XCI6bnVsbCxcInNraW5GZWF0dXJlXCI6bnVsbCxcImdsb3Zlc1wiOlwiQmFzaWNHbG92ZXNfQmFzaWMuQmxhY2tcIixcImNhcGVcIjpudWxsfSJ9LCJzY29wZSI6Imh5dGFsZTpjbGllbnQiLCJzdWIiOiI2MDhkZDFiNC0wZDdiLTQ5MGYtYmFlNC0zMzBjYTljMmI4M2IifQ.P56aVd-BJzm0VUMuICFnCcXzN5gzctfBuLiJQm9g1qsOIwsVB-abOCIxd0AkqD1MkRncv5KXUhwKWQQY5m2kDQ --session-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njg0MjYxNTQsImlhdCI6MTc2ODQyMjU1NCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiMjgzY2E5NDctMmNhYy00YzVkLTgyNzYtNzA0N2MwNmViNTI0Iiwic2NvcGUiOiJoeXRhbGU6Y2xpZW50Iiwic3ViIjoiNjA4ZGQxYjQtMGQ3Yi00OTBmLWJhZTQtMzMwY2E5YzJiODNiIn0.jMCPhY98ZKvlexHuOHS8QJbDfW4vhn1zx35NPx5OF0WtGVWiDw62wF24ildW8s7wojHh8JThUauextP6_g8JBg -p
+ 1334  strings HytaleClient 
+ 1335  strings HytaleClient
+ 1336  nm -C HytaleClient | head
+ 1337  nm -C HytaleClient
+ 1338  file HytaleClient
+ 1339  cd Repos/
+ 1340  ls
+ 1341  cd OtherBuilds/
+ 1342  ls
+ 1343  git clone https://github.com/cs01/gdbgui.git
+ 1344  cd gdbgui/
+ 1345  ls
+ 1346  ./setup.py
+ 1347  open
+ 1348  open .
+ 1349  gdbui
+ 1350  cd ..
+ 1351  pip install gdbgui
+ 1352  sudo pip install gdbgui
+ 1353  sudo pip install python2-gdbgui
+ 1354  apt install python3-gdbui
+ 1355  python3 -m pip install --user pipx
+ 1356  python3 -m userpath append ~/.local/bin
+ 1357  python3 -m pip install --user pipx
+ 1358  sudo python3 -m pip install --user pipx
+ 1359  sudo python3 -mg pip install --user pipx
+ 1360  sudo python3 -g -m pip install --user pipx
+ 1361  python3 -m pip install --user pipx
+ 1362  pip
+ 1363  pip install gdbui
+ 1364  apt install pipx
+ 1365  pipx install gdbgui
+ 1366  pgrep HytaleClient 
+ 1367  gdb -p 16273
+ 1368  sudo gdb -p 16273
+ 1369  ln -s left_ptr.png arrow
+ 1370  wine Launcher.exe 
+ 1371  ssh root@89.124.73.25
+ 1372  maidbooru 
+ 1373  ls
+ 1374  .ssh/
+ 1375  ls .ssh/
+ 1376  cat .ssh/id_rsa.pub 
+ 1377  maidbooru 
+ 1378  maidbooru 
+ 1379  /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest/Client/HytaleClient --app-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest --user-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/UserData --java-exec /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/jre/latest/bin/java --auth-mode authenticated --uuid 608dd1b4-0d7b-490f-bae4-330ca9c2b83b --name Meah --identity-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njk0MzcxMDgsImlhdCI6MTc2OTQzMzUwOCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiZTYwNWJmN2UtZThkNi00MjNjLTg4ZTctNmFhZmE0ODY3MTVlIiwicHJvZmlsZSI6eyJ1c2VybmFtZSI6Ik1lYWgiLCJlbnRpdGxlbWVudHMiOlsiZ2FtZS5iYXNlIl0sInNraW4iOiJ7XCJib2R5Q2hhcmFjdGVyaXN0aWNcIjpcIkRlZmF1bHQuNDhcIixcInVuZGVyd2VhclwiOlwiU3VpdC5CbHVlXCIsXCJmYWNlXCI6XCJGYWNlX0FnZWRcIixcImVhcnNcIjpcIkRlZmF1bHRcIixcIm1vdXRoXCI6XCJNb3V0aF9EZWZhdWx0XCIsXCJoYWlyY3V0XCI6XCJGcmluZ2UuQmxhY2tcIixcImZhY2lhbEhhaXJcIjpcIk1vdXN0YWNoZS5CbGFja1wiLFwiZXllYnJvd3NcIjpcIk1lZGl1bS5CbGFja1wiLFwiZXllc1wiOlwiTWVkaXVtX0V5ZXMuQmx1ZUxpZ2h0XCIsXCJwYW50c1wiOlwiTGVhdGhlclBhbnRzLkJsYWNrXCIsXCJvdmVycGFudHNcIjpudWxsLFwidW5kZXJ0b3BcIjpcIkNvc3R1bWVTaGlydC5DYXJtaW5cIixcIm92ZXJ0b3BcIjpcIlRyZW5jaENvYXQuQmxhY2tcIixcInNob2VzXCI6XCJMZWF0aGVyQm9vdHMuUmVkXCIsXCJoZWFkQWNjZXNzb3J5XCI6bnVsbCxcImZhY2VBY2Nlc3NvcnlcIjpudWxsLFwiZWFyQWNjZXNzb3J5XCI6bnVsbCxcInNraW5GZWF0dXJlXCI6bnVsbCxcImdsb3Zlc1wiOlwiQmFzaWNHbG92ZXNfQmFzaWMuQmxhY2tcIixcImNhcGVcIjpudWxsfSJ9LCJzY29wZSI6Imh5dGFsZTpjbGllbnQiLCJzdWIiOiI2MDhkZDFiNC0wZDdiLTQ5MGYtYmFlNC0zMzBjYTljMmI4M2IifQ.YpJi_WbmXvg8Ojzvu__F71LLXJaBwr_xNZAB6NvfnWkZivO9nHxYbmbvU2uPN0vEBV21pSWcC5a4lXtyKuOUAg --session-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njk0MzcxMDgsImlhdCI6MTc2OTQzMzUwOCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiZTYwNWJmN2UtZThkNi00MjNjLTg4ZTctNmFhZmE0ODY3MTVlIiwic2NvcGUiOiJoeXRhbGU6Y2xpZW50Iiwic3ViIjoiNjA4ZGQxYjQtMGQ3Yi00OTBmLWJhZTQtMzMwY2E5YzJiODNiIn0.UtNwcGPc6MVD6e5wi6C3ZeZBtkE6ETKVqqfBvlzDL4Dc_mZEmA2z5PXCLrFDCrXN96gaZexhkloOqMN-ZdKJAQ
+ 1380  pgrep -a HytaleClient
+ 1381  /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest/Client/HytaleClient --app-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/game/latest --user-dir /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/UserData --java-exec /home/sweet/.var/app/com.hypixel.HytaleLauncher/data/Hytale/install/release/package/jre/latest/bin/java --auth-mode authenticated --uuid 608dd1b4-0d7b-490f-bae4-330ca9c2b83b --name Meah --identity-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njk0MzcxMDgsImlhdCI6MTc2OTQzMzUwOCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiZTYwNWJmN2UtZThkNi00MjNjLTg4ZTctNmFhZmE0ODY3MTVlIiwicHJvZmlsZSI6eyJ1c2VybmFtZSI6Ik1lYWgiLCJlbnRpdGxlbWVudHMiOlsiZ2FtZS5iYXNlIl0sInNraW4iOiJ7XCJib2R5Q2hhcmFjdGVyaXN0aWNcIjpcIkRlZmF1bHQuNDhcIixcInVuZGVyd2VhclwiOlwiU3VpdC5CbHVlXCIsXCJmYWNlXCI6XCJGYWNlX0FnZWRcIixcImVhcnNcIjpcIkRlZmF1bHRcIixcIm1vdXRoXCI6XCJNb3V0aF9EZWZhdWx0XCIsXCJoYWlyY3V0XCI6XCJGcmluZ2UuQmxhY2tcIixcImZhY2lhbEhhaXJcIjpcIk1vdXN0YWNoZS5CbGFja1wiLFwiZXllYnJvd3NcIjpcIk1lZGl1bS5CbGFja1wiLFwiZXllc1wiOlwiTWVkaXVtX0V5ZXMuQmx1ZUxpZ2h0XCIsXCJwYW50c1wiOlwiTGVhdGhlclBhbnRzLkJsYWNrXCIsXCJvdmVycGFudHNcIjpudWxsLFwidW5kZXJ0b3BcIjpcIkNvc3R1bWVTaGlydC5DYXJtaW5cIixcIm92ZXJ0b3BcIjpcIlRyZW5jaENvYXQuQmxhY2tcIixcInNob2VzXCI6XCJMZWF0aGVyQm9vdHMuUmVkXCIsXCJoZWFkQWNjZXNzb3J5XCI6bnVsbCxcImZhY2VBY2Nlc3NvcnlcIjpudWxsLFwiZWFyQWNjZXNzb3J5XCI6bnVsbCxcInNraW5GZWF0dXJlXCI6bnVsbCxcImdsb3Zlc1wiOlwiQmFzaWNHbG92ZXNfQmFzaWMuQmxhY2tcIixcImNhcGVcIjpudWxsfSJ9LCJzY29wZSI6Imh5dGFsZTpjbGllbnQiLCJzdWIiOiI2MDhkZDFiNC0wZDdiLTQ5MGYtYmFlNC0zMzBjYTljMmI4M2IifQ.YpJi_WbmXvg8Ojzvu__F71LLXJaBwr_xNZAB6NvfnWkZivO9nHxYbmbvU2uPN0vEBV21pSWcC5a4lXtyKuOUAg --session-token eyJhbGciOiJFZERTQSIsImtpZCI6IjIwMjUtMTAtMDEiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE3Njk0MzcxMDgsImlhdCI6MTc2OTQzMzUwOCwiaXNzIjoiaHR0cHM6Ly9zZXNzaW9ucy5oeXRhbGUuY29tIiwianRpIjoiZTYwNWJmN2UtZThkNi00MjNjLTg4ZTctNmFhZmE0ODY3MTVlIiwic2NvcGUiOiJoeXRhbGU6Y2xpZW50Iiwic3ViIjoiNjA4ZGQxYjQtMGQ3Yi00OTBmLWJhZTQtMzMwY2E5YzJiODNiIn0.UtNwcGPc6MVD6e5wi6C3ZeZBtkE6ETKVqqfBvlzDL4Dc_mZEmA2z5PXCLrFDCrXN96gaZexhkloOqMN-ZdKJAQ
+ 1382  ssh 89.124.73.25
+ 1383  ssh root@89.124.73.25
+ 1384  maidm
+ 1385  sortmaid --id Pictures
+ 1386  sortmaid . ~ --id Pictures
+ 1387  sortmaid . ~ --id ~/Pictures
+ 1388  ls
+ 1389  sortmaid . ~ --id ~/Pictures
+ 1390  sortmaid . ~ --id ~/Pictures -vadmef
+ 1391  ls
+ 1392  sortmaid . ~ --id ~/Pictures -vadmef
+ 1393  sortmaid . ~ --id~/Pictures -vadmef
+ 1394  sortmaid . ~ --id ~/Pictures -vadmef
+ 1395  sortmaid . ~ -ivadmef --id ~/Pictures
+ 1396  cd Downloads/
+ 1397  sortmaid . ~ -ivadmef --id ~/Pictures
+ 1398  ls
+ 1399  cd Telegram\ Desktop/
+ 1400  sortmaid . ~ -ivadmef --id ~/Pictures
+ 1401  sudo pix
+ 1402  cd Documents/
+ 1403  echo "ypoz7q2m3p1pbnvpfy4dokcrripipoh6@gmail.com" >> googlelogin
+ 1404  rm googlelogin 
+ 1405  ls
+ 1406  google
+ 1407  ls
+ 1408  echo "ypoz7q2m3p1pbnvpfy4dokc" >> glogin
+ 1409  shred .
+ 1410  shred ./*
+ 1411  shred --help
+ 1412  shred --remove ./*
+ 1413  shred .
+ 1414  shred ./*
+ 1415  rm *
+ 1416  cd ..
+ 1417  ls
+ 1418  cd normal/
+ 1419  ls
+ 1420  shred ./*
+ 1421  rm .
+ 1422  rm *
+ 1423  ls
+ 1424  cd ..
+ 1425  ls
+ 1426  cd fail/
+ 1427  ls
+ 1428  cd gnome-thumbnail-factory/
+ 1429  ls
+ 1430  shred ./*
+ 1431  rm *\
+ 1432  rm *
+ 1433  ~/.cache/thumbnails/
+ 1434  ls
+ 1435  open .
+ 1436  shred ./*
+ 1437  shred .
+ 1438  shred ./*
+ 1439  ls
+ 1440  shred
+ 1441  shred --help
+ 1442  shred ./*
+ 1443  rm ./*
+ 1444  cd ~
+ 1445  cd .cache/
+ 1446  ls
+ 1447  cd ..
+ 1448  ls
+ 1449  cd .local/
+ 1450  cd Downloads/
+ 1451  ls
+ 1452  open Untitled.jpeg 
+ 1453  cat ~/textrand.txt > Untitled.jpeg 
+ 1454  convert
+ 1455  maidbooru 
+ 1456  ./build/TealEngineLauncher 
+ 1457  history >> history.txt

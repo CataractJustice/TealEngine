@@ -51,5 +51,9 @@ namespace TealEngine
 		RigidBody();
 
 		void onCollision(const Collision& collision) override;
+
+		static glm::vec3 globalGravityAcceleration;
+		glm::vec3 objectLocalGravity;
+		bool useObjectLocalGravity;
 	};
 }

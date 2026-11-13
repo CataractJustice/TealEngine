@@ -23,8 +23,6 @@ public:
 class PerlinNoise
 {
 private:
-	static float fx, fy, fz;
-	static float n[2][2][2];
 public:
 
 	static float get(float x, float y = 0.0f, float z = 0.0f, unsigned int octaves = 1, float persistance = 0.5f, float lacunarity = 2.0f);

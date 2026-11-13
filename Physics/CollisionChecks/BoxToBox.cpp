@@ -1,15 +1,14 @@
 #include "Physics/CollisionSolver.h"
 #include "GameNode/GameNode3D.h"
 #include "Core.h"
-#include "Graphics/Renderer/Shapes/Line3D.h"
 
 namespace TealEngine 
 {
 	std::pair<Collision, Collision> CollisionSolver::BoxToBox(BoxCollider* bca, BoxCollider* bcb)
 	{
 		Collision colla, collb;
-		Transform& atransform = bca->getParentOfType<GameNode3D>()->getWorldTransform();
-		Transform& btransform = bcb->getParentOfType<GameNode3D>()->getWorldTransform();
+		const Transform& atransform = bca->getParentOfType<GameNode3D>()->getWorldTransform();
+		const Transform& btransform = bcb->getParentOfType<GameNode3D>()->getWorldTransform();
 
 		glm::vec3 apos, bpos;
 		apos = atransform.getPosition();
@@ -127,13 +126,11 @@ namespace TealEngine
 					{
 						collisionCorners++;
 						pos += atransform.pointFromLocalToGlobal(acorner, true);
-						Core::shapesRenderer.pushShape(Line3D(atransform.pointFromLocalToGlobal(acorner, true), atransform.pointFromLocalToGlobal(acorner, true) + 0.1f, glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), 0.1f));
 					}
 					if(binac.x > afrom.x && binac.y > afrom.y && binac.z > afrom.z && binac.x < ato.x && binac.y < ato.y && binac.z < ato.z)
 					{
 						collisionCorners++;
 						pos += btransform.pointFromLocalToGlobal(bcorner, true);
-						Core::shapesRenderer.pushShape(Line3D(btransform.pointFromLocalToGlobal(bcorner, true), btransform.pointFromLocalToGlobal(bcorner, true) + 0.1f, glm::vec4(1.0f, 0.5f, 0.0f, 1.0f), 0.1f));
 					}
 				}
 			}

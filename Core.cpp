@@ -6,7 +6,6 @@
 #include "Graphics/Graphics.h"
 #include "Graphics/Mesh/MeshUtil.h"
 #include "Graphics/Renderer/RenderUtil.h"
-#include "Graphics/Renderer/DeferredRenderer.h"
 #include "Graphics/Mesh/MeshRenderer.h"
 #include "System/Clock.h"
 #include <thread>
@@ -19,25 +18,30 @@
 #include "System/DLLoader.h"
 #include "GameNode/ComponentFactory.h"
 #include "Editor/UI/UISpace.h"
-#include "Graphics/Renderer/IdRenderer.h"
 #include "Editor/UI/EditorUI/GameAssetsBrowser.h"
-#include "Graphics/Renderer/IdRenderer.h"
 #include "Editor/UI/SelectedObjectOutlinePostProcess.h"
 #include "Graphics/GUI/Text/FreeTypeUtil.h"
-
+#include "GameNode/SceneNode.h"
+#include "Graphics/DeferredRenderer.h"
+#include "Graphics/Light/Light.h"
+#include "Graphics/Shapes/Line3D.h"
+#include "enet/enet.h"
+#ifndef _WIN32
+#include <sys/resource.h>
+#endif
 using Json = nlohmann::json;
 
 namespace TealEngine
 {
 	namespace Core
 	{
-		DeferredRenderer renderer;
-		IdRenderer idRenderer;
+		SceneNode* scene;
 		GameNode* sceneRoot;
 		Clock sceneclock;
 		UISpace uiSpace;
 		GameNode3D* idCameraNode;
 		Camera* idCamera;
+		const Camera* camera;
 		ActionList actionList;
 		Project currentProject;
 		TextureManager textureManager;
@@ -45,36 +49,80 @@ namespace TealEngine
 		ShadersManager shadersManager;
 		MaterialsManager materialsManager;
 		FontManager fontManager;
-		PhysicsScene physicsScene;
-		ShapesRenderer shapesRenderer;
+		PhysicsScene* physicsScene;
 		Profiler profiler;
-
-		Json originalSceneJson;
+		Kirino::UniformBufferObject cameraUBO;
+		Kirino::UniformBufferObject transformUBO;
+		DeferredRenderer* renderer;
+		ShapesRenderer shapesRenderer;
+		Client client;
+		Host host;
+		NetworkDictionary networkDictionary;
+		LaunchArguments launchArguments;
 		GameNode* originalScene;
+		GameNode* nextScene = nullptr;
+		Json originalSceneJson;
+		
+		int frameId = 0;
+
+		Kirino::Material imageMaterial;
+
 
 		bool modulesNeedReload = false;
 		void requestModulesReload() { modulesNeedReload = true; }
 
-		GameNode* nextScene = nullptr;
 		std::string nextScenePath = "";
 
 		EngineState engineState = EngineState::GAME_STOPPED;
 		EngineState targetEngineState = EngineState::GAME_STOPPED;
 
+		unsigned int getFrameId() 
+		{
+			return frameId;
+		}
+
+		void setCamera(const Camera* cam) 
+		{
+			camera = cam;
+			
+			struct alignas(16) UBOData 
+			{
+				glm::mat4 PV;
+				glm::vec3 dir;
+				float p0;
+				glm::vec3 pos;
+				float p1;
+			};
+			UBOData ubo;
+			ubo.PV = cam->getPV();
+			ubo.dir = cam->getParentOfTypeConst<GameNode3D>()->getWorldTransform().forward();
+			ubo.pos = cam->getParentOfTypeConst<GameNode3D>()->getWorldTransform().getPosition();
+			cameraUBO.upload(ubo);
+		}
+
 		void playImpl() 
 		{
 			originalScene = sceneRoot;
 			sceneRoot = GameNode::nodeFromJson(sceneRoot->toJson());
+			scene->removeChild(originalScene);
+			scene->addChild(sceneRoot);
 		}
 
 		void stopImpl() 
 		{
-			delete sceneRoot;
+			scene->removeChild(sceneRoot);
+			sceneRoot->destroy();
+			GameNode::cleanupDestroyed();
 			sceneRoot = originalScene;
+			scene->addChild(sceneRoot);
 		}
 
 		void update()
 		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			frameId++;
 			Profiler::ProfilerPoint frameProf(&profiler, "Frame");
 			static float updateTimer = 0.0f;
 			sceneclock.update();
@@ -102,36 +150,31 @@ namespace TealEngine
 				}
 				idRenderer.render(sceneRoot);
 			}*/
+			
 			idsProf.end();
 			//render game
 			Profiler::ProfilerPoint defferedProf(&profiler, "Deferred render");
-			renderer.render(sceneRoot);
-			
+			renderer->render(Camera::getPrimary());
+			defferedProf.end();
+			Profiler::ProfilerPoint guiProf(&profiler, "Engine GUI");
 			glDisable(GL_CULL_FACE);
 			glDisable(GL_DEPTH_TEST);
+			scene->refreshGUI();
 			//Display render texture on screen
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0,0, Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
-			if(renderer.getActiveCamera()) 
+			
+			if(Camera::getPrimary()) 
 			{
-				glDisable(GL_BLEND);
-				Render::renderTexture(renderer.getActiveCamera()->renderTexture.id());
+				shapesRenderer.pushShape(Line3D(glm::vec3(0.0f), glm::vec3(4.0f, 0.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0.2f));
+				shapesRenderer.pushShape(Line3D(glm::vec3(0.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.2f));
+				shapesRenderer.pushShape(Line3D(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 4.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0.2f));
+				setCamera(Camera::getPrimary());
+				shapesRenderer.renderAll();
 			}
-			defferedProf.end();
 			//Render GUI
-			Profiler::ProfilerPoint guiProf(&profiler, "Engine GUI");
-			sceneRoot->GUIRender();
+			//sceneRoot->GUIRender();
 			guiProf.end();
-			//ImGUI
-			Profiler::ProfilerPoint imGuiProf(&profiler, "ImGui GUI");
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-			//Editor ui
-			uiSpace.display();
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			imGuiProf.end();
 			renderProf.end();
 
 			Profiler::ProfilerPoint updateProf(&profiler, "Update");
@@ -144,14 +187,18 @@ namespace TealEngine
 			//Switch scene
 			if(nextScene) 
 			{
+				scene->removeChild(sceneRoot);
 				delete sceneRoot;
 				sceneRoot = nextScene;
+				scene->addChild(sceneRoot);
 				nextScene = nullptr;
 			}
 			else if(nextScenePath.length()) 
 			{
+				scene->removeChild(sceneRoot);
 				delete sceneRoot;
 				sceneRoot = GameNode::loadNodeFromJsonFile(nextScenePath);
+				scene->addChild(sceneRoot);
 				nextScenePath = "";
 			}
 			//Update engine state
@@ -167,30 +214,41 @@ namespace TealEngine
 			}
 			engineState = targetEngineState;
 			Input::inputUpdate();
+			
+			scene->editorUpdate();
 			//run game logics
 			if(engineState == EngineState::GAME_PLAYING) 
 			{
-				sceneRoot->updateAll();
-				physicsScene.CollisionCheck();
-				physicsScene.CollisionFlush();
+				scene->update();
+				physicsScene->collisionsCheck();
+				physicsScene->collisionsFlush();
 			}
-			else 
-			{
-				sceneRoot->editorUpdate();
-			}
-			
 			//destruct objects marked as destroyed
 			GameNode::cleanupDestroyed();
 			updateProf.end();
-			
+			//ImGUI
+			Profiler::ProfilerPoint imGuiProf(&profiler, "ImGui GUI");
+			//Editor ui
+			uiSpace.display();
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			imGuiProf.end();
 			//Swap buffers and other
 			Profiler::ProfilerPoint displayProf(&profiler, "Display");
 			Graphics::display();
 			displayProf.end();
+			if(host.isLive()) host.update(scene);
+			if(client.isLive()) client.update(scene);
 		}
 
-		void init()
+		void windowResizeCallback(int width, int height) 
 		{
+			scene->windowResize(width, height);
+		}
+
+		void init(int argc, char** argv)
+		{
+			launchArguments.parse(argc, argv);
 			//load settings
 			std::fstream settingsFile("settings.json");
 			Json settingsJson = Json::parse(settingsFile);
@@ -198,29 +256,30 @@ namespace TealEngine
 			Graphics::init(settingsJson["title"]);
 			BasicMeshes::init();
 			Input::init();
-			lightInit();
+			//lightInit();
 			uiSpace.init();
 			FreeTypeUtil::FreeTypeInitialize();
-			
-			//setup deferred renderer
-			renderer.resize(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
-			renderer.setDepthTest(true);
-			renderer.setDepthClear(true);
-			renderer.setColorClear(true);
-			renderer.setClearColor(vec4(0.0f, 0.0f, 0.0f, 1.0f));
-			//setup id renderer
-			IdRenderer::loadIdShader();
-			idRenderer.setDepthTest(true);
-			idRenderer.setDepthClear(true);
-			idRenderer.setColorClear(true);
-			idRenderer.setClearColor(vec4(0.0f, 0.0f, 0.0f, 0.0f));
 
+			Graphics::window->setWindowResizeCallback(windowResizeCallback);
+			enet_initialize();
+			//default UBOs 
+			cameraUBO.create();
+			transformUBO.create();
+			materialsManager.addDefaultUBO("CameraBlock", cameraUBO.getId());
+			materialsManager.addDefaultUBO("TransformBlock", transformUBO.getId());
+
+			shadersManager.loadRecursive("./Assets");
+			modelsManager.loadRecursive("./Assets");
+			textureManager.loadRecursive("./Assets");
+			materialsManager.loadRecursive("./Assets");
+			fontManager.loadRecursive("./Assets");
+			
 			//ImGUI
 			IMGUI_CHECKVERSION();
 			
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO();
-			io.Fonts->AddFontFromFileTTF("./Assets/Fonts/DroidSansMono.ttf", 18.0f);
+			//io.Fonts->AddFontFromFileTTF("./Assets/Fonts/DroidSansMono.ttf", 18.0f);
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 			ImVec4* colors = ImGui::GetStyle().Colors;
   			ImGuiStyle& style = ImGui::GetStyle();
@@ -285,14 +344,21 @@ namespace TealEngine
 			SelectedObjectOutlinePostProcess::loadShader();
 			gameAssetsBrowser->setPath(std::filesystem::current_path());
 			gameAssetsBrowser->setRootPath(std::filesystem::current_path());
+			scene = new SceneNode();
+			renderer = new DeferredRenderer();
+			physicsScene = new PhysicsScene();
+			scene->attachComponents({physicsScene, renderer});
 			sceneRoot = new GameNode3D();
-
-			idCameraNode = new GameNode3D();
-			idCamera = new Camera();
-			idCamera->renderTexture = Texture(GL_TEXTURE_2D, GL_R32I, GL_RED_INTEGER, GL_INT);
-			idCamera->renderTexture.create(Graphics::window->getWindowWidth(), Graphics::window->getWindowHeight());
-			idCameraNode->attachComponent(idCamera);
-			idRenderer.setCamera(idCamera);
+			scene->addChild(sceneRoot);
+			if(launchArguments.exists("p")) 
+			{
+				std::string projectPathArg = launchArguments.get("p");
+				Core::setProject(Project::open(projectPathArg));
+			}
+			if(launchArguments.exists("run")) 
+			{
+				play();
+			}
 		}
 
 		GameNode* getRoot() 
@@ -302,27 +368,33 @@ namespace TealEngine
 
 		void setProject(Project project) 
 		{
+			if(currentProject.isOpen()) 
+			{
+				textureManager.unloadRecursive(currentProject.getPath()+"/GameAssets");
+				modelsManager.unloadRecursive(currentProject.getPath()+"/GameAssets");
+				shadersManager.unloadRecursive(currentProject.getPath()+"/GameAssets");
+				materialsManager.unloadRecursive(currentProject.getPath()+"/GameAssets");
+				fontManager.unloadRecursive(currentProject.getPath()+"/GameAssets");
+			}
 			currentProject = project;
 			requestModulesReload();
 			setScene(currentProject.getDefaultScene());
 			gameAssetsBrowser->setPath(project.getPath()+"/GameAssets");
 			gameAssetsBrowser->setRootPath(project.getPath()+"/GameAssets");
-			textureManager.clearAll();
-			textureManager.loadRecursive(project.getPath()+"/Assets");
 			textureManager.loadRecursive(project.getPath()+"/GameAssets");
-			modelsManager.clearAll();
-			modelsManager.loadRecursive(project.getPath()+"/Assets");
+
 			modelsManager.loadRecursive(project.getPath()+"/GameAssets");
-			shadersManager.clearAll();
-			shadersManager.loadRecursive(project.getPath()+"/Assets");
+			modelsManager.build();
 			shadersManager.loadRecursive(project.getPath()+"/GameAssets");
-			materialsManager.clearAll();
-			materialsManager.loadRecursive(project.getPath()+"/Assets");
 			materialsManager.loadRecursive(project.getPath()+"/GameAssets");
-			fontManager.clearAll();
-			fontManager.loadRecursive(project.getPath()+"/Assets");
 			fontManager.loadRecursive(project.getPath()+"/GameAssets");
+
 			std::filesystem::current_path(project.getPath());
+			imageMaterial.setProgram(&shadersManager.get("ScreenImage"));
+			unsigned int backgroundTexture = textureManager.get("RGBNoise.png").id();
+			imageMaterial.setTexture("textureImage", &backgroundTexture, 1, 0);
+			lightInit();
+			networkDictionary.load();
 		}
 
 		void setScene(GameNode* node) 
@@ -357,21 +429,33 @@ namespace TealEngine
 	
 		void reloadModules() 
 		{
-			currentProject.buildLibs();
-
 			Json currentScene;
 			if(sceneRoot) 
 			{
 				//save current scene to restore after new libs are loaded
 				currentScene = sceneRoot->toJson();
+				scene->removeChild(sceneRoot);
 				//delete scene while old libs are still loaded so proper destructors are called
 				delete sceneRoot;
 			}
 
 			currentProject.loadLibs();
 			//restore scene with new libs loaded
-			if(sceneRoot)
+			if(sceneRoot) 
+			{
 				sceneRoot = GameNode::nodeFromJson(currentScene);
+				scene->addChild(sceneRoot);
+			}
+		}
+		SceneNode* sceneNode() 
+		{
+			return scene;
+		}
+
+		void close() 
+		{
+			delete scene;
+			if(scene != originalScene) delete originalScene;
 		}
 	}
 }

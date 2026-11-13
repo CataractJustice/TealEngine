@@ -6,7 +6,7 @@ namespace TealEngine
 	{
 		public:
 		void postProcess(unsigned int unlitColor, unsigned int litColor, unsigned int position, unsigned int normal, unsigned int specular, unsigned int light, FrameBuffer* frameBuffer) override;
-		static ShaderProgram outlineShader;
+		//static ShaderProgram outlineShader;
 		static void loadShader();
 	};
 }

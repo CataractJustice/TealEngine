@@ -98,6 +98,16 @@ namespace TealEngine
 	};
 
 
+	float GUIUnit::inSelfWidths(const GUITransform& transform) const
+	{
+		return inPixels(transform) / transform.getCWidth().inPixels(transform);
+	};
+	float GUIUnit::inSelfHeights(const GUITransform& transform) const
+	{
+		return inPixels(transform) / transform.getCHeight().inPixels(transform);
+	};
+
+
 	GUIUnit GUIUnit::operator+(GUIUnit unit) const
 	{
 		GUIUnit sum;
@@ -120,6 +130,18 @@ namespace TealEngine
 		sum.rootHeightsValue 	= this->rootHeightsValue 	- unit.rootHeightsValue;
 		sum.parentWidthsValue 	= this->parentWidthsValue 	- unit.parentWidthsValue;
 		sum.parentHeightsValue 	= this->parentHeightsValue 	- unit.parentHeightsValue;
+		return sum;
+	}
+	GUIUnit GUIUnit::operator-() const
+	{
+		GUIUnit sum;
+		sum.pixelsValue 		= -this->pixelsValue;
+		sum.windowWidthsValue 	= -this->windowWidthsValue;
+		sum.windowHeightsValue 	= -this->windowHeightsValue;
+		sum.rootWidthsValue 	= -this->rootWidthsValue;
+		sum.rootHeightsValue 	= -this->rootHeightsValue;
+		sum.parentWidthsValue 	= -this->parentWidthsValue;
+		sum.parentHeightsValue 	= -this->parentHeightsValue;
 		return sum;
 	} 
 	GUIUnit GUIUnit::operator*(GUIUnit unit) const
@@ -160,11 +182,23 @@ namespace TealEngine
 
 	GUIUnit GUITransform::getTop() const 
 	{
-		return (this->parent ? this->parent->getTop() : GUIUnit::pixels(0.0f)) + GUIUnit::pixels(this->offsetY.inPixels(*this));
+		return 
+		(
+			this->parent ? 
+			this->parent->getTop() - this->parent->getScrollY() : 
+			GUIUnit::pixels(0.0f)
+		) + 
+		GUIUnit::pixels(this->offsetY.inPixels(*this));
 	}
 	GUIUnit GUITransform::getLeft() const 
 	{
-		return (this->parent ? this->parent->getLeft() : GUIUnit::pixels(0.0f)) + GUIUnit::pixels(this->offsetX.inPixels(*this));
+		return 
+		(
+			this->parent ? 
+			this->parent->getLeft() - this->parent->getScrollX() : 
+			GUIUnit::pixels(0.0f)
+		) + 
+		GUIUnit::pixels(this->offsetX.inPixels(*this));
 	}
 	GUIUnit GUITransform::getBottom() const 
 	{
@@ -192,21 +226,21 @@ namespace TealEngine
 	}
 	
 	GUIUnit& GUITransform::getWidth()
-        {
-                return width;
-        }
-        GUIUnit& GUITransform::getHeight()
-        {
-                return height;
-        }
-        GUIUnit& GUITransform::getOffsetX()
-        {
-                return offsetX;
-        }
-        GUIUnit& GUITransform::getOffsetY()
-        {
-                return offsetY;
-        }
+	{
+		return width;
+	}
+	GUIUnit& GUITransform::getHeight()
+	{
+		return height;
+	}
+	GUIUnit& GUITransform::getOffsetX()
+	{
+		return offsetX;
+	}
+	GUIUnit& GUITransform::getOffsetY()
+	{
+		return offsetY;
+	}
 
 	const GUITransform* GUITransform::getRoot() const
 	{
@@ -217,20 +251,36 @@ namespace TealEngine
 		return this->parent;
 	}
 
-	void GUITransform::setOffsetX(GUIUnit offsetX) 
+	void GUITransform::setOffsetX(const GUIUnit& offsetX) 
 	{
 		this->offsetX = offsetX;
 	}
-	void GUITransform::setOffsetY(GUIUnit offsetY)
+	void GUITransform::setOffsetY(const GUIUnit& offsetY)
 	{
 		this->offsetY = offsetY;
 	}
-	void GUITransform::setWidth(GUIUnit width) 
+	void GUITransform::setWidth(const GUIUnit& width) 
 	{
 		this->width = width;
 	}
-	void GUITransform::setHeight(GUIUnit height) 
+	void GUITransform::setHeight(const GUIUnit& height) 
 	{
 		this->height = height;
+	}
+	void GUITransform::setScrollX(const GUIUnit& scroll) 
+	{
+		this->scrollX = scroll;
+	}
+	void GUITransform::setScrollY(const GUIUnit& scroll) 
+	{
+		this->scrollY = scroll;
+	}
+	GUIUnit GUITransform::getScrollX() const
+	{
+		return scrollX;
+	}
+	GUIUnit GUITransform::getScrollY() const
+	{
+		return scrollY;
 	}
 } // namespace TealEngine

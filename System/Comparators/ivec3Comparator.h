@@ -6,15 +6,9 @@ namespace TealEngine
 	{
 		bool operator() (const glm::ivec3& left, const glm::ivec3& right) const
 		{
-			if (left.x < right.x)
-				return true;
-			if (left.x == right.x) 
-			{
-				if (left.y < right.y)
-					return true;
-				if (left.y == right.y)
-					return left.z < right.z;
-			}
+			if (left.x != right.x) return left.x < right.x;
+			if (left.y != right.y) return left.y < right.y;
+			if (left.z != right.z) return left.z < right.z;
 			return false;
 		}
 	};

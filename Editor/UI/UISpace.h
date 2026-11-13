@@ -21,6 +21,8 @@ namespace TealEngine
 		const std::string materialEditor = "Material editor";
 		const std::string textureViewer = "Texture viewer";
 		const std::string debugInfo = "Debug Info";
+		const std::string networkDictionary = "Network dictionary";
+		const std::string logger = "Logger";
 	};
 	class UISpace 
 	{

@@ -1,30 +1,63 @@
 #version 330 core
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
+layout (location = 1) in vec2 uv;
 layout (location = 2) in vec3 tangent;
-layout (location = 3) in vec2 uv;
-layout (location = 4) in vec4 color;
-layout (location = 5) in vec3 bitangent;
+layout (location = 3) in vec3 bitangent;
+layout (location = 4) in vec3 normal;
 
 out vec2 TexCoord;
-out vec4 Color;
 out vec3 FragPos;
-out vec3 Normal;
-out vec3 Tangent;
-out vec3 Bitangent;
+out vec4 ClipPos;
 out mat3 TBN;
-uniform mat4 pv_mat;
-uniform mat4 model;
-uniform mat4 n_model;
-uniform bool use_color = false;
+
+layout (std140) uniform CameraBlock
+{
+	mat4 PV;
+	vec3 camDir;
+    vec3 camPos;
+};
+
+layout (std140) uniform TransformBlock
+{
+	mat4 model;
+	mat4 normalModel;
+};
+
+vec3 unpacknorm(uint packedNormal) 
+{
+	float x = float((packedNormal >> 8u) & 0xFFu) / 255.0 * 2.0 - 1.0;
+	float y = float(packedNormal & 0xFFu) / 255.0 * 2.0 - 1.0;
+	vec3 n = vec3(x, y, 1.0 - abs(x) - abs(y));
+	if (n.z < 0) {
+		n.xy = (1.0 - abs(n.yx)) * sign(n.xy);
+	}
+	return normalize(n);
+}
+
+vec2 unpackuv(uint packedUV) 
+{
+	return vec2(
+		float(packedUV & 0xFFFFu) / 65535.0f,
+		float((packedUV >> 16u) & 0xFFFFu) / 65535.0f
+	);
+}
+
 void main()
 {
+	//TexCoord = unpackuv(UVTBN.x);
 	TexCoord = uv;
-	Color = use_color ? color : vec4(1.0f);
-	FragPos = vec3(model * vec4(position, 1.0));
-	Normal = mat3(n_model) * (normal);
-	Tangent =  mat3(n_model) * (tangent);
-	Bitangent = mat3(n_model) * (bitangent);
-	TBN = mat3(Tangent, Bitangent, Normal);
-	gl_Position = pv_mat * model * vec4(position, 1.0f);
+	FragPos = vec3(model * vec4(position, 1.0f));
+	gl_Position = PV * model * vec4(position, 1.0f);
+	ClipPos = gl_Position;
+	TBN = mat3(normalModel) * mat3(
+		tangent,
+		bitangent,
+		normal
+	);
+	/*
+	TBN = normalModel * mat3(
+		unpacknorm(UVTBN.y & 0xFFFFu), 
+		unpacknorm((UVTBN.y << 16u) & 0xFFFFu), 
+		unpacknorm(UVTBN.z & 0xFFFFu)
+	);*/
 }

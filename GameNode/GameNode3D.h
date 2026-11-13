@@ -11,8 +11,8 @@ namespace TealEngine
 	class GameNode3D : public GameNode
 	{
 	private:
-		Transform lastWorldTransform, lastTransfrom, lastParentWorldTransform;
-		unsigned int transformLastModifyStamp, parentWorldTransformLastModifyStamp;
+		mutable Transform lastWorldTransform, lastTransfrom, lastParentWorldTransform;
+		mutable unsigned int transformLastModifyStamp, parentWorldTransformLastModifyStamp;
 		bool hasGameNode3DParent;
 
 		void setParent(GameNode* parent) override;
@@ -26,7 +26,7 @@ namespace TealEngine
 		virtual ~GameNode3D();
 
 		//do not try to modify game node world transform through this reference
-		virtual Transform& getWorldTransform();
+		virtual const Transform& getWorldTransform() const;
 
 		virtual void setWorldTransform(Transform transform);
 
@@ -38,7 +38,5 @@ namespace TealEngine
 
 		Json toJson() override;
 		void displayProps() override;
-		//
-		virtual void render(ShaderProgram* shader = nullptr, unsigned int stages = 0) override;
 	};
 }

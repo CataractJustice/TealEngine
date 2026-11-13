@@ -2,22 +2,24 @@
 #include "CollisionSolver.h"
 #include "Collider.h"
 #include <stack>
-#include <set>
+#include <unordered_set>
 namespace TealEngine 
 {
-	class PhysicsScene 
+	class PhysicsScene : public Component
 	{
 	private:
-		std::set<Collider*> colliders;
-
+		std::unordered_set<Collider*> colliders;
+		std::unordered_set<Collider*> nonCollidingColliders;
 		std::stack<Collision> collisions;
+		std::vector<Collider*> globalColliders;
+		const float cellSize = 16.0f;
 	public:
-
-		void addColliders(const std::initializer_list<Collider*>& colliders);
-		void removeColliders(const std::initializer_list<Collider*>& colliders);
-
-		void CollisionCheck();
-
-		void CollisionFlush();
+		std::string layerNames[64];
+		void addCollider(Collider* collider);
+		void removeCollider(Collider* collider);
+		void onSceneComponentAdd(Component* component, GameNode* parent) override;
+		void onSceneComponentRemove(Component* component, GameNode* parent) override;
+		void collisionsCheck();
+		void collisionsFlush();
 	};
 }

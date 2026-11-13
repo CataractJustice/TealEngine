@@ -48,6 +48,10 @@ namespace TealEngine
 			{
 				return json;
 			}
+			if(Component::isValidComponent(this->valueref<Component*>()) == false) 
+			{
+				return json;	
+			}
 			json["path"] = this->ownerComp->getParent()->getRelativeIndexPathTo(this->valueref<Component*>()->getParent());
 			json["index"] = this->valueref<Component*>()->getIndex();
 			return json;

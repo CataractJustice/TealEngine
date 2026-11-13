@@ -1,5 +1,5 @@
 #include "GameNode/ComponentProp.h"
-#include "Graphics/Texture/Texture.h"
+#include "Graphics/Texture.h"
 namespace TealEngine 
 {
 	class TextureSelectProp : public StringKeyMapValuePointerProp<Texture> 

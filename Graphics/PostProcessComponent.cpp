@@ -1,3 +1,4 @@
+/*
 #include "PostProcessComponent.h"
 #include "GameNode/ComponentFactory.h"
 #include "Core.h"
@@ -69,3 +70,4 @@ namespace TealEngine
 	}
 	EXPORT_COMPONENT(PostProcessComponent);
 }
+*/

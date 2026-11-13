@@ -24,34 +24,28 @@ namespace TealEngine
 
 		inline bool exists(std::filesystem::path resourcePath) 
 		{
-			return loadedResources.find(resourcePath) != loadedResources.cend();
+			return loadedResources.find(resourcePath.string()) != loadedResources.cend();
 		}
 		
 		T& get(std::filesystem::path resourcePath) 
 		{
-			auto it = loadedResources.find(resourcePath);
+			auto it = loadedResources.find(resourcePath.string());
 			if(it == loadedResources.cend()) 
 			{
 				load(resourcePath);
-				return loadedResources[resourcePath];
+				return loadedResources[resourcePath.string()];
 			}
 			return it->second;
 		};
 		void load(std::filesystem::path resourcePath) 
 		{
-			if(this->extensions.contains(resourcePath.extension())) 
-			{
-				loadImpl(resourcePath);
-			}
-			else 
-			{
-				TE_DEBUG_ERROR("Unsupported file extension");
-			}
+			loadImpl(resourcePath);
 		}
-		virtual int loadRecursive(std::filesystem::path folderPath) 
+		bool loadRecursive(std::filesystem::path folderPath) 
 		{
-			if(!std::filesystem::is_directory(folderPath))
-				return -1;
+			std::error_code ec;
+			if(!std::filesystem::is_directory(folderPath, ec) && !std::filesystem::is_symlink(folderPath, ec))
+				return false;
 			for(const auto& entry : std::filesystem::recursive_directory_iterator(folderPath)) 
 			{
 				if(this->extensions.contains(entry.path().extension().string())) 
@@ -60,8 +54,24 @@ namespace TealEngine
 				}
 			}
 
-			return 0;
+			return true;
 		};
+
+		bool unloadRecursive(std::filesystem::path folderPath) 
+		{
+			std::error_code ec;
+			if(!std::filesystem::is_directory(folderPath, ec) && !std::filesystem::is_symlink(folderPath, ec))
+				return false;
+			for(const auto& entry : std::filesystem::recursive_directory_iterator(folderPath)) 
+			{
+				if(this->extensions.contains(entry.path().extension().string())) 
+				{
+					this->loadedResources.erase(entry.path().filename().string());
+				}
+			}
+
+			return true;
+		}
 		virtual void clearAll() 
 		{
 			this->loadedResources.clear();

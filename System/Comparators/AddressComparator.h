@@ -7,7 +7,7 @@ namespace TealEngine
 		template <class T>
 		bool operator()(const T* left, const T* right) const
 		{
-			return (int)(&left) < (int)(&right);
+			return (long long)(left) < (long long)(right);
 		}
 	};
 }

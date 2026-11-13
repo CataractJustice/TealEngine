@@ -5,3 +5,4 @@
 #include "SphereCollider.h"
 #include "BoxCollider.h"
 #include "ScalarFieldCollider.h"
+#include "TilesCollider.h"

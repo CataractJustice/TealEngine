@@ -1,35 +1,40 @@
 #version 330 core
-
 layout (location = 0) out vec4 UnlitColor;
 layout (location = 1) out vec4 FragColor;
 layout (location = 2) out vec3 FragPosition;
 layout (location = 3) out vec3 FragNormal;
 layout (location = 4) out vec4 FragSpecular;
+layout (location = 5) out vec4 FragLight;
 
 in vec2 TexCoord;
 in vec3 FragPos;
-in vec3 Normal;
 in mat3 TBN;
-in vec4 Color;
 
+/*layout (std140) uniform Deferred
+{
+};*/
+
+uniform vec4 textureColor;
+uniform vec4 unlitColor;
+uniform vec3 specularColor;
 uniform sampler2D unlit;
 uniform sampler2D textureImage;
 uniform sampler2D specular;
 uniform sampler2D normals;
 
-uniform vec4 textureColor = vec4(1.0f);
-uniform vec4 unlitColor = vec4(1.0f);
-uniform vec3 specularColor = vec3(1.0f);
-
 void main()
 {
-    UnlitColor = texture(unlit, TexCoord) * Color * unlitColor;
-    FragColor = texture(textureImage, TexCoord) * Color * textureColor;
+    UnlitColor = texture(unlit, TexCoord) * unlitColor;
+    FragColor = texture(textureImage, TexCoord) * textureColor;
+	if((UnlitColor.a == 0.0f && FragColor.a < 0.5f)) 
+	{
+		discard;
+	}
 	FragPosition = FragPos;
-	if((UnlitColor.a + FragColor.a) == 0.0) discard;
 	UnlitColor.a = 1.0f;
 	FragColor.a = 1.0f;
 	vec3 ln = texture(normals, TexCoord).rgb * 2.0 - 1.0;
+	ln.g = -ln.g;
 	FragNormal = normalize(TBN * ln);
 	vec4 specvec = texture(specular, TexCoord);
 	specvec.x *= specularColor.x;

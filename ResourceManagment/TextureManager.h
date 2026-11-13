@@ -1,6 +1,6 @@
 #pragma once
 #include "ResourceManager.h"
-#include "Graphics/Texture/Texture.h"
+#include "Graphics/Texture.h"
 
 namespace TealEngine
 {

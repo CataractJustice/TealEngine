@@ -9,6 +9,26 @@ namespace TealEngine
 {
 	bool CollisionSolver::matchAndSwapColliders(Collider*& a, Collider*& b, Collider::ColliderType firstType, Collider::ColliderType secondType)
 	{
+		if(firstType == Collider::ColliderType::ANY && secondType == Collider::ColliderType::ANY) 
+		{
+			return true;
+		}
+		if(firstType == Collider::ColliderType::ANY || secondType == Collider::ColliderType::ANY) 
+		{
+			bool firstTypeAny = firstType == Collider::ColliderType::ANY;
+			Collider::ColliderType type = firstTypeAny ? secondType : firstType;
+			if(b->getColliderType() == type) 
+			{
+				if(!firstTypeAny) std::swap(a, b);
+				return true;
+			}
+			if(a->getColliderType() == type) 
+			{
+				if(firstTypeAny) std::swap(a, b);
+				return true;
+			}
+			return false;
+		}
 		if (isPairContains(a->getColliderType(), b->getColliderType(), firstType, secondType))
 		{
 			if (!isPairInGivenOrder(a->getColliderType(), b->getColliderType(), firstType, secondType))
@@ -19,48 +39,53 @@ namespace TealEngine
 		}
 		return false;
 	}
-	std::pair<Collision, Collision> CollisionSolver::SolveCollision(Collider* a, Collider* b, bool& isAnyCollisionOccured) 
+	std::vector<std::pair<Collision, Collision>> CollisionSolver::SolveCollision(Collider* a, Collider* b, bool& hasAnyCollisionOccured) 
 	{
-		isAnyCollisionOccured = true;
+		hasAnyCollisionOccured = true;
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::AABC, Collider::ColliderType::AAPLANE))
 		{
-			return AABCToAAPlane((AABC*)a, (AAPlaneCollider*)b);
+			return {AABCToAAPlane((AABC*)a, (AAPlaneCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::AABC, Collider::ColliderType::HEIGHTMAP))
 		{
-			return AABCToHeightMap((AABC*)a, (HeightCollider*)b);
+			return {AABCToHeightMap((AABC*)a, (HeightCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::SPHERE, Collider::ColliderType::HEIGHTMAP))
 		{
-			return SphereToHeightMap((SphereCollider*)a, (HeightCollider*)b);
+			return {SphereToHeightMap((SphereCollider*)a, (HeightCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::SPHERE, Collider::ColliderType::SPHERE))
 		{
-			return SphereToSphere((SphereCollider*)a, (SphereCollider*)b);
+			return {SphereToSphere((SphereCollider*)a, (SphereCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::SPHERE, Collider::ColliderType::SCALAR_FIELD))
 		{
-			return SphereToScalarField((SphereCollider*)a, (ScalarFieldCollider*)b);
+			return {SphereToScalarField((SphereCollider*)a, (ScalarFieldCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::BOX))
 		{
-			return BoxToBox((BoxCollider*)a, (BoxCollider*)b);
+			return {BoxToBox((BoxCollider*)a, (BoxCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::SPHERE))
 		{
-			return BoxToSphere((BoxCollider*)a, (SphereCollider*)b);
+			return {BoxToSphere((BoxCollider*)a, (SphereCollider*)b)};
 		}
 		else
 		if (matchAndSwapColliders(a, b, Collider::ColliderType::BOX, Collider::ColliderType::SCALAR_FIELD))
 		{
-			return BoxToScalarField((BoxCollider*)a, (ScalarFieldCollider*)b);
+			return {BoxToScalarField((BoxCollider*)a, (ScalarFieldCollider*)b)};
 		}
-		isAnyCollisionOccured = false;
+		if(matchAndSwapColliders(a, b, Collider::ColliderType::ANY, Collider::ColliderType::TILES)) 
+		{
+			return AnyToTiles(a, (TilesCollider*)b);
+		}
+		hasAnyCollisionOccured = false;
+		return {};
 	}
 }

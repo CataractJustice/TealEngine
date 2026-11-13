@@ -70,8 +70,8 @@ namespace TealEngine
 		bool renameFinished = false;
 		for(auto file : std::filesystem::directory_iterator(this->currentPath)) 
 		{
-			std::string filename = file.path().filename();
-			std::string extension = file.path().extension();
+			std::string filename = file.path().filename().string();
+			std::string extension = file.path().extension().string();
 			unsigned int iconId = GameAssetsBrowser::unknownIcon.id();
 			
 			if(file.is_directory()) iconId = GameAssetsBrowser::folderIcon.id();
@@ -97,7 +97,7 @@ namespace TealEngine
 					iconId = GameAssetsBrowser::nodesIcon.id();
 				}
 			}
-			if(ImGui::ImageButton(filename.c_str(), ImTextureID((long)iconId), ImVec2(entrySize, entrySize), ImVec2(0, 1), ImVec2(1, 0))) 
+			if(ImGui::ImageButton(filename.c_str(), ImTextureID((long long)iconId), ImVec2(entrySize, entrySize), ImVec2(0, 1), ImVec2(1, 0))) 
 			{
 				if(std::filesystem::is_directory(file)) 
 				{
@@ -112,7 +112,7 @@ namespace TealEngine
 					ImGui::EndDragDropSource();
 				}
 			}
-			if(extension == ".mtljson") 
+			if(extension == ".mbf") 
 			{
 				if(ImGui::BeginDragDropSource()) 
 				{

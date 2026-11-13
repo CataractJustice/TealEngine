@@ -14,6 +14,7 @@ namespace TealEngine
 		{
 			return json;
 		}
+		if(GameNode::isValidNode(this->valueref<GameNode*>()) == false) return json;
 		json["path"] = this->ownerComp->getParent()->getRelativeIndexPathTo(this->valueref<GameNode*>());
 		return json;
 	}
@@ -62,7 +63,7 @@ namespace TealEngine
 		} 
 		else 
 		{
-			ImGui::Text("%s", "<Drop node here>");
+			ImGui::Text("%s %s", "<Drop node here>", label);
 		}
 		if(ImGui::BeginDragDropTarget()) 
 		{

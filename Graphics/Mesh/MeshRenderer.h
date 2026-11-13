@@ -1,135 +1,45 @@
 #pragma once
-#include "libs/glm/glm.hpp"
-#include "Mesh.h"
-#include "Graphics/Renderer/RenderUtil.h"
-#include "MeshRenderer.h"
-namespace TealEngine{
-	class MeshRenderer : public Component
+#include "GameNode/Component.h"
+#include "Kirino/Mesh.h"
+#include "Kirino/Material.h"
+#include "Kirino/MeshInstance.h"
+#include "Kirino/Renderer.h"
+#include <vector>
+#include "glm/glm.hpp"
+#include "Graphics/Camera.h"
+#include <set>
+#include <map>
+
+namespace TealEngine 
+{
+	struct TransformBlock 
 	{
-	private:
-
-	protected:
-		SharedMesh* mesh;
-		ShaderProgram* shader;
-		unsigned int mode;
-
-		unsigned int renderPassMask;
-		bool shadowCaster;
-
-	public:
-		enum class RenderPass 
-		{
-			DeferredPass = 1,
-			ShadowMapPass = 2,
-			UnlitPass = 4,
-			DebugPass = 8
-		};
-		MeshRenderer();
-
-		void setRenderPassActive(MeshRenderer::RenderPass pass, bool value) 
-		{
-			renderPassMask = value ? (renderPassMask | (unsigned int)pass) : (renderPassMask & ~((unsigned int)pass));
-		}
-
-		bool isRenderPassActive(MeshRenderer::RenderPass pass) 
-		{
-			return bool(renderPassMask & (unsigned int)pass) || !(int)pass;
-		}
-
-		virtual void setShader(ShaderProgram* shader) 
-		{
-			this->shader = shader;
-		}
-
-		ShaderProgram* getShader() 
-		{
-			return this->shader;
-		}
-
-		void setMode(unsigned int mode) 
-		{
-			this->mode = mode;
-		}
-
-		void setMesh(SharedMesh* mesh) {
-			this->mesh = mesh;
-		}
-
-		void static render(SharedMesh* mesh, ShaderProgram* shader, unsigned int mode, unsigned int LOD = 0)
-		{
-			if(mesh->getLength() == 0) return;
-			shader->use();
-			mesh->render(LOD, mode);
-		}
-
-		virtual void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0)
-		{
-			
-			if((this->shader || shader) && this->mesh)
-				render(
-					mesh,
-					shader ? shader : this->shader,
-					mode ? mode : this->mode,
-					LOD
-				);
-		}
-
-		virtual void render(ShaderProgram* shader, unsigned int passes) override 
-		{
-			if(this->renderPassMask & passes)
-				this->render(shader, this->mode, 0);
-		}
-
-		void onPropSet(const std::string& propName) override
-		{
-			if(shader)
-				this->setShader(this->shader);
-			this->setRenderPassActive(RenderPass::ShadowMapPass, this->isShadowCaster());
-		}
-
-		bool isShadowCaster();
-		void setShadowCast(bool castShadow);
-
-
+		glm::mat4 model;
+		glm::mat4 normalModel;
 	};
-
-	class Mesh3DRenderer : public MeshRenderer 
+	class Mesh3DRenderer : public Component 
 	{
-	private:
-		std::map<std::string, Uniform>::iterator model, nModel, PV, V;
-
-	public:
-
-		void setShader(ShaderProgram* shader) override
-		{
-			this->shader = shader;
-			if(this->shader == nullptr) return;
-			this->shader->setUniform("model", mat4(1.0f));
-			this->shader->setUniform("n_model", mat4(1.0f));
-			this->shader->setUniform("pv_mat", mat4(1.0f));
-			model = shader->getUniformIterator("model");
-			nModel = shader->getUniformIterator("n_model");
-			PV = shader->getUniformIterator("pv_mat");
-		}
-
-		void renderId() override;
-		
-		void render(ShaderProgram* shader = nullptr, unsigned int mode = 0, unsigned int LOD = 0) override
-		{
-			if((!shader && !this->shader) || !this->mesh) return;
-			if (mesh->getLength() > 0) 
-			{	
-				Transform meshTransform = ((GameNode3D*)getParent())->getWorldTransform();
-				
-				vec4 screenPos = Render::VP_matrix * vec4(meshTransform.getPosition(), 1.0f);
-				
-				ShaderProgram* targetShader = shader ? shader : this->shader;
-				
-				targetShader->setUniform("model", meshTransform.getMatrix());
-				targetShader->setUniform("n_model", meshTransform.getNormalsModel());
-				targetShader->setUniform("pv_mat", Render::VP_matrix);
-				MeshRenderer::render(targetShader, mode ? mode : this->mode, 0);
-			}
-		}
+		private:
+		const Kirino::Material* material;
+		const Kirino::Material* shadowsMaterial;
+		const Kirino::Mesh* mesh;
+		bool post;
+		bool shadowCaster;
+		public:
+		float renderDistance;
+		Mesh3DRenderer();
+		void setMaterial(const Kirino::Material* material);
+		void setShadowsMaterial(const Kirino::Material* material);
+		void setMesh(const Kirino::Mesh* mesh);
+		inline const Kirino::Mesh* getMesh() const { return mesh; };
+		inline const Kirino::Material* getMaterial() const { return material; };
+		inline void setShadowCasting(bool castShadow) { shadowCaster = castShadow; }
+		inline const Kirino::Material* getShadowsMaterial() const { return shadowsMaterial; };
+		inline bool isShadowCaster() { return shadowCaster; }
+		inline void setPost(bool post) { this->post = post; }
+		inline bool isPost() { return post; }
+		void render(Kirino::StateColletion& stateCollection, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) override;
+		void shadowRender(Kirino::StateColletion& stateCollection, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) override;
+		void postRender(Kirino::StateColletion& stateCollection, const FrustumPlanes& frustum, const RenderTexturesCollection& renderTextures) override;
 	};
 }

@@ -8,13 +8,13 @@
 	"Line3D": 
 	{
 		"vert": "VertLine3D.glsl",
-		"frag": "FragTexture.glsl"
+		"frag": "FragColor.glsl"
 	},
 
-	"Rect2D": 
+	"GuiBackground": 
 	{
-		"vert": "Vert2D.glsl",
-		"frag": "FragTexture.glsl"
+		"vert": "VertScreen.glsl",
+		"frag": "FragImageColor.glsl"
 	},
 	
 	"Fog": 

@@ -8,6 +8,7 @@ namespace TealEngine
 		void* window;
 		void* primMonVidMode;
 		unsigned int windowWidth, windowHeight;
+		void (*windowResizeCallback)(int, int);
 	public:
 
 		Window(const char* title, int width = 640, int height = 480);
@@ -23,6 +24,7 @@ namespace TealEngine
 		glm::vec2 getScreenResolution();
 		glm::vec2 getWindowResolution();
 		bool shouldClose();
+		inline void setWindowResizeCallback(void (callback)(int, int)) { windowResizeCallback = callback; }
 
 		void* gl_window_ptr_();
 		void* prim_mon_mode_ptr_();

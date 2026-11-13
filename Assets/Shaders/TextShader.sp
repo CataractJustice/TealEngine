@@ -1,7 +1,7 @@
 {
 	"Text": 
 	{
-		"vert": "Vert2D.glsl",
+		"vert": "VertText.glsl",
 		"frag": "FragText.glsl"
 	}
 }

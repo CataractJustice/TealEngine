@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Core.h"
 #include "GameNode/Component.h"
+#include "GameNode/SceneNode.h"
 namespace TealEngine
 {
 	namespace Input
@@ -14,7 +15,11 @@ namespace TealEngine
 			double deltaSPos = 0.0;
 			bool mButton[3] = {0};
 			double scrollPos = 0;
+			DefaultDisableCursorOption defaultCursorDisable;
+			bool cursorDisable = false;
+			bool cursorIsDisabled = false;
 			glm::vec2 mousePos;
+			glm::vec2 activeCursorMousePos;
 			bool isButtonPressed(unsigned int button) 
 			{
 				if (button <= 3)
@@ -29,14 +34,16 @@ namespace TealEngine
 
 			void moveCallback(GLFWwindow* window, double xpos, double ypos) 
 			{
-				if(!inputIsActive) return;
+				if(!getInputActive()) return;
 				deltaMPoAccum += glm::vec2(xpos, ypos) - mousePos;
 				mousePos = glm::vec2(xpos, ypos);
+				if(!cursorDisable) activeCursorMousePos = mousePos;
 			}
 
 			void buttonCallback(GLFWwindow* window, int button, int action, int mod) 
 			{
-				if(!inputIsActive) return;
+				if(!getInputActive()) return;
+				if(button < 0 || button >= (sizeof(mButton)/sizeof(*mButton)))  return;
 				if (action == GLFW_PRESS)
 				{	
 					if(Core::getRoot()) 
@@ -56,7 +63,7 @@ namespace TealEngine
 
 			void wheelCallback(GLFWwindow* window, double xoffset, double yoffset) 
 			{
-				if(!inputIsActive) return;
+				if(!getInputActive()) return;
 				scrollPos += yoffset;
 			}
 
@@ -76,20 +83,24 @@ namespace TealEngine
 				glfwSetCursorPos((GLFWwindow*)Graphics::window->gl_window_ptr_(), px, py);
 				mousePos = glm::vec2(px, py);
 			}
-
-			void setCursorHidden(bool hidden) 
+			
+			void setDisableCursorDefault(DefaultDisableCursorOption option) 
 			{
-				if(hidden)
-					glfwSetInputMode((GLFWwindow*)Graphics::window->gl_window_ptr_(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-				else 
-				{
-					glfwSetInputMode((GLFWwindow*)Graphics::window->gl_window_ptr_(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				}
+				defaultCursorDisable = option;
+			}
+			void setDisableCursorCurrent(bool disabled) 
+			{
+				cursorDisable = disabled;
 			}
 		}
 
 		namespace Keyboard
 		{
+			Component* focusedCharInput = nullptr;
+
+			Component* getFocusedCharInput() { return focusedCharInput; }
+			void focusCharInput(Component* c) { focusedCharInput = c; }
+
 			bool keyboardKey[1024] = {0};
 			bool isKeyPressed(unsigned int key) 
 			{
@@ -101,20 +112,36 @@ namespace TealEngine
 		
 			void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mod) 
 			{
-				if(!inputIsActive) return;
+				if(!getInputActive()) return;
+				
 				if (action == GLFW_PRESS)
 				{
+					if(key == GLFW_KEY_ESCAPE) focusedCharInput = nullptr;
 					if(key == GLFW_KEY_F1) Core::uiSpace.showEditorUI = !Core::uiSpace.showEditorUI;
-					Component::onKeyPressCallbacks(key);
+					if(focusedCharInput) focusedCharInput->onKeyPress(key); else Core::sceneNode()->onKeyPress(key);
 				}
 				if (action == GLFW_REPEAT) 
 				{
+					if(focusedCharInput) focusedCharInput->onKeyRepeat(key); else Core::sceneNode()->onKeyRepeat(key);
 				}
 				if (action == GLFW_RELEASE)
 				{
-					Component::onKeyReleaseCallbacks(key);
+					if(focusedCharInput) focusedCharInput->onKeyRelease(key); else Core::sceneNode()->onKeyRelease(key);
 				}
 				keyboardKey[key] = action != GLFW_RELEASE;
+			}
+
+
+			void charCallback(GLFWwindow* window, unsigned int unicode) 
+			{
+				if(focusedCharInput) 
+				{
+					focusedCharInput->onChar(unicode);
+				}
+				else 
+				{
+					Core::sceneNode()->onChar(unicode);
+				}
 			}
 		}
 
@@ -125,19 +152,51 @@ namespace TealEngine
 			glfwSetCursorPosCallback(wptr, Mouse::moveCallback);
 			glfwSetMouseButtonCallback(wptr, Mouse::buttonCallback);
 			glfwSetScrollCallback(wptr, Mouse::wheelCallback);
+			glfwSetCharCallback(wptr, Keyboard::charCallback);
 		}
 
-		void inputUpdate() 
+		void inputUpdate()
 		{
-			if(!inputIsActive) return;
+			if(Core::uiSpace.showEditorUI) Mouse::cursorDisable = false;
+			// Change cursor mode only if the desired mode changed since last frame
+			if (Mouse::cursorIsDisabled != Mouse::cursorDisable)
+			{
+				glfwSetInputMode(
+					(GLFWwindow*)Graphics::window->gl_window_ptr_(),
+					GLFW_CURSOR,
+					Mouse::cursorDisable ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL
+				);
+				Mouse::mousePos = Mouse::activeCursorMousePos;
+				Mouse::deltaMPoAccum = glm::vec2(0.0f);
+				Mouse::cursorIsDisabled = Mouse::cursorDisable;
+			}
+
+			// Apply default cursor mode for this frame
+			// Components can call setDisableCursorCurrent every frame to request cursor locking,
+			// and when no component requires focus, the cursor returns to the default state.
+			switch (Mouse::defaultCursorDisable)
+			{
+				case Mouse::DefaultDisableCursorOption::DisableOnFrameStart:
+					Mouse::cursorDisable = true;
+					break;
+				case Mouse::DefaultDisableCursorOption::EnableOnFrameStart:
+					Mouse::cursorDisable = false;
+					break;
+				case Mouse::DefaultDisableCursorOption::KeepValue:
+				default:
+					break;
+			}
+
+			if (!getInputActive()) return;
+
 			static glm::vec2 lastMousePos = Mouse::getMousePos();
-			static double lastScrollPos = Mouse::getScrollPos();
+			static double	lastScrollPos = Mouse::getScrollPos();
 
-			Mouse::deltaMPos = Mouse::deltaMPoAccum;
+			Mouse::deltaMPos	 = Mouse::deltaMPoAccum;
 			Mouse::deltaMPoAccum = glm::vec2(0.0f);
-			Mouse::deltaSPos = Mouse::getScrollPos() - lastScrollPos;
+			Mouse::deltaSPos	 = Mouse::getScrollPos() - lastScrollPos;
 
-			lastMousePos = Mouse::getMousePos();
+			lastMousePos  = Mouse::getMousePos();
 			lastScrollPos = Mouse::getScrollPos();
 		}
 		void setInputActive(bool active) 
@@ -147,7 +206,7 @@ namespace TealEngine
 
 		bool getInputActive() 
 		{
-			return inputIsActive;
+			return inputIsActive && Core::getEngineState() == Core::EngineState::GAME_PLAYING;
 		}
 	}
 }

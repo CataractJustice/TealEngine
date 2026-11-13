@@ -1,4 +1,4 @@
 #pragma once
 #include<string>
-
-std::string loadStrFromFile(std::string path, int* errorcode = nullptr);
+#include <filesystem>
+std::string loadStrFromFile(std::filesystem::path path, int* errorcode = nullptr);

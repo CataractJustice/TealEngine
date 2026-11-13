@@ -39,6 +39,7 @@ namespace TealEngine
 		void display(const char* label, Component* component);
 		template<class T>
 		inline T& valueref() { return *((T*)(propptr)); };
+		virtual ~IProp() = default;
 	};
 
 	template<class T>
@@ -75,8 +76,8 @@ namespace TealEngine
 	class ShortProp : public TProp<short> {public: MacrosOverrideTProp};
 	class UShortProp : public TProp<unsigned short> {public: MacrosOverrideTProp};
 	class CharProp : public TProp<char> {public: MacrosOverrideTProp};
-	class LongProp : public TProp<long> {public: MacrosOverrideTProp};
-	class ULongProp : public TProp<unsigned long> {public: MacrosOverrideTProp};
+	class LongProp : public TProp<long long> {public: MacrosOverrideTProp};
+	class ULongProp : public TProp<unsigned long long> {public: MacrosOverrideTProp};
 	class FloatProp : public TProp<float> {public: MacrosOverrideTProp};
 	class StringProp : public  TProp<std::string> {public: MacrosOverrideTProp};
 	class BoolProp : public  TProp<bool> {public: MacrosOverrideTProp};
@@ -107,18 +108,18 @@ namespace TealEngine
 	class StringKeyMapValuePointerProp : public IProp 
 	{
 		private:
-		std::map<std::string, MapValue>* mapptr;
+		const std::map<std::string, MapValue>* mapptr;
 		public:
-		StringKeyMapValuePointerProp(MapValue** propptr, std::map<std::string, MapValue>* mapptr) : mapptr(mapptr)
+		StringKeyMapValuePointerProp(const MapValue** propptr, const std::map<std::string, MapValue>* mapptr) : mapptr(mapptr)
 		{
-			this->propptr = propptr;
+			this->propptr = (void*)propptr;
 		}
 
 		void set(const Json& json) override 
 		{
 			std::string key = json.get<std::string>();
 			if((*mapptr).find(key) != (*mapptr).cend())
-				this->valueref<MapValue*>() = &((*mapptr)[key]);
+				this->valueref<const MapValue*>() = &(*((*mapptr).find(key))).second;
 		}
 		
 		Json get() 
@@ -139,13 +140,21 @@ namespace TealEngine
 			int mapsize = (*(this->mapptr)).size();
 			const int staticKeysBufferSize = 1024;
 			static char* keysStaticBuffer[staticKeysBufferSize]; 
-			char** keys = mapsize > staticKeysBufferSize ? new char*[mapsize] : keysStaticBuffer;
+			char** keys;
+			if(mapsize > staticKeysBufferSize) 
+			{
+				keys = new char*[mapsize];
+			} 
+			else 
+			{
+				keys = keysStaticBuffer;
+			}
 			int index = -1;
 			bool found = false;
 			for(auto& keyval : *(this->mapptr)) 
 			{
 				index++;
-				if(this->valueref<MapValue*>() == &(keyval.second)) 
+				if(this->valueref<const MapValue*>() == &(keyval.second)) 
 				{
 					found = true;
 					break;
@@ -159,7 +168,10 @@ namespace TealEngine
 			}
 
 			bool edited = ImGui::Combo(label, &index, keys, mapsize);
-			if(edited) this->valueref<MapValue*>() = &(this->mapptr->operator[](keys[index]));
+			if(edited) 
+			{
+				this->valueref<const MapValue*>() = &(*this->mapptr->find(keys[index])).second;
+			}
 			if(mapsize > staticKeysBufferSize) delete[] keys;
 			return edited;
 		}

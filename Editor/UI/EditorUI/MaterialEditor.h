@@ -1,5 +1,6 @@
 #pragma once
 #include "GameNode/Component.h"
+#include "Kirino/Material.h"
 #include <filesystem>
 
 namespace TealEngine 
@@ -9,7 +10,7 @@ namespace TealEngine
 		private:
 		std::filesystem::path currentMaterialFile;
 		std::string currentMaterialName;
-		ShaderProgram* currentMaterial;
+		Kirino::Material* currentMaterial;
 		int shaderItem;
 		public:
 		MaterialEditor();
